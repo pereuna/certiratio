@@ -1,7 +1,8 @@
+# Certiratio – velkatalouden tutkimussimulaattori
 
-# Credita certa, homines liberi.
+*Credita certa, homines liberi.*
 
-# Velkatalous – ensimmäinen tutkimussimulaattori
+[Nimen synty ja tausta](docs/name.md).
 
 Lue [johdonmukaisuusauditointi ja toteutussuunnitelma](docs/MALLI_JA_SUUNNITELMA.md) sekä alkuperäinen [mallikonteksti](VELKATALOUS_CONTEXT.md). Käyttäjän periaatteet ja kokeelliset oletukset on erotettu raportissa.
 
