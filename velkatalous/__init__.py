@@ -1,0 +1,1 @@
+"""Velkatalous research prototype."""

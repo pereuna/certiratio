@@ -1,0 +1,10183 @@
+{
+  "parameters": {
+    "seed": 7,
+    "periods": 30,
+    "creation": true,
+    "cap_scale": 1.0,
+    "resource": 200,
+    "mortality": 0.05
+  },
+  "rows": [
+    {
+      "tick": 0,
+      "total_debt": 0,
+      "created_debt": 0,
+      "death_extinguished_debt": 0,
+      "transfer_volume": 0,
+      "debt_velocity": null,
+      "consumption": {
+        "food": 12,
+        "box": 3
+      },
+      "production": {
+        "labor": 16,
+        "food": 12,
+        "wood": 3,
+        "box": 3
+      },
+      "hours": 16,
+      "unmet_demand": 9,
+      "rejected_trades": 0,
+      "open_promises": 22,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 0,
+        "worker6": 0,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {
+          "resource": 194,
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "forest": {
+          "resource": 197,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 0,
+          "food": 0
+        },
+        "worker0": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 1,
+      "total_debt": 40,
+      "created_debt": 40,
+      "death_extinguished_debt": 0,
+      "transfer_volume": 34,
+      "debt_velocity": 1.7,
+      "consumption": {
+        "food": 24,
+        "box": 5
+      },
+      "production": {
+        "labor": 32,
+        "food": 24,
+        "wood": 6,
+        "box": 6
+      },
+      "hours": 16,
+      "unmet_demand": 8,
+      "rejected_trades": 4,
+      "open_promises": 18,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 2,
+        "workshop": 6,
+        "worker0": 4,
+        "worker1": 2,
+        "worker2": 4,
+        "worker3": 0,
+        "worker4": 6,
+        "worker5": 6,
+        "worker6": 0,
+        "worker7": 6,
+        "worker8": 4
+      },
+      "stocks": {
+        "farm": {
+          "resource": 188,
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "forest": {
+          "resource": 194,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 1,
+          "food": 0
+        },
+        "worker0": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 2,
+      "total_debt": 58,
+      "created_debt": 58,
+      "death_extinguished_debt": 0,
+      "transfer_volume": 50,
+      "debt_velocity": 1.0204081632653061,
+      "consumption": {
+        "food": 36,
+        "box": 9
+      },
+      "production": {
+        "labor": 48,
+        "food": 36,
+        "wood": 9,
+        "box": 9
+      },
+      "hours": 16,
+      "unmet_demand": 8,
+      "rejected_trades": 1,
+      "open_promises": 9,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 2,
+        "workshop": 14,
+        "worker0": 0,
+        "worker1": 2,
+        "worker2": 8,
+        "worker3": 10,
+        "worker4": 6,
+        "worker5": 4,
+        "worker6": 4,
+        "worker7": 4,
+        "worker8": 4
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 191,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 0,
+          "food": 0
+        },
+        "worker0": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 3,
+      "total_debt": 58,
+      "created_debt": 58,
+      "death_extinguished_debt": 0,
+      "transfer_volume": 30,
+      "debt_velocity": 0.5172413793103449,
+      "consumption": {
+        "food": 36,
+        "box": 10
+      },
+      "production": {
+        "labor": 64,
+        "food": 36,
+        "wood": 12,
+        "box": 12
+      },
+      "hours": 8,
+      "unmet_demand": 18,
+      "rejected_trades": 0,
+      "open_promises": 8,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 2,
+        "workshop": 22,
+        "worker0": 4,
+        "worker1": 0,
+        "worker2": 8,
+        "worker3": 10,
+        "worker4": 4,
+        "worker5": 2,
+        "worker6": 4,
+        "worker7": 2,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 188,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 2,
+          "food": 0
+        },
+        "worker0": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 4,
+      "total_debt": 60,
+      "created_debt": 64,
+      "death_extinguished_debt": 4,
+      "transfer_volume": 20,
+      "debt_velocity": 0.3389830508474576,
+      "consumption": {
+        "food": 36,
+        "box": 15
+      },
+      "production": {
+        "labor": 80,
+        "food": 36,
+        "wood": 15,
+        "box": 15
+      },
+      "hours": 8,
+      "unmet_demand": 19,
+      "rejected_trades": 0,
+      "open_promises": 10,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 2,
+        "workshop": 34,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 4,
+        "worker3": 10,
+        "worker4": 6,
+        "worker5": 0,
+        "worker6": 4,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 185,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 0,
+          "food": 0
+        },
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 5,
+      "total_debt": 70,
+      "created_debt": 74,
+      "death_extinguished_debt": 4,
+      "transfer_volume": 24,
+      "debt_velocity": 0.36923076923076925,
+      "consumption": {
+        "food": 36,
+        "box": 17
+      },
+      "production": {
+        "labor": 94,
+        "food": 36,
+        "wood": 18,
+        "box": 18
+      },
+      "hours": 8,
+      "unmet_demand": 16,
+      "rejected_trades": 0,
+      "open_promises": 9,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 2,
+        "workshop": 38,
+        "worker0": 0,
+        "worker1": 4,
+        "worker2": 0,
+        "worker3": 10,
+        "worker4": 4,
+        "worker5": 4,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 182,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 1,
+          "food": 0
+        },
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 6,
+      "total_debt": 80,
+      "created_debt": 84,
+      "death_extinguished_debt": 4,
+      "transfer_volume": 20,
+      "debt_velocity": 0.26666666666666666,
+      "consumption": {
+        "food": 36,
+        "box": 18
+      },
+      "production": {
+        "labor": 108,
+        "food": 36,
+        "wood": 21,
+        "box": 21
+      },
+      "hours": 8,
+      "unmet_demand": 16,
+      "rejected_trades": 0,
+      "open_promises": 8,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 2,
+        "workshop": 46,
+        "worker0": 0,
+        "worker1": 2,
+        "worker2": 0,
+        "worker3": 14,
+        "worker4": 2,
+        "worker5": 6,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 179,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 3,
+          "food": 0
+        },
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 7,
+      "total_debt": 90,
+      "created_debt": 94,
+      "death_extinguished_debt": 4,
+      "transfer_volume": 16,
+      "debt_velocity": 0.18823529411764706,
+      "consumption": {
+        "food": 36,
+        "box": 24
+      },
+      "production": {
+        "labor": 122,
+        "food": 36,
+        "wood": 24,
+        "box": 24
+      },
+      "hours": 8,
+      "unmet_demand": 16,
+      "rejected_trades": 0,
+      "open_promises": 11,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 2,
+        "workshop": 58,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 4,
+        "worker3": 14,
+        "worker4": 0,
+        "worker5": 4,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 176,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {
+          "labor": 0,
+          "wood": 0,
+          "box": 0,
+          "food": 0
+        },
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 8,
+      "total_debt": 40,
+      "created_debt": 102,
+      "death_extinguished_debt": 62,
+      "transfer_volume": 32,
+      "debt_velocity": 0.49230769230769234,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 135,
+        "food": 36,
+        "wood": 26,
+        "box": 26
+      },
+      "hours": 7,
+      "unmet_demand": 16,
+      "rejected_trades": 0,
+      "open_promises": 2,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 4,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 18,
+        "worker4": 4,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 4
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 174,
+          "labor": 0,
+          "wood": 0,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 9,
+      "total_debt": 42,
+      "created_debt": 104,
+      "death_extinguished_debt": 62,
+      "transfer_volume": 2,
+      "debt_velocity": 0.04878048780487805,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 146,
+        "food": 36,
+        "wood": 28,
+        "box": 26
+      },
+      "hours": 2,
+      "unmet_demand": 13,
+      "rejected_trades": 0,
+      "open_promises": 2,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 8,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 18,
+        "worker4": 2,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 4
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 172,
+          "labor": 0,
+          "wood": 2,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 10,
+      "total_debt": 44,
+      "created_debt": 106,
+      "death_extinguished_debt": 62,
+      "transfer_volume": 2,
+      "debt_velocity": 0.046511627906976744,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 157,
+        "food": 36,
+        "wood": 30,
+        "box": 26
+      },
+      "hours": 2,
+      "unmet_demand": 14,
+      "rejected_trades": 0,
+      "open_promises": 2,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 12,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 18,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 4
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 170,
+          "labor": 0,
+          "wood": 4,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        }
+      }
+    },
+    {
+      "tick": 11,
+      "total_debt": 44,
+      "created_debt": 110,
+      "death_extinguished_debt": 66,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 168,
+        "food": 36,
+        "wood": 32,
+        "box": 26
+      },
+      "hours": 2,
+      "unmet_demand": 14,
+      "rejected_trades": 0,
+      "open_promises": 2,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 16,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 18,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 168,
+          "labor": 0,
+          "wood": 6,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 12,
+      "total_debt": 30,
+      "created_debt": 114,
+      "death_extinguished_debt": 84,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 177,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 2,
+      "unmet_demand": 11,
+      "rejected_trades": 0,
+      "open_promises": 2,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 20,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 166,
+          "labor": 0,
+          "wood": 8,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 13,
+      "total_debt": 34,
+      "created_debt": 118,
+      "death_extinguished_debt": 84,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 183,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 7,
+      "rejected_trades": 2,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 24,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 166,
+          "labor": 0,
+          "wood": 8,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 14,
+      "total_debt": 34,
+      "created_debt": 118,
+      "death_extinguished_debt": 84,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 189,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 9,
+      "rejected_trades": 2,
+      "open_promises": 0,
+      "over_limit": 1,
+      "debts": {
+        "farm": 0,
+        "forest": 24,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 166,
+          "labor": 0,
+          "wood": 8,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 15,
+      "total_debt": 34,
+      "created_debt": 118,
+      "death_extinguished_debt": 84,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 194,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 7,
+      "rejected_trades": 1,
+      "open_promises": 0,
+      "over_limit": 1,
+      "debts": {
+        "farm": 0,
+        "forest": 24,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 166,
+          "labor": 0,
+          "wood": 8,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 16,
+      "total_debt": 34,
+      "created_debt": 118,
+      "death_extinguished_debt": 84,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 199,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 6,
+      "rejected_trades": 1,
+      "open_promises": 0,
+      "over_limit": 1,
+      "debts": {
+        "farm": 0,
+        "forest": 24,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 166,
+          "labor": 0,
+          "wood": 8,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 17,
+      "total_debt": 34,
+      "created_debt": 118,
+      "death_extinguished_debt": 84,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 204,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 7,
+      "rejected_trades": 1,
+      "open_promises": 0,
+      "over_limit": 1,
+      "debts": {
+        "farm": 0,
+        "forest": 24,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 166,
+          "labor": 0,
+          "wood": 8,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 18,
+      "total_debt": 34,
+      "created_debt": 118,
+      "death_extinguished_debt": 84,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 209,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 10,
+      "rejected_trades": 1,
+      "open_promises": 0,
+      "over_limit": 1,
+      "debts": {
+        "farm": 0,
+        "forest": 24,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {
+          "resource": 166,
+          "labor": 0,
+          "wood": 8,
+          "food": 0,
+          "box": 0
+        },
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 19,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 214,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 7,
+      "rejected_trades": 1,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 20,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 219,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 6,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 21,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 224,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 5,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 22,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 229,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 6,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 23,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 234,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 5,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {},
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 24,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 238,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 6,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {},
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 25,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 242,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 4,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {},
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 26,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 246,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 5,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {},
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 27,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 250,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 5,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {},
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 28,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 254,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 5,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {},
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    },
+    {
+      "tick": 29,
+      "total_debt": 10,
+      "created_debt": 118,
+      "death_extinguished_debt": 108,
+      "transfer_volume": 0,
+      "debt_velocity": 0.0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "production": {
+        "labor": 258,
+        "food": 36,
+        "wood": 34,
+        "box": 26
+      },
+      "hours": 0,
+      "unmet_demand": 4,
+      "rejected_trades": 0,
+      "open_promises": 0,
+      "over_limit": 0,
+      "debts": {
+        "farm": 0,
+        "forest": 0,
+        "workshop": 0,
+        "worker0": 0,
+        "worker1": 0,
+        "worker2": 0,
+        "worker3": 0,
+        "worker4": 0,
+        "worker5": 2,
+        "worker6": 8,
+        "worker7": 0,
+        "worker8": 0
+      },
+      "stocks": {
+        "farm": {},
+        "forest": {},
+        "workshop": {},
+        "worker0": {},
+        "worker1": {},
+        "worker2": {},
+        "worker3": {},
+        "worker4": {},
+        "worker5": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker6": {
+          "labor": 0,
+          "food": 0,
+          "box": 0
+        },
+        "worker7": {},
+        "worker8": {}
+      }
+    }
+  ],
+  "events": [
+    {
+      "event": "birth",
+      "name": "farm",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "forest",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "workshop",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker0",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker1",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker2",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker3",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker4",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker5",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker6",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker7",
+      "tick": 0
+    },
+    {
+      "event": "birth",
+      "name": "worker8",
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker0",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker0",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker3",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 3,
+      "amount": 6,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker6",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 3,
+      "amount": 6,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "farm",
+      "batches": 6,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "food": 2
+      },
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker4",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker5",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker5",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "workshop",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker7",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker7",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker1",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker8",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 2,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker2",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 2,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker0",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "food",
+      "quantity": 2,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "forest",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 1,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "farm",
+      "good": "food",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "farm",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker0",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "farm",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 0
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 0
+    },
+    {
+      "event": "settlement",
+      "seller": "worker0",
+      "buyer": "farm",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker3",
+      "buyer": "farm",
+      "amount": 6,
+      "created": 6,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker6",
+      "buyer": "farm",
+      "amount": 6,
+      "created": 6,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker7",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker4",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker4",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker5",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker5",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker7",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker7",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker1",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker8",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker2",
+      "amount": 4,
+      "created": 2,
+      "transferred": 2,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker0",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker0",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker0",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker3",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 3,
+      "amount": 6,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker6",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 3,
+      "amount": 6,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "farm",
+      "batches": 6,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "food": 2
+      },
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "farm",
+      "good": "food",
+      "quantity": 1,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "farm",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker3",
+      "good": "food",
+      "quantity": 3,
+      "amount": 6,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 3,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker3",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 1,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker8",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker2",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 2,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker4",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 1,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker1",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 1,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker6",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 2,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "food",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "box",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "farm",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "expiration",
+      "name": "worker0",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 1
+    },
+    {
+      "event": "settlement",
+      "seller": "worker0",
+      "buyer": "farm",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker3",
+      "buyer": "farm",
+      "amount": 6,
+      "created": 6,
+      "transferred": 0,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker6",
+      "buyer": "farm",
+      "amount": 6,
+      "created": 6,
+      "transferred": 0,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker7",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker3",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker3",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker8",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker2",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker4",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker1",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "farm",
+      "buyer": "worker6",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker0",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker0",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker3",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 3,
+      "amount": 6,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker6",
+      "buyer": "farm",
+      "good": "labor",
+      "quantity": 3,
+      "amount": 6,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "farm",
+      "batches": 6,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "food": 2
+      },
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker7",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker0",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "food",
+      "quantity": 2,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker0",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "box",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker6",
+      "good": "food",
+      "quantity": 3,
+      "amount": 6,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker5",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker8",
+      "good": "food",
+      "quantity": 2,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 2,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "forest",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "workshop",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker4",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "farm",
+      "good": "food",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "farm",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "farm",
+      "good": "box",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 3,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker0",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "farm",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 2
+    },
+    {
+      "event": "death",
+      "name": "farm",
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 2
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "worker7",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker0",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker0",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 4,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "food",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "box",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 3
+    },
+    {
+      "event": "expiration",
+      "name": "worker0",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 3
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "worker7",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker4",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker0",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker0",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker0",
+      "good": "box",
+      "quantity": 1,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 1,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker5",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 1,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker1",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 1,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker6",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 5,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 1,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker0",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 4
+    },
+    {
+      "event": "death",
+      "name": "worker0",
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 4
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "worker7",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker5",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker1",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker6",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker5",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 1,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker3",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 6,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 1,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 5
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "worker7",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker5",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker3",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 7,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 6
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 6
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "worker7",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker7",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "worker7",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 3,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 3,
+      "amount": 6,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 3,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker3",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 1,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 1,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "forest",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 1,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker8",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 8,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 1,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "food",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "consumption",
+      "name": "worker7",
+      "good": "box",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "expiration",
+      "name": "worker7",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 7
+    },
+    {
+      "event": "death",
+      "name": "worker7",
+      "tick": 7
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "amount": 4,
+      "created": 4,
+      "transferred": 0,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "forest",
+      "buyer": "workshop",
+      "amount": 6,
+      "created": 0,
+      "transferred": 6,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker3",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker4",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "forest",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "workshop",
+      "buyer": "worker8",
+      "amount": 4,
+      "created": 0,
+      "transferred": 4,
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "worker2",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "worker2",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "worker5",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "worker8",
+      "buyer": "workshop",
+      "good": "labor",
+      "quantity": 2,
+      "amount": 4,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 2,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "forest",
+      "buyer": "workshop",
+      "good": "wood",
+      "quantity": 2,
+      "amount": 4,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "production",
+      "name": "workshop",
+      "batches": 2,
+      "inputs": {
+        "wood": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "box": 1
+      },
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker2",
+      "good": "box",
+      "quantity": 1,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "due": 9,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 1,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "workshop",
+      "good": "box",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "worker2",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "death",
+      "name": "worker2",
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "workshop",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 8
+    },
+    {
+      "event": "death",
+      "name": "workshop",
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 8
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 8
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 9
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 9
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 9
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 10,
+      "tick": 9
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 9
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 9
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 10,
+      "tick": 9
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 9
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 9
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 9
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 2,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 9
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 9
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 9
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 9
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 9
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 10
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 0,
+      "transferred": 2,
+      "tick": 10
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 10
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 11,
+      "tick": 10
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 10
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 10
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 11,
+      "tick": 10
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 10
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 10
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 10
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 2,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 10
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 10
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 10
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 10
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 10
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 11
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 11
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 11
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 12,
+      "tick": 11
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 11
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 11
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 12,
+      "tick": 11
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 11
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 11
+    },
+    {
+      "event": "production",
+      "name": "worker8",
+      "batches": 2,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 11
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 2,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "food",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker8",
+      "good": "box",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 11
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 11
+    },
+    {
+      "event": "expiration",
+      "name": "worker8",
+      "good": "labor",
+      "quantity": 2,
+      "tick": 11
+    },
+    {
+      "event": "death",
+      "name": "worker8",
+      "tick": 11
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 11
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 11
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 12
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 12
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 12
+    },
+    {
+      "event": "trade",
+      "seller": "worker1",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 13,
+      "tick": 12
+    },
+    {
+      "event": "production",
+      "name": "worker3",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 12
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 12
+    },
+    {
+      "event": "trade",
+      "seller": "worker4",
+      "buyer": "forest",
+      "good": "labor",
+      "quantity": 1,
+      "amount": 2,
+      "due": 13,
+      "tick": 12
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 12
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 12
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 2,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "food",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker3",
+      "good": "box",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 12
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 12
+    },
+    {
+      "event": "expiration",
+      "name": "worker3",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 12
+    },
+    {
+      "event": "death",
+      "name": "worker3",
+      "tick": 12
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 12
+    },
+    {
+      "event": "settlement",
+      "seller": "worker1",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 13
+    },
+    {
+      "event": "settlement",
+      "seller": "worker4",
+      "buyer": "forest",
+      "amount": 2,
+      "created": 2,
+      "transferred": 0,
+      "tick": 13
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 13
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 13
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 13
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 13
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 0,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 13
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 13
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 13
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 13
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 13
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 14
+    },
+    {
+      "event": "production",
+      "name": "worker4",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 14
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 14
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 14
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 0,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "food",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker4",
+      "good": "box",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 14
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 14
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 14
+    },
+    {
+      "event": "expiration",
+      "name": "worker4",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 14
+    },
+    {
+      "event": "death",
+      "name": "worker4",
+      "tick": 14
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 14
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 15
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 15
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 15
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 0,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 15
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 15
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 15
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 15
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 16
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 16
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 16
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 0,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 16
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 16
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 16
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 16
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 17
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 17
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 17
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 0,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 17
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 17
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 17
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 17
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 18
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 18
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 18
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 0,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 18
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 18
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 18
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 18
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 19
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 19
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 19
+    },
+    {
+      "event": "production",
+      "name": "forest",
+      "batches": 0,
+      "inputs": {
+        "resource": 1,
+        "labor": 1
+      },
+      "outputs": {
+        "wood": 1
+      },
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "food",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "consumption",
+      "name": "forest",
+      "good": "box",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 19
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 19
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 19
+    },
+    {
+      "event": "expiration",
+      "name": "forest",
+      "good": "labor",
+      "quantity": 0,
+      "tick": 19
+    },
+    {
+      "event": "death",
+      "name": "forest",
+      "tick": 19
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 20
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 20
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 20
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 20
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 20
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 20
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 20
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 20
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 20
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 20
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 20
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 20
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 21
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 21
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 21
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 21
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 21
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 21
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 21
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 21
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 21
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 21
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 21
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 21
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 22
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 22
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 22
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 22
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 22
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 22
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 22
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 22
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 22
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 22
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 22
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 22
+    },
+    {
+      "event": "production",
+      "name": "worker1",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 23
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 23
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 23
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 23
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 23
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "food",
+      "quantity": 0,
+      "tick": 23
+    },
+    {
+      "event": "consumption",
+      "name": "worker1",
+      "good": "box",
+      "quantity": 0,
+      "tick": 23
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 23
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 23
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 23
+    },
+    {
+      "event": "expiration",
+      "name": "worker1",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 23
+    },
+    {
+      "event": "death",
+      "name": "worker1",
+      "tick": 23
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 23
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 24
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 24
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 24
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 24
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 24
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 24
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 24
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 24
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 25
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 25
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 25
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 25
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 25
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 25
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 25
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 25
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 26
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 26
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 26
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 26
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 26
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 26
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 26
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 26
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 27
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 27
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 27
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 27
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 27
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 27
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 27
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 27
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 28
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 28
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 28
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 28
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 28
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 28
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 28
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 28
+    },
+    {
+      "event": "production",
+      "name": "worker5",
+      "batches": 1,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 29
+    },
+    {
+      "event": "production",
+      "name": "worker6",
+      "batches": 3,
+      "inputs": {},
+      "outputs": {
+        "labor": 1
+      },
+      "tick": 29
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "food",
+      "quantity": 0,
+      "tick": 29
+    },
+    {
+      "event": "consumption",
+      "name": "worker5",
+      "good": "box",
+      "quantity": 0,
+      "tick": 29
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "food",
+      "quantity": 0,
+      "tick": 29
+    },
+    {
+      "event": "consumption",
+      "name": "worker6",
+      "good": "box",
+      "quantity": 0,
+      "tick": 29
+    },
+    {
+      "event": "expiration",
+      "name": "worker5",
+      "good": "labor",
+      "quantity": 1,
+      "tick": 29
+    },
+    {
+      "event": "expiration",
+      "name": "worker6",
+      "good": "labor",
+      "quantity": 3,
+      "tick": 29
+    }
+  ]
+}
