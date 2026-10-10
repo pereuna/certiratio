@@ -1,36 +1,32 @@
-# Kirjanpidon 300 vuoden rasituskoe
+# Suhteellisten saldojen 300 vuoden rasituskoe
 
-Tämä on insinöörimäinen testi: syötetään kirjanpitoon satunnaisia tapahtumaketjuja ja etsitään virheitä. Yksi ajo kuvaa 300 vuotta. Sata ajoa tarkoittaa sataa erilaista mahdollista tapahtumahistoriaa samoilla kokeellisilla säännöillä.
+V2-koe testaa välittömien saldosiirtojen kirjanpitoa. Se ei sisällä velanluontia, erääntymisiä tai avoimia sopimuksia.
 
-Tarkistus voidaan sanoa ilman taloustieteen käsitteitä: **elossa olevien ihmisten velkojen summan pitää olla täsmälleen kaikki tähän mennessä syntynyt velka miinus kuolemissa poistunut velka.** Sama summa on osallistujayhteisön kollektiivinen saaminen. Kauppa vaihtaa velan kantajaa, ja syntymä aloittaa nollasta. Velan luonti tapahtuu vain valitulla kokeellisella erääntymissäännöllä.
+Jokaisen tapahtuman jälkeen tarkistetaan **elävien henkilöiden suhteellisten saldojen summa + yhteisön selvitystili = 0**. Yhteisötili vastaanottaa kuolleen position samalla etumerkillä. Se ei ole historiallinen perusvelka tai absoluuttinen kollektiivinen saaminen.
 
-## Mitä satunnaistetaan?
+## Satunnaistetut syötteet
 
-- Yhteisössä on 30 elossa olevaa ihmistä. Alkujoukko on 20–60-vuotiaita; kaikki aloittavat nollavelasta. Kuolleen tilalle syntyy nollavuotias, joka tulee mukaan palvelukauppaan 18-vuotiaana.
-- Elinikä arvotaan väliltä 65–100 vuotta. Tämä on testijakauma, ei väestöennuste. Todellista arvottua kuolinikää ei käytetä velkarajan laskennassa.
-- Työpalvelun myyjä ja ostaja arvotaan. Palvelu käyttää yhden yksikön myyjän vuosittaisesta 2–8 yksikön työaikabudjetista. Jokaiselle aikuiselle tehdään keskimäärin kaksi kauppayritystä vuodessa.
-- Palvelun mukana siirtyväksi sovittu velka on 1–20 yksikköä. Ostaja antaa suostumuksen 95 %:ssa yrityksistä. Lisäksi kirjanpito tarkistaa vastaanottorajan ja avoimet varaukset.
-- Velka erääntyy toimitusvuonna tai 1–2 vuotta myöhemmin. Palvelu toimitetaan ja kulutetaan heti hyväksytyssä kaupassa. Epäonnistuneen kaupan palvelusuorite poistuu vanhenemisena.
-- Vastaanottoraja perustuu arvioon jäljellä olevasta ajasta (90 vuotta miinus ikä), kapasiteettiin ja vuosittain arvottuun ennustekertoimeen 0,25–1,5. Tämä on tarkoituksella vaihteleva testisyöte, ei ratkaistu elinikäisen velansiirtokyvyn malli.
-- Kuolemassa henkilön velka poistuu ja hänen avoimet sopimuksensa perutaan aiemman prototyypin koevalinnan mukaisesti. Yrityksiä ei ole tässä testissä.
+- 30 elossa olevaa ihmistä; alkujoukko 20–60-vuotiaita, kaikki saldolla nolla. Kuolleen tilalle syntyy nollavuotias, joka aloittaa palvelukaupan 18-vuotiaana.
+- Elinikä 65–100 vuotta on testijakauma. Todellista arvottua kuolinikää ei käytetä vastaanottorajan laskennassa.
+- Palvelun myyjä ja ostaja arvotaan. Jokaisen aikuisen vuosittainen työbudjetti on 2–8 yksikköä. Kauppayrityksiä tehdään yhteensä kaksi jokaista aikuista kohti; työbudjetin jo käyttäneet ohitetaan.
+- Palvelun kokonaisvelkahinta on 1–20 yksikköä. Suostumus arvotaan 95 %:ssa yrityksistä. Hyödyke ja saldomuutokset siirtyvät heti hyväksytyssä kaupassa; palvelu kulutetaan heti.
+- Hylätty kauppa ei muuta saldotilejä tai hyödykkeiden omistusta. Ennen kauppayritystä tuotettu palvelu vanhenee hylkäyksen jälkeen erillisessä fyysisessä tapahtumassa ja työbudjetti on käytetty.
+- Raja on `max(0, 90 - ikä) × työkapasiteetti × vuosittainen ennustekerroin 0.25–1.5`, kokonaislukuna; lapsilla nolla. Tämä on kalibroimaton testisyöte. Negatiivinen saldo antaa lisävaraa rajaan asti.
+- Kuolemassa saldo siirtyy yhteisötilille ja tili suljetaan. Yrityksiä, perintöä ja yhteisötilin käyttöä ei ole tässä kokeessa.
 
-Vuosijärjestys on ikääntyminen ja kuolemat → korvaavat syntymät → rajojen päivitys → vanhojen sopimusten selvitys → palvelukaupat → uusi selvitys → vuosiraportti. Yksi askel on yksi vuosi. Vuosiluku ei tee tästä yhteiskunnan ennustetta: testi käy läpi monta sukupolvea.
+Vuoden järjestys: ikääntyminen ja kuolemat → korvaavat syntymät → rajojen päivitys → välittömät palvelukaupat → vuosiraportti.
 
-## Mitä tarkistetaan?
+## Tarkastukset ja rajat
 
-Jokaisen hyväksytyn tapahtuman jälkeen tarkistetaan alkuperäisen moottorin saldo- ja resurssiehdot. Lisäksi erillinen tarkastuskirjanpito laskee tapahtumista uudestaan jokaisen henkilön velan ja yhteisön saamisen. Näin testi havaitsee myös väärälle ihmiselle päätyvän velan, vaikka kaikkien velkojen summa näyttäisi oikealta. Virhe keskeyttää ajon heti.
+Moottori tarkistaa nollasumman ja fyysiset varastot jokaisen tapahtuman jälkeen. Lisäksi `AuditedLedger` laskee tapahtumista riippumattoman varjosaldon jokaiselle henkilölle, yhteisötilille ja siirtoliikevaihdolle. Myös väärälle ihmiselle päätyvä saldo havaitaan, vaikka aggregaatti näyttäisi oikealta.
 
-Kokonaislukuyksiköt välttävät liukulukujen pyöristysvirheet. Hylätyt kaupat ja erääntyneet mutta selvittämättömät lupaukset raportoidaan erikseen. **Täsmäävä kirjanpito ei tarkoita, että kaikki sopimukset selvitetään tai että palveluja riittää.** Avoimet lupaukset ovat tulevia vastaanottoja, eivät vielä kirjattua velkaa.
-
-Ajo säilyttää vuosiyhteenvedot ja tapahtumamäärät. Selvitetyt ja perutut sopimukset poistetaan aktiivisesta työjonosta, ja jo tarkistettu yksityiskohtainen tapahtumaloki tyhjennetään vuosittain muistin säästämiseksi. Kuolleiden henkilöiden nollasaldot jäävät tarkastettaviksi. Koko tapahtumakulun saa toistettua samalla siemenellä ja samalla ohjelmaversiolla.
-
-## Ajaminen ja tulosten lukeminen
+Kokonaislukujen avulla täsmäytys on tarkka. Yksityiskohtainen tapahtumaloki tyhjennetään vuosittain vasta tarkastuksen jälkeen. Vuosiyhteenvedot, tapahtumamäärät ja kuolleiden nollatilien tarkastus säilyvät. Sama ohjelmaversio ja siemen toistavat historian.
 
 ```bash
-python3 -m velkatalous.monte_carlo --runs 100 --years 300 --population 30
 python3 -m unittest discover -s tests -v
+python3 -m velkatalous.monte_carlo --runs 100 --years 300 --population 30
 ```
 
-Tulokset: `results/monte_carlo/summary.json` ja `results/monte_carlo/annual.csv`. CSV avautuu taulukkolaskennassa. `error` on kirjanpidon täsmäytysero: sen tulee olla jokaisella rivillä nolla. `debt` ja `community_claim` ovat henkilösaldojen summa ja erikseen laskettu yhteisön saaminen. `overdue_promises` kertoo erääntyneet selvittämättömät lupaukset. `created` ja `extinguished` ovat kumulatiivisia määriä.
+Tulokset ovat `results/monte_carlo/annual.csv` ja `summary.json`. CSV:n `accounting_error` on nolla, ja `balance_sum + community_balance = 0`. Positiiviset ja negatiiviset saldot sekä niiden itseisarvojen summa raportoidaan erikseen. Nettosumma voi kuolemien vuoksi poiketa nollasta. Negatiivinen saldo tai yhteisötili eivät tarkoita kirjanpitovirhettä.
 
-Testin läpäisy tarkoittaa, ettei näissä satunnaisissa tapahtumahistorioissa löytynyt kirjanpitovirhettä. Se ei ole matemaattinen todistus kaikkien mahdollisten tapahtumaketjujen virheettömyydestä eikä arvio hintojen, elintason tai velkarajojen toimivuudesta. Kulutus- tai varallisuustavoitteita ei tässä rasituskokeessa optimoida.
+Testin läpäisy tarkoittaa, ettei näissä historioissa löytynyt kirjanpitovirhettä. Se ei ole kaikkien tapahtumaketjujen matemaattinen todistus eikä talouden toimivuusarvio. Hintojen, kysynnän, kannustimien ja elinikärajojen realismia ei tässä kokeessa optimoida tai kalibroida.

@@ -1,8 +1,8 @@
 {
+  "model": "relative-balances-v2",
   "parameters": {
     "seed": 7,
     "periods": 30,
-    "creation": true,
     "cap_scale": 1.0,
     "resource": 200,
     "mortality": 0.05
@@ -10,11 +10,14 @@
   "rows": [
     {
       "tick": 0,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
-      "transfer_volume": 0,
-      "debt_velocity": null,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 20,
+      "negative_balance_total": -20,
+      "gross_balance": 40,
+      "accounting_error": 0,
+      "transfer_volume": 74,
+      "turnover_per_gross_balance": 3.7,
       "consumption": {
         "food": 12,
         "box": 3
@@ -28,20 +31,19 @@
       "hours": 16,
       "unmet_demand": 9,
       "rejected_trades": 0,
-      "open_promises": 22,
       "over_limit": 0,
-      "debts": {
-        "farm": 0,
-        "forest": 0,
-        "workshop": 0,
+      "balances": {
+        "farm": -8,
+        "forest": 2,
+        "workshop": 6,
         "worker0": 0,
         "worker1": 0,
         "worker2": 0,
-        "worker3": 0,
-        "worker4": 0,
-        "worker5": 0,
-        "worker6": 0,
-        "worker7": 0,
+        "worker3": -6,
+        "worker4": 4,
+        "worker5": 4,
+        "worker6": -6,
+        "worker7": 4,
         "worker8": 0
       },
       "stocks": {
@@ -113,14 +115,17 @@
     },
     {
       "tick": 1,
-      "total_debt": 40,
-      "created_debt": 40,
-      "death_extinguished_debt": 0,
-      "transfer_volume": 34,
-      "debt_velocity": 1.7,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 34,
+      "negative_balance_total": -34,
+      "gross_balance": 68,
+      "accounting_error": 0,
+      "transfer_volume": 72,
+      "turnover_per_gross_balance": 1.3333333333333333,
       "consumption": {
         "food": 24,
-        "box": 5
+        "box": 6
       },
       "production": {
         "labor": 32,
@@ -129,23 +134,22 @@
         "box": 6
       },
       "hours": 16,
-      "unmet_demand": 8,
-      "rejected_trades": 4,
-      "open_promises": 18,
+      "unmet_demand": 7,
+      "rejected_trades": 0,
       "over_limit": 0,
-      "debts": {
-        "farm": 0,
+      "balances": {
+        "farm": -14,
         "forest": 2,
-        "workshop": 6,
-        "worker0": 4,
-        "worker1": 2,
+        "workshop": 12,
+        "worker0": -4,
+        "worker1": -2,
         "worker2": 4,
-        "worker3": 0,
-        "worker4": 6,
-        "worker5": 6,
-        "worker6": 0,
-        "worker7": 6,
-        "worker8": 4
+        "worker3": -2,
+        "worker4": 4,
+        "worker5": 4,
+        "worker6": -12,
+        "worker7": 8,
+        "worker8": 0
       },
       "stocks": {
         "farm": {
@@ -164,7 +168,7 @@
         "workshop": {
           "labor": 0,
           "wood": 0,
-          "box": 1,
+          "box": 0,
           "food": 0
         },
         "worker0": {
@@ -216,11 +220,14 @@
     },
     {
       "tick": 2,
-      "total_debt": 58,
-      "created_debt": 58,
-      "death_extinguished_debt": 0,
-      "transfer_volume": 50,
-      "debt_velocity": 1.0204081632653061,
+      "balance_sum": 22,
+      "community_balance": -22,
+      "positive_balance_total": 46,
+      "negative_balance_total": -24,
+      "gross_balance": 70,
+      "accounting_error": 0,
+      "transfer_volume": 70,
+      "turnover_per_gross_balance": 1.0144927536231885,
       "consumption": {
         "food": 36,
         "box": 9
@@ -232,23 +239,22 @@
         "box": 9
       },
       "hours": 16,
-      "unmet_demand": 8,
-      "rejected_trades": 1,
-      "open_promises": 9,
+      "unmet_demand": 9,
+      "rejected_trades": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 2,
-        "workshop": 14,
+        "forest": 4,
+        "workshop": 22,
         "worker0": 0,
-        "worker1": 2,
-        "worker2": 8,
-        "worker3": 10,
-        "worker4": 6,
+        "worker1": -4,
+        "worker2": 0,
+        "worker3": -8,
+        "worker4": 4,
         "worker5": 4,
-        "worker6": 4,
-        "worker7": 4,
-        "worker8": 4
+        "worker6": -12,
+        "worker7": 12,
+        "worker8": 0
       },
       "stocks": {
         "farm": {},
@@ -314,11 +320,14 @@
     },
     {
       "tick": 3,
-      "total_debt": 58,
-      "created_debt": 58,
-      "death_extinguished_debt": 0,
-      "transfer_volume": 30,
-      "debt_velocity": 0.5172413793103449,
+      "balance_sum": 22,
+      "community_balance": -22,
+      "positive_balance_total": 56,
+      "negative_balance_total": -34,
+      "gross_balance": 90,
+      "accounting_error": 0,
+      "transfer_volume": 26,
+      "turnover_per_gross_balance": 0.325,
       "consumption": {
         "food": 36,
         "box": 10
@@ -332,21 +341,20 @@
       "hours": 8,
       "unmet_demand": 18,
       "rejected_trades": 0,
-      "open_promises": 8,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 2,
-        "workshop": 22,
-        "worker0": 4,
-        "worker1": 0,
-        "worker2": 8,
-        "worker3": 10,
-        "worker4": 4,
+        "forest": 4,
+        "workshop": 34,
+        "worker0": 0,
+        "worker1": -6,
+        "worker2": -4,
+        "worker3": -8,
+        "worker4": 6,
         "worker5": 2,
-        "worker6": 4,
-        "worker7": 2,
-        "worker8": 0
+        "worker6": -12,
+        "worker7": 10,
+        "worker8": -4
       },
       "stocks": {
         "farm": {},
@@ -412,11 +420,14 @@
     },
     {
       "tick": 4,
-      "total_debt": 60,
-      "created_debt": 64,
-      "death_extinguished_debt": 4,
-      "transfer_volume": 20,
-      "debt_velocity": 0.3389830508474576,
+      "balance_sum": 18,
+      "community_balance": -18,
+      "positive_balance_total": 54,
+      "negative_balance_total": -36,
+      "gross_balance": 90,
+      "accounting_error": 0,
+      "transfer_volume": 38,
+      "turnover_per_gross_balance": 0.4222222222222222,
       "consumption": {
         "food": 36,
         "box": 15
@@ -430,21 +441,20 @@
       "hours": 8,
       "unmet_demand": 19,
       "rejected_trades": 0,
-      "open_promises": 10,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 2,
+        "forest": 4,
         "workshop": 34,
         "worker0": 0,
-        "worker1": 0,
-        "worker2": 4,
-        "worker3": 10,
-        "worker4": 6,
-        "worker5": 0,
-        "worker6": 4,
-        "worker7": 0,
-        "worker8": 0
+        "worker1": -4,
+        "worker2": -8,
+        "worker3": -8,
+        "worker4": 4,
+        "worker5": 4,
+        "worker6": -8,
+        "worker7": 8,
+        "worker8": -8
       },
       "stocks": {
         "farm": {},
@@ -506,11 +516,14 @@
     },
     {
       "tick": 5,
-      "total_debt": 70,
-      "created_debt": 74,
-      "death_extinguished_debt": 4,
-      "transfer_volume": 24,
-      "debt_velocity": 0.36923076923076925,
+      "balance_sum": 18,
+      "community_balance": -18,
+      "positive_balance_total": 60,
+      "negative_balance_total": -42,
+      "gross_balance": 102,
+      "accounting_error": 0,
+      "transfer_volume": 30,
+      "turnover_per_gross_balance": 0.3125,
       "consumption": {
         "food": 36,
         "box": 17
@@ -524,21 +537,20 @@
       "hours": 8,
       "unmet_demand": 16,
       "rejected_trades": 0,
-      "open_promises": 9,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 2,
-        "workshop": 38,
+        "forest": 4,
+        "workshop": 42,
         "worker0": 0,
-        "worker1": 4,
-        "worker2": 0,
-        "worker3": 10,
-        "worker4": 4,
-        "worker5": 4,
-        "worker6": 8,
-        "worker7": 0,
-        "worker8": 0
+        "worker1": -6,
+        "worker2": -12,
+        "worker3": -4,
+        "worker4": 2,
+        "worker5": 6,
+        "worker6": -8,
+        "worker7": 6,
+        "worker8": -12
       },
       "stocks": {
         "farm": {},
@@ -600,11 +612,14 @@
     },
     {
       "tick": 6,
-      "total_debt": 80,
-      "created_debt": 84,
-      "death_extinguished_debt": 4,
-      "transfer_volume": 20,
-      "debt_velocity": 0.26666666666666666,
+      "balance_sum": 18,
+      "community_balance": -18,
+      "positive_balance_total": 66,
+      "negative_balance_total": -48,
+      "gross_balance": 114,
+      "accounting_error": 0,
+      "transfer_volume": 26,
+      "turnover_per_gross_balance": 0.24074074074074073,
       "consumption": {
         "food": 36,
         "box": 18
@@ -618,21 +633,20 @@
       "hours": 8,
       "unmet_demand": 16,
       "rejected_trades": 0,
-      "open_promises": 8,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 2,
-        "workshop": 46,
+        "forest": 4,
+        "workshop": 54,
         "worker0": 0,
-        "worker1": 2,
-        "worker2": 0,
-        "worker3": 14,
-        "worker4": 2,
-        "worker5": 6,
-        "worker6": 8,
-        "worker7": 0,
-        "worker8": 0
+        "worker1": -8,
+        "worker2": -12,
+        "worker3": -4,
+        "worker4": 0,
+        "worker5": 4,
+        "worker6": -8,
+        "worker7": 4,
+        "worker8": -16
       },
       "stocks": {
         "farm": {},
@@ -694,11 +708,14 @@
     },
     {
       "tick": 7,
-      "total_debt": 90,
-      "created_debt": 94,
-      "death_extinguished_debt": 4,
-      "transfer_volume": 16,
-      "debt_velocity": 0.18823529411764706,
+      "balance_sum": 16,
+      "community_balance": -16,
+      "positive_balance_total": 62,
+      "negative_balance_total": -46,
+      "gross_balance": 108,
+      "accounting_error": 0,
+      "transfer_volume": 42,
+      "turnover_per_gross_balance": 0.3783783783783784,
       "consumption": {
         "food": 36,
         "box": 24
@@ -712,21 +729,20 @@
       "hours": 8,
       "unmet_demand": 16,
       "rejected_trades": 0,
-      "open_promises": 11,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 2,
-        "workshop": 58,
+        "forest": 8,
+        "workshop": 50,
         "worker0": 0,
-        "worker1": 0,
-        "worker2": 4,
-        "worker3": 14,
-        "worker4": 0,
-        "worker5": 4,
-        "worker6": 8,
+        "worker1": -10,
+        "worker2": -12,
+        "worker3": 0,
+        "worker4": 2,
+        "worker5": 2,
+        "worker6": -8,
         "worker7": 0,
-        "worker8": 0
+        "worker8": -16
       },
       "stocks": {
         "farm": {},
@@ -784,11 +800,14 @@
     },
     {
       "tick": 8,
-      "total_debt": 40,
-      "created_debt": 102,
-      "death_extinguished_debt": 62,
-      "transfer_volume": 32,
-      "debt_velocity": 0.49230769230769234,
+      "balance_sum": -28,
+      "community_balance": 28,
+      "positive_balance_total": 12,
+      "negative_balance_total": -40,
+      "gross_balance": 52,
+      "accounting_error": 0,
+      "transfer_volume": 26,
+      "turnover_per_gross_balance": 0.325,
       "consumption": {
         "food": 36,
         "box": 26
@@ -802,21 +821,20 @@
       "hours": 7,
       "unmet_demand": 16,
       "rejected_trades": 0,
-      "open_promises": 2,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 4,
+        "forest": 8,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -12,
         "worker2": 0,
-        "worker3": 18,
+        "worker3": 0,
         "worker4": 4,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
-        "worker8": 4
+        "worker8": -20
       },
       "stocks": {
         "farm": {},
@@ -865,11 +883,14 @@
     },
     {
       "tick": 9,
-      "total_debt": 42,
-      "created_debt": 104,
-      "death_extinguished_debt": 62,
-      "transfer_volume": 2,
-      "debt_velocity": 0.04878048780487805,
+      "balance_sum": -28,
+      "community_balance": 28,
+      "positive_balance_total": 14,
+      "negative_balance_total": -42,
+      "gross_balance": 56,
+      "accounting_error": 0,
+      "transfer_volume": 4,
+      "turnover_per_gross_balance": 0.07407407407407407,
       "consumption": {
         "food": 36,
         "box": 26
@@ -883,21 +904,20 @@
       "hours": 2,
       "unmet_demand": 13,
       "rejected_trades": 0,
-      "open_promises": 2,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 8,
+        "forest": 12,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -14,
         "worker2": 0,
-        "worker3": 18,
+        "worker3": 0,
         "worker4": 2,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
-        "worker8": 4
+        "worker8": -20
       },
       "stocks": {
         "farm": {},
@@ -946,11 +966,14 @@
     },
     {
       "tick": 10,
-      "total_debt": 44,
-      "created_debt": 106,
-      "death_extinguished_debt": 62,
-      "transfer_volume": 2,
-      "debt_velocity": 0.046511627906976744,
+      "balance_sum": -28,
+      "community_balance": 28,
+      "positive_balance_total": 16,
+      "negative_balance_total": -44,
+      "gross_balance": 60,
+      "accounting_error": 0,
+      "transfer_volume": 4,
+      "turnover_per_gross_balance": 0.06896551724137931,
       "consumption": {
         "food": 36,
         "box": 26
@@ -964,21 +987,20 @@
       "hours": 2,
       "unmet_demand": 14,
       "rejected_trades": 0,
-      "open_promises": 2,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 12,
+        "forest": 16,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -16,
         "worker2": 0,
-        "worker3": 18,
+        "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
-        "worker8": 4
+        "worker8": -20
       },
       "stocks": {
         "farm": {},
@@ -1027,11 +1049,14 @@
     },
     {
       "tick": 11,
-      "total_debt": 44,
-      "created_debt": 110,
-      "death_extinguished_debt": 66,
-      "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 20,
+      "negative_balance_total": -28,
+      "gross_balance": 48,
+      "accounting_error": 0,
+      "transfer_volume": 4,
+      "turnover_per_gross_balance": 0.07407407407407407,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1045,19 +1070,18 @@
       "hours": 2,
       "unmet_demand": 14,
       "rejected_trades": 0,
-      "open_promises": 2,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 16,
+        "forest": 20,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -18,
         "worker2": 0,
-        "worker3": 18,
-        "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker3": 0,
+        "worker4": -2,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1104,11 +1128,14 @@
     },
     {
       "tick": 12,
-      "total_debt": 30,
-      "created_debt": 114,
-      "death_extinguished_debt": 84,
-      "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 24,
+      "negative_balance_total": -32,
+      "gross_balance": 56,
+      "accounting_error": 0,
+      "transfer_volume": 4,
+      "turnover_per_gross_balance": 0.07692307692307693,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1122,19 +1149,18 @@
       "hours": 2,
       "unmet_demand": 11,
       "rejected_trades": 0,
-      "open_promises": 2,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
-        "forest": 20,
+        "forest": 24,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
-        "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker4": -4,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1177,11 +1203,14 @@
     },
     {
       "tick": 13,
-      "total_debt": 34,
-      "created_debt": 118,
-      "death_extinguished_debt": 84,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 24,
+      "negative_balance_total": -32,
+      "gross_balance": 56,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1195,19 +1224,18 @@
       "hours": 0,
       "unmet_demand": 7,
       "rejected_trades": 2,
-      "open_promises": 0,
-      "over_limit": 0,
-      "debts": {
+      "over_limit": 1,
+      "balances": {
         "farm": 0,
         "forest": 24,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
-        "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker4": -4,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1250,11 +1278,14 @@
     },
     {
       "tick": 14,
-      "total_debt": 34,
-      "created_debt": 118,
-      "death_extinguished_debt": 84,
+      "balance_sum": -4,
+      "community_balance": 4,
+      "positive_balance_total": 24,
+      "negative_balance_total": -28,
+      "gross_balance": 52,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1268,19 +1299,18 @@
       "hours": 0,
       "unmet_demand": 9,
       "rejected_trades": 2,
-      "open_promises": 0,
       "over_limit": 1,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 24,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1319,11 +1349,14 @@
     },
     {
       "tick": 15,
-      "total_debt": 34,
-      "created_debt": 118,
-      "death_extinguished_debt": 84,
+      "balance_sum": -4,
+      "community_balance": 4,
+      "positive_balance_total": 24,
+      "negative_balance_total": -28,
+      "gross_balance": 52,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1337,19 +1370,18 @@
       "hours": 0,
       "unmet_demand": 7,
       "rejected_trades": 1,
-      "open_promises": 0,
       "over_limit": 1,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 24,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1388,11 +1420,14 @@
     },
     {
       "tick": 16,
-      "total_debt": 34,
-      "created_debt": 118,
-      "death_extinguished_debt": 84,
+      "balance_sum": -4,
+      "community_balance": 4,
+      "positive_balance_total": 24,
+      "negative_balance_total": -28,
+      "gross_balance": 52,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1406,19 +1441,18 @@
       "hours": 0,
       "unmet_demand": 6,
       "rejected_trades": 1,
-      "open_promises": 0,
       "over_limit": 1,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 24,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1457,11 +1491,14 @@
     },
     {
       "tick": 17,
-      "total_debt": 34,
-      "created_debt": 118,
-      "death_extinguished_debt": 84,
+      "balance_sum": -4,
+      "community_balance": 4,
+      "positive_balance_total": 24,
+      "negative_balance_total": -28,
+      "gross_balance": 52,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1475,19 +1512,18 @@
       "hours": 0,
       "unmet_demand": 7,
       "rejected_trades": 1,
-      "open_promises": 0,
       "over_limit": 1,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 24,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1526,11 +1562,14 @@
     },
     {
       "tick": 18,
-      "total_debt": 34,
-      "created_debt": 118,
-      "death_extinguished_debt": 84,
+      "balance_sum": -4,
+      "community_balance": 4,
+      "positive_balance_total": 24,
+      "negative_balance_total": -28,
+      "gross_balance": 52,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1544,19 +1583,18 @@
       "hours": 0,
       "unmet_demand": 10,
       "rejected_trades": 1,
-      "open_promises": 0,
       "over_limit": 1,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 24,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1595,11 +1633,14 @@
     },
     {
       "tick": 19,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -28,
+      "community_balance": 28,
+      "positive_balance_total": 0,
+      "negative_balance_total": -28,
+      "gross_balance": 28,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1613,19 +1654,18 @@
       "hours": 0,
       "unmet_demand": 7,
       "rejected_trades": 1,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1658,11 +1698,14 @@
     },
     {
       "tick": 20,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -28,
+      "community_balance": 28,
+      "positive_balance_total": 0,
+      "negative_balance_total": -28,
+      "gross_balance": 28,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1676,19 +1719,18 @@
       "hours": 0,
       "unmet_demand": 6,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1721,11 +1763,14 @@
     },
     {
       "tick": 21,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -28,
+      "community_balance": 28,
+      "positive_balance_total": 0,
+      "negative_balance_total": -28,
+      "gross_balance": 28,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1739,19 +1784,18 @@
       "hours": 0,
       "unmet_demand": 5,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1784,11 +1828,14 @@
     },
     {
       "tick": 22,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -28,
+      "community_balance": 28,
+      "positive_balance_total": 0,
+      "negative_balance_total": -28,
+      "gross_balance": 28,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1802,19 +1849,18 @@
       "hours": 0,
       "unmet_demand": 6,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
         "worker0": 0,
-        "worker1": 0,
+        "worker1": -20,
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1847,11 +1893,14 @@
     },
     {
       "tick": 23,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1865,9 +1914,8 @@
       "hours": 0,
       "unmet_demand": 5,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1876,8 +1924,8 @@
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1906,11 +1954,14 @@
     },
     {
       "tick": 24,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1924,9 +1975,8 @@
       "hours": 0,
       "unmet_demand": 6,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1935,8 +1985,8 @@
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -1965,11 +2015,14 @@
     },
     {
       "tick": 25,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -1983,9 +2036,8 @@
       "hours": 0,
       "unmet_demand": 4,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1994,8 +2046,8 @@
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -2024,11 +2076,14 @@
     },
     {
       "tick": 26,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -2042,9 +2097,8 @@
       "hours": 0,
       "unmet_demand": 5,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2053,8 +2107,8 @@
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -2083,11 +2137,14 @@
     },
     {
       "tick": 27,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -2101,9 +2158,8 @@
       "hours": 0,
       "unmet_demand": 5,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2112,8 +2168,8 @@
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -2142,11 +2198,14 @@
     },
     {
       "tick": 28,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -2160,9 +2219,8 @@
       "hours": 0,
       "unmet_demand": 5,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2171,8 +2229,8 @@
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -2201,11 +2259,14 @@
     },
     {
       "tick": 29,
-      "total_debt": 10,
-      "created_debt": 118,
-      "death_extinguished_debt": 108,
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": 0.0,
+      "turnover_per_gross_balance": 0.0,
       "consumption": {
         "food": 36,
         "box": 26
@@ -2219,9 +2280,8 @@
       "hours": 0,
       "unmet_demand": 4,
       "rejected_trades": 0,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2230,8 +2290,8 @@
         "worker2": 0,
         "worker3": 0,
         "worker4": 0,
-        "worker5": 2,
-        "worker6": 8,
+        "worker5": 0,
+        "worker6": -8,
         "worker7": 0,
         "worker8": 0
       },
@@ -2337,7 +2397,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2357,7 +2416,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2377,7 +2435,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2397,7 +2454,6 @@
       "good": "labor",
       "quantity": 3,
       "amount": 6,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2417,7 +2473,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2437,7 +2492,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2457,7 +2511,6 @@
       "good": "labor",
       "quantity": 3,
       "amount": 6,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2477,7 +2530,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2497,7 +2549,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2533,7 +2584,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2556,7 +2606,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2573,7 +2622,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2590,7 +2638,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2607,7 +2654,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2624,7 +2670,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2648,7 +2693,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2665,7 +2709,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2682,7 +2725,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2706,7 +2748,6 @@
       "good": "food",
       "quantity": 2,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2730,7 +2771,6 @@
       "good": "food",
       "quantity": 2,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2754,7 +2794,6 @@
       "good": "food",
       "quantity": 2,
       "amount": 4,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2778,7 +2817,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 1,
       "tick": 0
     },
     {
@@ -2922,204 +2960,6 @@
       "tick": 0
     },
     {
-      "event": "settlement",
-      "seller": "worker0",
-      "buyer": "farm",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker3",
-      "buyer": "farm",
-      "amount": 6,
-      "created": 6,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker6",
-      "buyer": "farm",
-      "amount": 6,
-      "created": 6,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker7",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker4",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker4",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker5",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker5",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker7",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker7",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker1",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker8",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker2",
-      "amount": 4,
-      "created": 2,
-      "transferred": 2,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker0",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 1
-    },
-    {
       "event": "production",
       "name": "worker0",
       "batches": 2,
@@ -3136,7 +2976,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3156,7 +2995,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3176,7 +3014,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3196,7 +3033,6 @@
       "good": "labor",
       "quantity": 3,
       "amount": 6,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3216,7 +3052,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3236,7 +3071,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3256,7 +3090,6 @@
       "good": "labor",
       "quantity": 3,
       "amount": 6,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3276,7 +3109,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3296,7 +3128,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3332,7 +3163,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3349,17 +3179,35 @@
       "tick": 1
     },
     {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker7",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "tick": 1
+    },
+    {
       "event": "consumption",
       "name": "worker7",
       "good": "food",
-      "quantity": 0,
+      "quantity": 1,
+      "tick": 1
+    },
+    {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker7",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
       "tick": 1
     },
     {
       "event": "consumption",
       "name": "worker7",
       "good": "box",
-      "quantity": 0,
+      "quantity": 1,
       "tick": 1
     },
     {
@@ -3377,10 +3225,19 @@
       "tick": 1
     },
     {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "worker5",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "tick": 1
+    },
+    {
       "event": "consumption",
       "name": "worker5",
       "good": "food",
-      "quantity": 0,
+      "quantity": 1,
       "tick": 1
     },
     {
@@ -3397,7 +3254,6 @@
       "good": "food",
       "quantity": 3,
       "amount": 6,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3414,7 +3270,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3431,7 +3286,6 @@
       "good": "food",
       "quantity": 2,
       "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3455,7 +3309,6 @@
       "good": "food",
       "quantity": 2,
       "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3472,7 +3325,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3483,10 +3335,19 @@
       "tick": 1
     },
     {
+      "event": "trade",
+      "seller": "farm",
+      "buyer": "workshop",
+      "good": "food",
+      "quantity": 1,
+      "amount": 2,
+      "tick": 1
+    },
+    {
       "event": "consumption",
       "name": "workshop",
       "good": "food",
-      "quantity": 0,
+      "quantity": 1,
       "tick": 1
     },
     {
@@ -3503,7 +3364,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 2,
       "tick": 1
     },
     {
@@ -3521,20 +3381,10 @@
       "tick": 1
     },
     {
-      "event": "trade",
-      "seller": "farm",
-      "buyer": "worker1",
-      "good": "food",
-      "quantity": 1,
-      "amount": 2,
-      "due": 2,
-      "tick": 1
-    },
-    {
       "event": "consumption",
       "name": "worker1",
       "good": "food",
-      "quantity": 1,
+      "quantity": 0,
       "tick": 1
     },
     {
@@ -3542,23 +3392,13 @@
       "name": "worker1",
       "good": "box",
       "quantity": 0,
-      "tick": 1
-    },
-    {
-      "event": "trade",
-      "seller": "farm",
-      "buyer": "worker6",
-      "good": "food",
-      "quantity": 2,
-      "amount": 4,
-      "due": 2,
       "tick": 1
     },
     {
       "event": "consumption",
       "name": "worker6",
       "good": "food",
-      "quantity": 2,
+      "quantity": 0,
       "tick": 1
     },
     {
@@ -3679,168 +3519,6 @@
       "good": "labor",
       "quantity": 0,
       "tick": 1
-    },
-    {
-      "event": "settlement",
-      "seller": "worker0",
-      "buyer": "farm",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker3",
-      "buyer": "farm",
-      "amount": 6,
-      "created": 6,
-      "transferred": 0,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker6",
-      "buyer": "farm",
-      "amount": 6,
-      "created": 6,
-      "transferred": 0,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker7",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker3",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker3",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker8",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker2",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker2",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker4",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker1",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "farm",
-      "buyer": "worker6",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 2
     },
     {
       "event": "production",
@@ -3859,7 +3537,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 3,
       "tick": 2
     },
     {
@@ -3879,7 +3556,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -3899,7 +3575,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 3,
       "tick": 2
     },
     {
@@ -3919,7 +3594,6 @@
       "good": "labor",
       "quantity": 3,
       "amount": 6,
-      "due": 3,
       "tick": 2
     },
     {
@@ -3939,7 +3613,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -3959,7 +3632,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -3979,7 +3651,6 @@
       "good": "labor",
       "quantity": 3,
       "amount": 6,
-      "due": 3,
       "tick": 2
     },
     {
@@ -3999,7 +3670,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4019,7 +3689,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4055,7 +3724,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4078,7 +3746,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4089,10 +3756,19 @@
       "tick": 2
     },
     {
+      "event": "trade",
+      "seller": "workshop",
+      "buyer": "worker7",
+      "good": "box",
+      "quantity": 1,
+      "amount": 4,
+      "tick": 2
+    },
+    {
       "event": "consumption",
       "name": "worker7",
       "good": "box",
-      "quantity": 0,
+      "quantity": 1,
       "tick": 2
     },
     {
@@ -4102,7 +3778,6 @@
       "good": "food",
       "quantity": 2,
       "amount": 4,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4119,7 +3794,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4136,7 +3810,6 @@
       "good": "food",
       "quantity": 3,
       "amount": 6,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4160,7 +3833,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4184,7 +3856,6 @@
       "good": "food",
       "quantity": 2,
       "amount": 4,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4208,7 +3879,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4232,7 +3902,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4256,7 +3925,6 @@
       "good": "food",
       "quantity": 1,
       "amount": 2,
-      "due": 3,
       "tick": 2
     },
     {
@@ -4281,20 +3949,10 @@
       "tick": 2
     },
     {
-      "event": "trade",
-      "seller": "workshop",
-      "buyer": "farm",
-      "good": "box",
-      "quantity": 1,
-      "amount": 4,
-      "due": 3,
-      "tick": 2
-    },
-    {
       "event": "consumption",
       "name": "farm",
       "good": "box",
-      "quantity": 1,
+      "quantity": 0,
       "tick": 2
     },
     {
@@ -4305,20 +3963,10 @@
       "tick": 2
     },
     {
-      "event": "trade",
-      "seller": "workshop",
-      "buyer": "worker2",
-      "good": "box",
-      "quantity": 1,
-      "amount": 4,
-      "due": 3,
-      "tick": 2
-    },
-    {
       "event": "consumption",
       "name": "worker2",
       "good": "box",
-      "quantity": 1,
+      "quantity": 0,
       "tick": 2
     },
     {
@@ -4415,6 +4063,7 @@
     {
       "event": "death",
       "name": "farm",
+      "balance": -22,
       "tick": 2
     },
     {
@@ -4437,87 +4086,6 @@
       "good": "labor",
       "quantity": 0,
       "tick": 2
-    },
-    {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "worker7",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker0",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 3
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker2",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 3
     },
     {
       "event": "production",
@@ -4546,7 +4114,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4566,7 +4133,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4596,7 +4162,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4616,7 +4181,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4646,7 +4210,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4666,7 +4229,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4689,7 +4251,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4845,7 +4406,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 4,
       "tick": 3
     },
     {
@@ -4947,78 +4507,6 @@
       "tick": 3
     },
     {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 4
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 4
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 4
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 4
-    },
-    {
-      "event": "settlement",
-      "seller": "worker7",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 4
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 4
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 4
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker4",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 4
-    },
-    {
       "event": "production",
       "name": "worker0",
       "batches": 2,
@@ -5045,7 +4533,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5065,7 +4552,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5095,7 +4581,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5115,7 +4600,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5145,7 +4629,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5165,7 +4648,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5188,7 +4670,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5232,7 +4713,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5284,7 +4764,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5322,7 +4801,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5346,7 +4824,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 5,
       "tick": 4
     },
     {
@@ -5415,6 +4892,7 @@
     {
       "event": "death",
       "name": "worker0",
+      "balance": 4,
       "tick": 4
     },
     {
@@ -5481,96 +4959,6 @@
       "tick": 4
     },
     {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "worker7",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker5",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker1",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 5
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker6",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 5
-    },
-    {
       "event": "production",
       "name": "worker1",
       "batches": 1,
@@ -5587,7 +4975,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5607,7 +4994,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5637,7 +5023,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5657,7 +5042,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5687,7 +5071,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5707,7 +5090,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5730,7 +5112,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5760,7 +5141,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5854,7 +5234,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 6,
       "tick": 5
     },
     {
@@ -5977,87 +5356,6 @@
       "tick": 5
     },
     {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "worker7",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker5",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 6
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker3",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 6
-    },
-    {
       "event": "production",
       "name": "worker1",
       "batches": 1,
@@ -6074,7 +5372,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6094,7 +5391,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6124,7 +5420,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6144,7 +5439,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6174,7 +5468,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6194,7 +5487,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6217,7 +5509,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6261,7 +5552,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 7,
       "tick": 6
     },
     {
@@ -6454,78 +5744,6 @@
       "tick": 6
     },
     {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "worker7",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker2",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 7
-    },
-    {
       "event": "production",
       "name": "worker1",
       "batches": 1,
@@ -6542,7 +5760,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6562,7 +5779,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6592,7 +5808,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6612,7 +5827,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6642,7 +5856,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6662,7 +5875,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6685,7 +5897,6 @@
       "good": "wood",
       "quantity": 3,
       "amount": 6,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6729,7 +5940,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6753,7 +5963,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6791,7 +6000,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6829,7 +6037,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6867,7 +6074,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 8,
       "tick": 7
     },
     {
@@ -6964,106 +6170,8 @@
     {
       "event": "death",
       "name": "worker7",
+      "balance": 2,
       "tick": 7
-    },
-    {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "worker2",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "worker5",
-      "buyer": "workshop",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "worker8",
-      "buyer": "workshop",
-      "amount": 4,
-      "created": 4,
-      "transferred": 0,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "forest",
-      "buyer": "workshop",
-      "amount": 6,
-      "created": 0,
-      "transferred": 6,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker3",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker2",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker4",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "forest",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 8
-    },
-    {
-      "event": "settlement",
-      "seller": "workshop",
-      "buyer": "worker8",
-      "amount": 4,
-      "created": 0,
-      "transferred": 4,
-      "tick": 8
     },
     {
       "event": "production",
@@ -7082,7 +6190,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7102,7 +6209,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7132,7 +6238,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7152,7 +6257,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7182,7 +6286,6 @@
       "good": "labor",
       "quantity": 2,
       "amount": 4,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7205,7 +6308,6 @@
       "good": "wood",
       "quantity": 2,
       "amount": 4,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7249,7 +6351,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7273,7 +6374,6 @@
       "good": "box",
       "quantity": 1,
       "amount": 4,
-      "due": 9,
       "tick": 8
     },
     {
@@ -7384,6 +6484,7 @@
     {
       "event": "death",
       "name": "worker2",
+      "balance": -12,
       "tick": 8
     },
     {
@@ -7410,6 +6511,7 @@
     {
       "event": "death",
       "name": "workshop",
+      "balance": 56,
       "tick": 8
     },
     {
@@ -7441,24 +6543,6 @@
       "tick": 8
     },
     {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 9
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 9
-    },
-    {
       "event": "production",
       "name": "worker1",
       "batches": 1,
@@ -7475,7 +6559,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 10,
       "tick": 9
     },
     {
@@ -7505,7 +6588,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 10,
       "tick": 9
     },
     {
@@ -7699,24 +6781,6 @@
       "tick": 9
     },
     {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 10
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 0,
-      "transferred": 2,
-      "tick": 10
-    },
-    {
       "event": "production",
       "name": "worker1",
       "batches": 1,
@@ -7733,7 +6797,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 11,
       "tick": 10
     },
     {
@@ -7763,7 +6826,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 11,
       "tick": 10
     },
     {
@@ -7957,24 +7019,6 @@
       "tick": 10
     },
     {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 11
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 11
-    },
-    {
       "event": "production",
       "name": "worker1",
       "batches": 1,
@@ -7991,7 +7035,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 12,
       "tick": 11
     },
     {
@@ -8021,7 +7064,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 12,
       "tick": 11
     },
     {
@@ -8203,6 +7245,7 @@
     {
       "event": "death",
       "name": "worker8",
+      "balance": -20,
       "tick": 11
     },
     {
@@ -8218,24 +7261,6 @@
       "good": "labor",
       "quantity": 3,
       "tick": 11
-    },
-    {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 12
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 12
     },
     {
       "event": "production",
@@ -8254,7 +7279,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 13,
       "tick": 12
     },
     {
@@ -8284,7 +7308,6 @@
       "good": "labor",
       "quantity": 1,
       "amount": 2,
-      "due": 13,
       "tick": 12
     },
     {
@@ -8435,6 +7458,7 @@
     {
       "event": "death",
       "name": "worker3",
+      "balance": 0,
       "tick": 12
     },
     {
@@ -8450,24 +7474,6 @@
       "good": "labor",
       "quantity": 0,
       "tick": 12
-    },
-    {
-      "event": "settlement",
-      "seller": "worker1",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 13
-    },
-    {
-      "event": "settlement",
-      "seller": "worker4",
-      "buyer": "forest",
-      "amount": 2,
-      "created": 2,
-      "transferred": 0,
-      "tick": 13
     },
     {
       "event": "production",
@@ -8781,6 +7787,7 @@
     {
       "event": "death",
       "name": "worker4",
+      "balance": -4,
       "tick": 14
     },
     {
@@ -9428,6 +8435,7 @@
     {
       "event": "death",
       "name": "forest",
+      "balance": 24,
       "tick": 19
     },
     {
@@ -9798,6 +8806,7 @@
     {
       "event": "death",
       "name": "worker1",
+      "balance": -20,
       "tick": 23
     },
     {

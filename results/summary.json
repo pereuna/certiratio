@@ -1,62 +1,63 @@
 {
-  "baseline": {
-    "total_debt": 296,
-    "created_debt": 296,
-    "death_extinguished_debt": 0,
-    "open_promises": 20,
-    "consumption": {
-      "food": 360,
-      "box": 75
+  "model": "relative-balances-v2",
+  "seed": 7,
+  "periods": 30,
+  "scenarios": {
+    "baseline": {
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 264,
+      "negative_balance_total": -264,
+      "gross_balance": 528,
+      "accounting_error": 0,
+      "consumption": {
+        "food": 360,
+        "box": 74
+      },
+      "total_transfer_volume": 2006,
+      "total_rejected_trades": 37
     },
-    "total_transfer_volume": 1656,
-    "total_rejected_trades": 41
-  },
-  "no_creation": {
-    "total_debt": 0,
-    "created_debt": 0,
-    "death_extinguished_debt": 0,
-    "open_promises": 31,
-    "consumption": {
-      "food": 20,
-      "box": 3
+    "zero_limit": {
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
+      "consumption": {
+        "food": 0,
+        "box": 0
+      },
+      "total_transfer_volume": 0,
+      "total_rejected_trades": 270
     },
-    "total_transfer_volume": 0,
-    "total_rejected_trades": 287
-  },
-  "zero_limit": {
-    "total_debt": 0,
-    "created_debt": 0,
-    "death_extinguished_debt": 0,
-    "open_promises": 0,
-    "consumption": {
-      "food": 0,
-      "box": 0
+    "scarcity": {
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 156,
+      "negative_balance_total": -156,
+      "gross_balance": 312,
+      "accounting_error": 0,
+      "consumption": {
+        "food": 4,
+        "box": 2
+      },
+      "total_transfer_volume": 190,
+      "total_rejected_trades": 222
     },
-    "total_transfer_volume": 0,
-    "total_rejected_trades": 270
-  },
-  "scarcity": {
-    "total_debt": 150,
-    "created_debt": 150,
-    "death_extinguished_debt": 0,
-    "open_promises": 5,
-    "consumption": {
-      "food": 4,
-      "box": 2
-    },
-    "total_transfer_volume": 34,
-    "total_rejected_trades": 220
-  },
-  "mortality": {
-    "total_debt": 10,
-    "created_debt": 118,
-    "death_extinguished_debt": 108,
-    "open_promises": 0,
-    "consumption": {
-      "food": 36,
-      "box": 26
-    },
-    "total_transfer_volume": 230,
-    "total_rejected_trades": 14
+    "mortality": {
+      "balance_sum": -8,
+      "community_balance": 8,
+      "positive_balance_total": 0,
+      "negative_balance_total": -8,
+      "gross_balance": 8,
+      "accounting_error": 0,
+      "consumption": {
+        "food": 36,
+        "box": 26
+      },
+      "total_transfer_volume": 420,
+      "total_rejected_trades": 9
+    }
   }
 }

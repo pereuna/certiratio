@@ -14,11 +14,12 @@ from .physical import Physical
 
 
 class AuditedLedger(Ledger):
-    """Independently replay debt events; compare every account after every event."""
+    """Independently replay signed positions, including the death clearing account."""
     def __init__(self):
         super().__init__()
         self.shadow = Counter()
-        self.community_claim = 0
+        self.shadow_community = 0
+        self.shadow_volume = 0
         self.counts = Counter()
         self.max_error = 0
 
@@ -26,39 +27,33 @@ class AuditedLedger(Ledger):
         self.events.append({'event': event, **fields})
         if event in ('birth', 'register'):
             self.shadow[fields['name']] = 0
-        elif event == 'transfer':
+        elif event in ('trade', 'transfer'):
             self.shadow[fields['seller']] -= fields['amount']
             self.shadow[fields['buyer']] += fields['amount']
-        elif event == 'settlement':
-            seller, buyer = fields['seller'], fields['buyer']
-            amount = fields['amount']
-            existing = min(self.shadow[seller], amount)
-            created = amount - existing
-            if fields['created'] != created or fields['transferred'] != existing:
-                raise AssertionError('settlement decomposition mismatch')
-            self.shadow[seller] -= existing
-            self.shadow[buyer] += amount
-            self.community_claim += created
+            self.shadow_volume += fields['amount']
         elif event == 'death':
-            self.community_claim -= self.shadow[fields['name']]
+            if fields['balance'] != self.shadow[fields['name']]:
+                raise AssertionError('death position mismatch')
+            self.shadow_community += self.shadow[fields['name']]
             self.shadow[fields['name']] = 0
         self.counts[event] += 1
         self.audit()
 
     def audit(self):
         self.check()
-        actual = {name: a.debt for name, a in self.agents.items()}
+        actual = {name: a.balance for name, a in self.agents.items()}
         if actual != dict(self.shadow):
             raise AssertionError('independent account replay mismatch')
-        debt = sum(actual.values())
-        error = abs(debt - self.community_claim)
+        error = abs(sum(actual.values()) + self.shadow_community)
         self.max_error = max(self.max_error, error)
-        if error or self.community_claim != self.created - self.extinguished:
-            raise AssertionError('community claim mismatch')
+        if error or self.shadow_community != self.community_balance:
+            raise AssertionError('community clearing position mismatch')
+        if self.shadow_volume != self.volume:
+            raise AssertionError('transfer volume mismatch')
 
 
-def run(seed=0, years=300, population=30, creation=True):
-    if years < 1 or population < 2:
+def run(seed=0, years=300, population=30):
+    if type(years) is not int or type(population) is not int or years < 1 or population < 2:
         raise ValueError('years >= 1 and population >= 2 required')
     rng = random.Random(seed)
     book = AuditedLedger()
@@ -81,6 +76,7 @@ def run(seed=0, years=300, population=30, creation=True):
     annual = []
     rejected = 0
     previous_counts = Counter()
+    previous_volume = 0
     for year in range(years):
         for name in list(people):
             people[name]['age'] += 1
@@ -94,7 +90,6 @@ def run(seed=0, years=300, population=30, creation=True):
             horizon = max(0, 90 - p['age'])
             book.agents[name].limit = int(horizon * p['capacity'] * rng.uniform(.25, 1.5)) if p['age'] >= 18 else 0
         book.audit()
-        book.settle(year, creation=creation)
         remaining_hours = {n: people[n]['capacity'] for n in adults}
         year_rejected = 0
         # Each attempted service is physical work, independently bounded by time budget.
@@ -108,29 +103,25 @@ def run(seed=0, years=300, population=30, creation=True):
             physical.produce(seller, {}, {'service': 1}, 1, 1)
             try:
                 book.trade(seller, buyer, 'service', 1, rng.randint(1, 20),
-                           year + rng.randint(0, 2), consent=rng.random() < .95)
+                           consent=rng.random() < .95)
             except Rejected:
                 rejected += 1
                 year_rejected += 1
                 physical.expire(seller, 'service', 1)
             else:
                 physical.consume(buyer, 'service', 1)
-        book.settle(year, creation=creation)
         book.audit()
         counts = book.counts - previous_counts
         previous_counts = book.counts.copy()
-        annual.append({'year': year+1, 'debt': sum(a.debt for a in book.agents.values()),
-                       'community_claim': book.community_claim, 'created': book.created,
-                       'extinguished': book.extinguished, 'error': book.max_error,
+        annual.append({'year': year+1, **book.metrics(),
                        'adults': len(adults), 'trades': counts['trade'],
-                       'settlements': counts['settlement'], 'deaths': counts['death'],
+                       'transfer_volume': book.volume - previous_volume, 'deaths': counts['death'],
                        'rejected': year_rejected,
-                       'open_promises': sum(p.status == 'open' for p in book.promises),
-                       'overdue_promises': sum(p.status == 'open' and p.due <= year for p in book.promises)})
-        # Remove only closed contracts from the active work queue; counts are retained.
-        book.promises = [p for p in book.promises if p.status == 'open']
+                       'over_limit': sum(a.alive and a.balance > a.limit for a in book.agents.values())})
+        previous_volume = book.volume
+        # Events have already been audited; retain annual totals and zeroed dead accounts.
         book.events.clear()
-    return {'seed': seed, 'years': years, 'population': population, 'creation': creation,
+    return {'model': 'relative-balances-v2', 'seed': seed, 'years': years, 'population': population,
             'max_accounting_error': book.max_error, 'events_checked': sum(book.counts.values()),
             'counts': dict(book.counts), 'rejected_trades': rejected, 'annual': annual}
 
@@ -141,7 +132,6 @@ def main():
     parser.add_argument('--years', type=int, default=300)
     parser.add_argument('--population', type=int, default=30)
     parser.add_argument('--seed', type=int, default=0)
-    parser.add_argument('--no-creation', action='store_true')
     parser.add_argument('--output', type=Path, default=Path('results/monte_carlo'))
     args = parser.parse_args()
     if args.runs < 1 or args.years < 1 or args.population < 2:
@@ -151,24 +141,26 @@ def main():
     with (args.output / 'annual.csv').open('w', newline='') as f:
         writer = None
         for seed in range(args.seed, args.seed + args.runs):
-            result = run(seed, args.years, args.population, not args.no_creation)
+            result = run(seed, args.years, args.population)
             for row in result['annual']:
                 if writer is None:
-                    writer = csv.DictWriter(f, fieldnames=['seed'] + list(row))
+                    writer = csv.DictWriter(f, fieldnames=['seed'] + list(row), lineterminator='\n')
                     writer.writeheader()
                 writer.writerow({'seed': seed, **row})
             last = result['annual'][-1]
             summaries.append({k: v for k, v in result.items() if k != 'annual'} | {'final': last})
             if len(summaries) % 10 == 0:
                 print(f'{len(summaries)}/{args.runs} runs checked', flush=True)
-    report = {'runs': args.runs, 'years_per_run': args.years, 'population': args.population,
-              'creation': not args.no_creation,
+    report = {'model': 'relative-balances-v2', 'runs': args.runs,
+              'years_per_run': args.years, 'population': args.population,
               'events_checked': sum(r['events_checked'] for r in summaries),
               'max_accounting_error': max(r['max_accounting_error'] for r in summaries),
-              'min_final_debt': min(r['final']['debt'] for r in summaries),
-              'max_final_debt': max(r['final']['debt'] for r in summaries),
-              'min_final_overdue': min(r['final']['overdue_promises'] for r in summaries),
-              'max_final_overdue': max(r['final']['overdue_promises'] for r in summaries),
+              'min_final_balance_sum': min(r['final']['balance_sum'] for r in summaries),
+              'max_final_balance_sum': max(r['final']['balance_sum'] for r in summaries),
+              'min_final_community_balance': min(r['final']['community_balance'] for r in summaries),
+              'max_final_community_balance': max(r['final']['community_balance'] for r in summaries),
+              'min_final_gross_balance': min(r['final']['gross_balance'] for r in summaries),
+              'max_final_gross_balance': max(r['final']['gross_balance'] for r in summaries),
               'results': summaries}
     (args.output / 'summary.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({k: v for k, v in report.items() if k != 'results'}))

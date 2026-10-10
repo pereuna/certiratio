@@ -1,4 +1,4 @@
-"""Deterministic experimental protocol. Debt and physical quantities are integers."""
+"""Signed relative positions; the unmeasured historical baseline is not stored."""
 from collections import Counter
 from dataclasses import dataclass, field
 
@@ -8,18 +8,9 @@ class Agent:
     name: str
     limit: int
     kind: str = 'person'
-    debt: int = 0
+    balance: int = 0
     alive: bool = True
     goods: Counter = field(default_factory=Counter)
-
-
-@dataclass
-class Promise:
-    seller: str
-    buyer: str
-    amount: int
-    due: int
-    status: str = 'open'
 
 
 class Rejected(ValueError):
@@ -29,8 +20,8 @@ class Rejected(ValueError):
 class Ledger:
     def __init__(self):
         self.agents = {}
-        self.promises = []
-        self.created = self.extinguished = self.volume = 0
+        self.community_balance = 0
+        self.volume = 0
         self.initial = Counter()
         self.produced = Counter()
         self.used = Counter()
@@ -53,86 +44,86 @@ class Ledger:
             raise Rejected('quantities must be nonnegative integers')
 
     def active(self, name):
-        a = self.agents[name]
-        if not a.alive:
-            raise Rejected('inactive actor')
-        return a
+        if name not in self.agents or not self.agents[name].alive:
+            raise Rejected('unknown or inactive actor')
+        return self.agents[name]
 
-    def reserved(self, name):
-        return sum(p.amount for p in self.promises if p.buyer == name and p.status == 'open')
+    def _participants(self, seller, buyer, amount, consent):
+        a, b = self.active(seller), self.active(buyer)
+        self._quantities({'amount': amount})
+        if seller == buyer or consent is not True:
+            raise Rejected('distinct actors and explicit consent required')
+        # A reduced forecast never erases balances. Gifts add no position.
+        if amount > 0 and b.balance + amount > b.limit:
+            raise Rejected('recipient limit exceeded')
+        return a, b
+
+    def _move(self, a, b, amount):
+        # A seller can move below zero: there is no seller balance requirement.
+        a.balance -= amount
+        b.balance += amount
+        self.volume += amount
 
     def transfer(self, seller, buyer, amount, consent=False):
-        a, b = self.active(seller), self.active(buyer)
-        self._quantities({'debt': amount})
-        if seller == buyer or not consent or a.debt < amount or b.debt + self.reserved(buyer) + amount > b.limit:
-            raise Rejected('transfer rejected')
-        a.debt -= amount
-        b.debt += amount
-        self.volume += amount
+        a, b = self._participants(seller, buyer, amount, consent)
+        self._move(a, b, amount)
         self._record('transfer', seller=seller, buyer=buyer, amount=amount)
 
-    def trade(self, seller, buyer, good, quantity, amount, due, consent=False):
-        """Goods now, debt later; incoming debt fully reserved, no outgoing reservation."""
-        a, b = self.active(seller), self.active(buyer)
-        self._quantities({'quantity': quantity, 'amount': amount, 'due': due})
-        if seller == buyer or not consent or a.goods[good] < quantity or b.debt + self.reserved(buyer) + amount > b.limit:
-            raise Rejected('trade rejected')
+    def trade(self, seller, buyer, good, quantity, amount, consent=False):
+        """Transfer goods and relative positions together, after all validation."""
+        a, b = self._participants(seller, buyer, amount, consent)
+        self._quantities({'quantity': quantity})
+        if (amount > 0 and quantity == 0) or a.goods[good] < quantity:
+            raise Rejected('positive price requires a delivered good or service')
         a.goods[good] -= quantity
         b.goods[good] += quantity
-        p = Promise(seller, buyer, amount, due)
-        self.promises.append(p)
-        self._record('trade', seller=seller, buyer=buyer, good=good, quantity=quantity, amount=amount, due=due)
-        return p
-
-    def settle(self, tick, creation=True):
-        # FIFO is an explicit experimental choice. No partial settlement.
-        for p in self.promises:
-            if p.status != 'open' or p.due > tick:
-                continue
-            a, b = self.active(p.seller), self.active(p.buyer)
-            if b.debt + self.reserved(b.name) > b.limit or (not creation and a.debt < p.amount):
-                self._record('blocked', seller=p.seller, buyer=p.buyer, amount=p.amount)
-                continue
-            existing = min(a.debt, p.amount)
-            missing = p.amount - existing
-            a.debt -= existing
-            b.debt += p.amount
-            self.created += missing
-            self.volume += existing
-            p.status = 'settled'
-            self._record('settlement', seller=p.seller, buyer=p.buyer, amount=p.amount, created=missing, transferred=existing)
+        self._move(a, b, amount)
+        self._record('trade', seller=seller, buyer=buyer, good=good,
+                     quantity=quantity, amount=amount)
 
     def death(self, name):
         a = self.active(name)
         if a.kind != 'person':
             raise Rejected('firm closure undefined')
-        self.extinguished += a.debt
-        a.debt = 0
+        balance = a.balance
+        # Both signs move unchanged to a non-spendable community clearing account.
+        self.community_balance += balance
+        a.balance = 0
         self.destroyed.update(a.goods)
         a.goods.clear()
         a.alive = False
-        for p in self.promises:
-            if name in (p.seller, p.buyer) and p.status == 'open':
-                p.status = 'cancelled'
-        self._record('death', name=name)
+        self._record('death', name=name, balance=balance)
+
+    def metrics(self):
+        balances = [a.balance for a in self.agents.values() if a.alive]
+        return {'balance_sum': sum(balances),
+                'community_balance': self.community_balance,
+                'positive_balance_total': sum(x for x in balances if x > 0),
+                'negative_balance_total': sum(x for x in balances if x < 0),
+                'gross_balance': sum(abs(x) for x in balances),
+                'accounting_error': abs(sum(balances) + self.community_balance)}
 
     def check(self):
-        # One pass avoids repeated Counter.update overhead in long stress runs.
-        debt = 0
+        total = self.community_balance
+        if type(total) is not int:
+            raise AssertionError('community position must be an integer')
         stocks = {}
         for a in self.agents.values():
-            assert type(a.debt) is int and a.debt >= 0
-            if a.alive:
-                debt += a.debt
-            else:
-                assert a.debt == 0
+            if type(a.balance) is not int or (not a.alive and a.balance != 0):
+                raise AssertionError('invalid relative position')
+            total += a.balance
             for g, quantity in a.goods.items():
-                assert quantity >= 0
+                if type(quantity) is not int or quantity < 0 or (not a.alive and quantity):
+                    raise AssertionError('invalid physical stock')
                 stocks[g] = stocks.get(g, 0) + quantity
-        assert debt == self.created - self.extinguished
-        keys = set(self.initial) | set(self.produced) | set(stocks)
+        if total != 0:
+            raise AssertionError('relative positions and community must sum to zero')
+        keys = (set(self.initial) | set(self.produced) | set(self.used)
+                | set(self.consumed) | set(self.destroyed) | set(stocks))
         for g in keys:
-            assert stocks.get(g, 0) == self.initial[g] + self.produced[g] - self.used[g] - self.consumed[g] - self.destroyed[g], g
+            expected = self.initial[g] + self.produced[g] - self.used[g] - self.consumed[g] - self.destroyed[g]
+            if stocks.get(g, 0) != expected:
+                raise AssertionError(f'physical stock mismatch: {g}')
 
     def _record(self, event, **fields):
         self.check()

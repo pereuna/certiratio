@@ -27,19 +27,19 @@ Nämä käsitteet eivät tarkoita samaa asiaa. Ne osoittavat, ettei velka ole ka
 
 Intialainen ṛṇa on filosofisesti kiinnostava, koska se liittää ihmisen aikaisempien sukupolvien työhön ja saavutuksiin.
 
-Certiratio lähtee kuitenkin erilaisesta taloudellisesta periaatteesta:
+Certiration nykyinen mekanismi erottaa yhteisen historiallisen perusvelan ja kirjanpidossa näkyvän suhteellisen saldon:
 
-**Ihminen syntyy velattomana, velkasaldon kannalta ylimmässä mahdollisessa tilassa.**
+**Ihminen syntyy suhteellisella saldolla nolla. Nolla on neutraali vertailupiste, ei velattomuus tai korkein mahdollinen taloudellinen tila.**
 
-Nollavelka ei yksin määritä ostovoimaa: velan vastaanottamista rajoittaa myös arvioitu tuleva velansiirtokyky.
+Ajatuksellinen kokonaisvelka voidaan kuvata muodossa `D_i = K + x_i`. Mittaamatonta historiallista perusvelkaa K ei tallenneta eikä lasketa; järjestelmä kirjaa vain etumerkillisen poikkeaman x.
 
-Ihminen saa käyttöönsä vuosituhansien aikana syntyneen tiedon, tekniikan ja yhteiskunnallisen kehityksen. Yksilön oma panos rakentuu tälle suunnattomalle yhteiselle perinnölle.
+Ihminen saa käyttöönsä vuosituhansien aikana syntyneen tiedon, tekniikan ja yhteiskunnallisen kehityksen. Yksilön oma panos rakentuu tälle suunnattomalle yhteiselle perinnölle. Syntymässä ei tehdä numeerista perusvelkakirjausta.
 
-Tämä historiallinen riippuvuus tunnustetaan, mutta se ei synnytä vastasyntyneelle henkilökohtaista kirjanpidollista velkaa.
+**Sivilisaation perintö on mittaamaton; suhteellisen saldon nolla ei tarkoita, että historiallinen velka puuttuisi.**
 
-**Sivilisaation perintö on mittaamaton, mutta siitä syntyvä henkilökohtainen velka on nolla.**
+Negatiivinen saldo on mahdollinen: ensimmäinen myynti voi viedä saldon esimerkiksi nollasta −10:een. Etumerkki kuvaa sijaintia yhteisellä velka-akselilla. Taloudellisesti negatiivinen saldo antaa lisää mahdollisuutta vastaanottaa myöhemmin hyödykkeitä ja niiden mukana tulevaa velkaa ostajan vastaanottorajaan asti.
 
-Velattomuus ei silti ole tila, johon järjestelmä edellyttäisi ihmisen palaavan. Myös suuri velkasaldo voi kuulua normaaliin ja aktiiviseen taloudelliseen toimintaan.
+Agenttien tavoitteeksi ei aseteta nollasaldoa tai negatiivisen saldon maksimointia. [Nykyinen mallikonteksti](../VELKATALOUS_CONTEXT.md) määrittelee tapahtumat ja kuoleman yhteisötilikirjauksen.
 
 ## Latinasta Certiratio-nimeen
 

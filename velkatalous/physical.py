@@ -1,4 +1,4 @@
-"""Physical recipes and consumption; no debt decisions or mutations."""
+"""Physical recipes and consumption; no relative-position decisions or mutations."""
 from .ledger import Rejected
 
 
@@ -38,4 +38,3 @@ class Physical:
         a.goods[good] -= quantity
         self.book.consumed[good] += quantity
         self.book._record('consumption', name=name, good=good, quantity=quantity)
-

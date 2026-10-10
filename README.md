@@ -1,34 +1,47 @@
 # Certiratio – velkatalouden tutkimussimulaattori
 
-*Credita certa, homines liberi.*
+*Credita certa, homines liberi.* [Nimen tausta](docs/name.md).
 
-[Nimen synty ja tausta](docs/name.md).
+Certiratio kirjaa yhteiseen historialliseen perusvelkaan suhteutetun **etumerkillisen saldon** `x_i`. Perusvelkaa ei mitata tai tallenneta. Syntymäsaldo 0 on neutraali vertailupiste. Negatiivinen saldo kertoo poikkeamasta velka-akselilla ja antaa käytännössä lisää vastaanottovaraa.
 
-Lue [johdonmukaisuusauditointi ja toteutussuunnitelma](docs/MALLI_JA_SUUNNITELMA.md) sekä alkuperäinen [mallikonteksti](VELKATALOUS_CONTEXT.md). Käyttäjän periaatteet ja kokeelliset oletukset on erotettu raportissa.
+Ensimmäinen kauppa onnistuu heti nollasaldoista: A myy B:lle puuta 10 yksiköllä → A:n saldo −10, B:n +10. Hyödyke ja saldot siirtyvät atomisesti. Ostajan suostumus ja vastaanottoraja tarkistetaan.
 
-Velka on osallistujayhteisölle kollektiivisesti. Työn tai hyödykkeen vastaanottaja ottaa sovitun osan luovuttajan velasta kannettavakseen; yhteisön saaminen ei muodosta osallistujille henkilökohtaisia positiivisia saamissaldoja.
+Kuolemassa henkilön saldo siirtyy samalla etumerkillä erilliselle yhteisön selvitystilille. Invariantti on **elävien saldot + yhteisötili = 0**. Selvitystili ei ole kaupankäyntiin käytettävissä. Se ei mittaa historiallista perusvelkaa tai yhteisön absoluuttista saamista.
 
-Python 3.10 tai uudempi, vain standardikirjasto. Aja projektin juuresta:
+Lue [nykyinen mallikonteksti](VELKATALOUS_CONTEXT.md), [mekanismi ja tutkimussuunnitelma](docs/MALLI_JA_SUUNNITELMA.md) sekä [ensimmäiset v2-tulokset](docs/ENSIMMAISET_TULOKSET.md).
+
+Python 3.10 tai uudempi, vain standardikirjasto. Projektin juuresta:
 
 ```bash
 python3 -m unittest discover -s tests -v
 python3 -m velkatalous.simulation --seed 7 --periods 30 --output results/baseline.json
-python3 -m velkatalous.simulation --no-creation --output results/no_creation.json
 python3 -m velkatalous.simulation --cap-scale 0 --output results/zero_limit.json
 python3 -m velkatalous.simulation --resource 2 --output results/scarcity.json
 python3 -m velkatalous.simulation --mortality 0.05 --output results/mortality.json
-```
-
-JSON sisältää parametrit, jaksoittaiset mittarit ja tapahtumalokin. Samat parametrit ja siemen tuottavat saman tuloksen. Vahvistettuja sääntöjä ei voi muuttaa kokeellisten parametrien kautta: velka ei mene negatiiviseksi eikä häviä muutoin kuin henkilön kuollessa.
-
-Tämä on stock–flow-identiteetit säilyttävä ABM-prototyyppi, ei vielä täydellinen sektoritaseisiin perustuva, empiirisesti kalibroitu AB-SFC-makromalli. Agenttien tavoitteina ovat kulutus ja valittu toiminnan määrä; positiivista rahavarallisuutta tai nollavelan optimointia ei ole.
-
-## Yksinkertainen 300 vuoden Monte Carlo -koe
-
-[Selkokielinen kuvaus](docs/MONTE_CARLO_300_VUOTTA.md): 100 satunnaista 300 vuoden historiaa, syntymiä, kuolemia ja palvelukauppoja. Erillinen tarkastuskirjanpito täsmäyttää jokaisen henkilön velan ja yhteisön saamisen jokaisen tapahtuman jälkeen.
-
-```bash
+python3 -m velkatalous.scenarios
 python3 -m velkatalous.monte_carlo --runs 100 --years 300 --population 30
 ```
 
-Tulokset tallentuvat hakemistoon `results/monte_carlo/`. Täsmäytysero nolla tarkoittaa kirjanpidon testin läpäisyä; erääntyneet selvittämättömät sopimukset raportoidaan erikseen.
+`scenarios` tuottaa neljä yllä kuvattua skenaariotiedostoa ja `results/summary.json`-yhteenvedon. Monte Carlo tuottaa `results/monte_carlo/annual.csv`-vuosirivit ja `summary.json`-raportin. Sama ohjelmaversio, siemen ja parametrit tuottavat samat tulokset.
+
+## Rajapinta ja tulokset, versio 2
+
+```python
+from velkatalous.ledger import Ledger
+
+book = Ledger()
+book.add('A', 100, goods={'wood': 1})
+book.add('B', 100)
+book.trade('A', 'B', 'wood', 1, 10, consent=True)
+assert book.agents['A'].balance == -10
+assert book.agents['B'].balance == 10
+book.death('A')
+assert book.community_balance == -10
+book.check()
+```
+
+`Agent.balance` korvaa vanhan `debt`-kentän. `trade` ei ota erääntymisaikaa; kaikki hyväksytyt kaupat toteutuvat heti. `Promise`, `settle`, varaukset, velanluonti ja `--no-creation` on poistettu. Vanhan mekanismin ajot löytyvät [v1-version Git-historiasta](https://github.com/pereuna/certiratio/tree/581198f069666e7640f2227df521aa24e9adcc81). Myös `codex_handoff.zip` on historiallinen v1-aineisto.
+
+JSONin `model` on `relative-balances-v2`. Mittarit sisältävät henkilöiden nettosumman `balance_sum`, yhteisön selvityssaldon `community_balance`, positiivisten ja negatiivisten saldojen summat sekä `accounting_error`-täsmäytyseron. `gross_balance = sum(abs(x_i))` mittaa suhteellisten positioiden suuruutta, ei absoluuttista velkaa. Vanhoja luonti-, poistuma- ja lupausten mittareita ei tuoteta.
+
+[300 vuoden rasituskoe](docs/MONTE_CARLO_300_VUOTTA.md) tarkistaa tapahtumista erikseen jokaisen henkilön ja yhteisötilin saldon. Testin läpäisy ei osoita hintojen, elintason tai vastaanottorajojen toimivuutta. Hinnat ja päätössäännöt ovat prototyypin oletuksia.

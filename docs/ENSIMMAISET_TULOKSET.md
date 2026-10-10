@@ -1,19 +1,20 @@
-# Ensimmäinen koe: siemen 7, 30 jaksoa
+# Suhteellisten saldojen ensimmäiset tulokset
 
-Kaikki kahdeksan automaattista testiä läpäisevät. Testipakettiin sisältyy myös 25 simulaatioajoa: viisi siementä ja viisi skenaariota. Saldo- ja varastoinvariantit tarkistetaan jokaisen hyväksytyn tapahtuman jälkeen. Sama siemen ja samat parametrit toistuvat identtisesti.
+V2, siemen 7, 30 jaksoa. Kaikki 26 automaattista testiä läpäisevät. Testit kattavat ensimmäisen välittömän kaupan nollasta, negatiivisen myyjän, negatiivisen vastaanottajan vastaanottovaran, ostajan rajan, ilmaisen luovutuksen ylirajaiselle, kuoleman molemmilla etumerkeillä, hylkäysten atomisuuden ja fyysiset varastot.
 
-| Koe | Velka lopussa | Luotu velka | Kuolemissa poistettu | Siirtoliikevaihto yhteensä | Avoimet lupaukset | Ruokakulutus | Laatikkokulutus |
+| Koe | Henkilöiden nettosumma | Yhteisötili | Positiiviset saldot | Negatiiviset saldot | Siirtoliikevaihto yhteensä | Ruokakulutus | Laatikkokulutus |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Perusajo | 296 | 296 | 0 | 1656 | 20 | 360 | 75 |
-| Luonti pois | 0 | 0 | 0 | 0 | 31 | 20 | 3 |
+| Perusajo | 0 | 0 | 264 | −264 | 2006 | 360 | 74 |
 | Vastaanottoraja nolla | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Resurssi 2 / alkutuottaja | 150 | 150 | 0 | 34 | 5 | 4 | 2 |
-| Kuolleisuus 0,05 / henkilö / jakso | 10 | 118 | 108 | 230 | 0 | 36 | 26 |
+| Resurssi 2 / alkutuottaja | 0 | 0 | 156 | −156 | 190 | 4 | 2 |
+| Kuolleisuus 0,05 / henkilö / jakso | −8 | 8 | 0 | −8 | 420 | 36 | 26 |
 
-Perusajo osoittaa, että kokeellinen luontisääntö käynnistää velkakiertoa ja panosketjun. Se ei osoita stationaarisuutta tai hyvinvointivaikutusta. Avoimet lupaukset sisältävät myös viimeisen jakson vielä erääntymättömät sopimukset; kaikki eivät ole selvitysvaikeuksia.
+Kaikkien jaksojen saldojen ja yhteisötilin yhteissumma oli nolla. Nollasumma ei tarkoita, ettei kauppaa tapahtuisi: perusajon 2006 yksikön liikevaihto syntyi ilman velanluontia tai erääntyviä lupauksia. Myyjä voi siirtyä negatiiviseksi ensimmäisessä kaupassa.
 
-Luonti pois -ajossa ensimmäisiä hyödykkeitä toimitetaan velkalupausten vastineeksi, mutta positiivisen suuruiset lupaukset eivät selvity nollavelkaisessa järjestelmässä. Vastaanottovaraukset ja laskeva raja lopulta estävät uusia sopimuksia. Resurssipulassa työpalvelujen velkaa voi edelleen syntyä, vaikka lopputuotanto pysähtyy. Näin pelkkä velkasaldo tai velkaliikevaihto ei mittaa reaalitalouden onnistumista.
+Rajan nollakoe alkaa kaikkien nollasaldoista, joten yksikään positiivisen hinnan vastaanotto ei käynnisty. Se ei tarkoita, että negatiivinen saldo ja raja nolla estäisivät kaiken ostamisen: esimerkiksi −10-saldo sallii 10 yksikön vastaanoton nollaan asti. Tämä on erillinen deterministinen testi.
 
-Kuolleisuuskokeessa velka 10 = luonti 118 − poistuma 108; tuotantoyksikön henkilöomistajan kuolema voi samalla katkaista koko tuotantoketjun. Se on tämän henkilöomistajamallin ominaisuus, ei yritysten todellisesta elinkaaresta tehty päätelmä.
+Resurssipulassa palvelujen vaihto ja saldosiirrot voivat jatkua, vaikka lopputuotanto pysähtyy. Liikevaihto tai saldon itseisarvo ei siis yksin mittaa reaalitalouden onnistumista.
 
-Koneelliset tulokset ovat ../results/summary.json ja viidessä skenaariotiedostossa. Tämä taulukko kuvaa yhtä siementä; varsinaiset vaikutusarviot edellyttävät suunnitelmassa kuvattua kalibrointia ja laajempaa herkkyystutkimusta.
+Kuolleisuuskokeessa henkilöiden −8:n nettosumman vastapaino on yhteisötilin +8. Henkilöomistajan kuolema voi yhä katkaista tuotantoketjun; yritysten periytymistä ei mallinneta. Vanhan v1-mallin absoluuttisen velan luonti- ja poistumatuloksia ei voi verrata näihin suhteellisiin saldoihin samoina suureina.
+
+Uudelleentuotto: `python3 -m velkatalous.scenarios`. Koneelliset tulokset ovat `results/summary.json` ja neljä skenaariotiedostoa. Hinnat ja ennusterajat ovat kalibroimattomia; tämä yksi siemen ei osoita tasapainoa tai hyvinvointivaikutusta.

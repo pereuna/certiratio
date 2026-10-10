@@ -1,8 +1,8 @@
 {
+  "model": "relative-balances-v2",
   "parameters": {
     "seed": 7,
     "periods": 30,
-    "creation": true,
     "cap_scale": 0,
     "resource": 200,
     "mortality": 0.0
@@ -10,11 +10,14 @@
   "rows": [
     {
       "tick": 0,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -28,9 +31,8 @@
       "hours": 0,
       "unmet_demand": 24,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -113,11 +115,14 @@
     },
     {
       "tick": 1,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -131,9 +136,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -216,11 +220,14 @@
     },
     {
       "tick": 2,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -234,9 +241,8 @@
       "hours": 0,
       "unmet_demand": 24,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -319,11 +325,14 @@
     },
     {
       "tick": 3,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -337,9 +346,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -422,11 +430,14 @@
     },
     {
       "tick": 4,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -440,9 +451,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -525,11 +535,14 @@
     },
     {
       "tick": 5,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -543,9 +556,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -628,11 +640,14 @@
     },
     {
       "tick": 6,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -646,9 +661,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -731,11 +745,14 @@
     },
     {
       "tick": 7,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -749,9 +766,8 @@
       "hours": 0,
       "unmet_demand": 23,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -834,11 +850,14 @@
     },
     {
       "tick": 8,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -852,9 +871,8 @@
       "hours": 0,
       "unmet_demand": 24,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -937,11 +955,14 @@
     },
     {
       "tick": 9,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -955,9 +976,8 @@
       "hours": 0,
       "unmet_demand": 23,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1040,11 +1060,14 @@
     },
     {
       "tick": 10,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1058,9 +1081,8 @@
       "hours": 0,
       "unmet_demand": 27,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1143,11 +1165,14 @@
     },
     {
       "tick": 11,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1161,9 +1186,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1246,11 +1270,14 @@
     },
     {
       "tick": 12,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1264,9 +1291,8 @@
       "hours": 0,
       "unmet_demand": 25,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1349,11 +1375,14 @@
     },
     {
       "tick": 13,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1367,9 +1396,8 @@
       "hours": 0,
       "unmet_demand": 21,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1452,11 +1480,14 @@
     },
     {
       "tick": 14,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1470,9 +1501,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1555,11 +1585,14 @@
     },
     {
       "tick": 15,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1573,9 +1606,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1658,11 +1690,14 @@
     },
     {
       "tick": 16,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1676,9 +1711,8 @@
       "hours": 0,
       "unmet_demand": 23,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1761,11 +1795,14 @@
     },
     {
       "tick": 17,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1779,9 +1816,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1864,11 +1900,14 @@
     },
     {
       "tick": 18,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1882,9 +1921,8 @@
       "hours": 0,
       "unmet_demand": 25,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -1967,11 +2005,14 @@
     },
     {
       "tick": 19,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -1985,9 +2026,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2070,11 +2110,14 @@
     },
     {
       "tick": 20,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2088,9 +2131,8 @@
       "hours": 0,
       "unmet_demand": 23,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2173,11 +2215,14 @@
     },
     {
       "tick": 21,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2191,9 +2236,8 @@
       "hours": 0,
       "unmet_demand": 24,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2276,11 +2320,14 @@
     },
     {
       "tick": 22,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2294,9 +2341,8 @@
       "hours": 0,
       "unmet_demand": 24,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2379,11 +2425,14 @@
     },
     {
       "tick": 23,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2397,9 +2446,8 @@
       "hours": 0,
       "unmet_demand": 23,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2482,11 +2530,14 @@
     },
     {
       "tick": 24,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2500,9 +2551,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2585,11 +2635,14 @@
     },
     {
       "tick": 25,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2603,9 +2656,8 @@
       "hours": 0,
       "unmet_demand": 24,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2688,11 +2740,14 @@
     },
     {
       "tick": 26,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2706,9 +2761,8 @@
       "hours": 0,
       "unmet_demand": 26,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2791,11 +2845,14 @@
     },
     {
       "tick": 27,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2809,9 +2866,8 @@
       "hours": 0,
       "unmet_demand": 23,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2894,11 +2950,14 @@
     },
     {
       "tick": 28,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -2912,9 +2971,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,
@@ -2997,11 +3055,14 @@
     },
     {
       "tick": 29,
-      "total_debt": 0,
-      "created_debt": 0,
-      "death_extinguished_debt": 0,
+      "balance_sum": 0,
+      "community_balance": 0,
+      "positive_balance_total": 0,
+      "negative_balance_total": 0,
+      "gross_balance": 0,
+      "accounting_error": 0,
       "transfer_volume": 0,
-      "debt_velocity": null,
+      "turnover_per_gross_balance": null,
       "consumption": {
         "food": 0,
         "box": 0
@@ -3015,9 +3076,8 @@
       "hours": 0,
       "unmet_demand": 22,
       "rejected_trades": 9,
-      "open_promises": 0,
       "over_limit": 0,
-      "debts": {
+      "balances": {
         "farm": 0,
         "forest": 0,
         "workshop": 0,

@@ -1,21 +1,24 @@
-# 300 vuoden Monte Carlo -kokeen tulokset
+# Suhteellisten saldojen 300 vuoden Monte Carlo -tulokset
 
-Sata erilaista 300 vuoden tapahtumahistoriaa, kussakin 30 elossa olevaa ihmistä. Siemenet 0–99. Kuolleen tilalle syntyy uusi nollavelkainen ihminen.
+V2: sata 300 vuoden historiaa, 30 elossa olevaa ihmistä, siemenet 0–99. Kuolleen tilalle syntyy nollasaldoinen ihminen. Kaupat toteutuvat heti.
 
 | Tarkistus | Tulos |
 |---|---:|
 | Valmistuneet ajot | 100 / 100 |
 | Vuosittaiset havaintorivit | 30 000 |
-| Tapahtumia tarkistettu | 4,650,732 |
+| Tarkistettuja tapahtumia | 3 747 531 |
 | Suurin kirjanpidon täsmäytysero | 0 |
-| Hyväksyttyjä palvelukauppoja | 745,952 |
-| Selvitettyjä velkalupauksia | 718,570 |
-| Kuolemia | 11,035 |
-| Kokonaisvelka vuoden 300 lopussa, pienin–suurin ajo | 1363–2687 |
-| Erääntyneitä selvittämättömiä lupauksia lopussa, pienin–suurin ajo | 1–17 |
+| Hyväksyttyjä välittömiä palvelukauppoja | 1 054 921 |
+| Hylättyjä kauppayrityksiä | 278 887 |
+| Kuolemia | 10 997 |
+| Henkilöiden nettosumma lopussa, pienin–suurin ajo | 162–1312 |
+| Yhteisön selvitystili lopussa, pienin–suurin ajo | −1312–−162 |
+| Henkilösaldojen itseisarvojen summa lopussa, pienin–suurin ajo | 806–1957 |
 
-**Näissä sadassa historiassa kirjanpito pysyi kunnossa koko 300 vuoden ajan.** Jokaisen henkilön saldo tarkistettiin tapahtumista erikseen uudelleen laskettua saldoa vastaan. Yhteisön kollektiivinen saaminen vastasi henkilöiden velkojen summaa. Saldot ja palvelusuoritteiden varastot eivät menneet negatiivisiksi.
+**Jokaisessa tarkistetussa tapahtumassa henkilöiden saldot ja yhteisötili summautuivat nollaan.** Tapahtumista erikseen laskettu henkilösaldo, yhteisötili ja siirtoliikevaihto vastasivat moottorin tilaa. Fyysiset palveluvarastot täsmäsivät.
 
-Kaikki sopimukset eivät selviytyneet sovitussa ajassa: jokaisen ajon lopussa oli 1–17 erääntynyttä odottavaa lupausta. Se on mallin toiminnallinen tulos, vaikka kirjanpito täsmää. Tässä kokeessa rajat vaihtelevat tarkoituksella eikä hintojen tai agenttien päätösten realismia ole kalibroitu. Testin läpäisy ei yksin osoita talouden elinkelpoisuutta eikä kaikkien mahdollisten ohjelmapolkujen virheettömyyttä.
+Henkilöiden nettosumma ei kuolemien jälkeen välttämättä ole nolla. Näissä ajoissa se oli lopussa positiivinen, ja yhteisötili täsmälleen vastakkaismerkkinen. Tämä on valitun kuoleman selvityssäännön tulos, ei luotua historiallista velkaa. Yhteisötilin kertymä tarvitsee omaa taloudellista tutkimusta.
 
-[Koemenetelmä ja ajo-ohjeet](MONTE_CARLO_300_VUOTTA.md). Koneelliset tulokset: `results/monte_carlo/summary.json` ja `results/monte_carlo/annual.csv`. Testipaketin kaikki 11 testiä läpäisivät. Myös aiemman simulaattorin tallennettu perusajo toistui täsmälleen kirjanpidon tarkistusten nopeuttamisen jälkeen.
+Velanluontia, erääntyviä lupauksia ja niiden selvitysvaikeuksia ei ole tässä mekanismissa. Vastaanottorajat ja suostumus voivat yhä estää kaupan. Nollasumman säilyminen ei osoita talouden elinkelpoisuutta, hintojen oikeellisuutta tai rajojen toimivuutta.
+
+Ajo: `python3 -m velkatalous.monte_carlo --runs 100 --years 300 --population 30`. Koneelliset tulokset: `results/monte_carlo/summary.json` ja `annual.csv`. [Koemenetelmä](MONTE_CARLO_300_VUOTTA.md). Kaikki 26 yksikkötestiä läpäisivät. V1- ja v2-ajot käyttävät eri mekanismia ja eri satunnaistapahtumajonoa; niitä ei tulkita kontrolloiduksi talousjärjestelmien paremmuusvertailuksi.
