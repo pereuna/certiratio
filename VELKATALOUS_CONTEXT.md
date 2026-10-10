@@ -1,6 +1,8 @@
 # Certiratio – nykyinen mallikonteksti
 
-Päivitetty 2026-10-10: suhteellisen velka-akselin malliin on lisätty käyttäjän vaatimus tapahtumaprotokollan kannustinyhteensopivuudesta. Tämä dokumentti on nykyisten mallisääntöjen ensisijainen lähde. Aiempi ei-negatiivisten absoluuttisten saldojen ja erääntyvien lupausten malli on korvattu; sen kuvaus on [historiallisessa v1-kontekstissa](docs/history/VELKATALOUS_CONTEXT_V1.md).
+Päivitetty 2026-10-10: suhteellisen velka-akselin malliin on lisätty kannustinyhteensopivuusvaatimus, selainpohjaisen ensitoteutuksen prioriteetti ja velkaseteleitä koskeva jatkopohdinta. Tämä dokumentti on nykyisten mallisääntöjen ensisijainen lähde. Aiempi ei-negatiivisten absoluuttisten saldojen ja erääntyvien lupausten malli on korvattu; sen kuvaus on [historiallisessa v1-kontekstissa](docs/history/VELKATALOUS_CONTEXT_V1.md).
+
+**Toteutusprioriteetti:** järjestelmä toteutetaan aluksi selainpohjaiseksi. Kaikki paperiset ratkaisut ovat aluksi sekundäärinen eli toissijainen tavoite. Ensimmäisen selainversion lähtökohta on suora, välittömästi rekisteröitävä saldosiirto; paperiratkaisujen valmius ei ole sen valmistumisen edellytys.
 
 ## 1. Suhteellinen koordinaatisto
 
@@ -48,7 +50,19 @@ Kirjaamisen ja valvonnan hyväksyttävyyden ero, riitautus, häiriötilanteet ja
 
 Tämä on toteutusta ohjaava vaatimus. Nykyinen simulaation suostumusmuuttuja ei vielä toteuta todellista tosite-, tunnistus-, valtuutus- tai riitautusprotokollaa. Matemaattisesti täsmäävä kirjanpito ei yksin osoita kannustinyhteensopivuuden toteutumista.
 
-## 5. Taloudellinen tulkinta ja tutkimusrajat
+## 5. Velkasetelit: kirjattu jatkopohdinta
+
+Siirtokelpoinen velkaseteli voisi olla väliaikainen oikeus saada velansiirto kirjatuksi. Se voisi kiertää haltijalta toiselle ennen lopullista lunastusta. Haltijaseteli ja allekirjoitetulla siirtosarjalla todettava seteli ovat vaihtoehtoja; juokseva velkakirja ja vekselin siirtomerkinnät ovat pohdinnassa mainittuja historiallisia esikuvia.
+
+Kirjattu suhteellinen saldo ja liikkeessä olevat velkasitoumukset on erotettava: liikkeessä oleva instrumentti voi sitoa liikkeeseenlaskijaa ennen saldokirjausta. Valvonnassa voidaan tarvita molemmat tiedot. Vaihtoehdot ovat laskentatoimiston ennakkovahvistamat numeroidut setelit, joiden arvo huomioidaan jo myöntämisessä, tai henkilökohtaiset setelit, joiden vastaanottaja kantaa myöhemmän hyväksymisen riskin. Kumpaakaan ei ole vielä valittu käyttöön.
+
+Kopioinnin ja kaksoislunastuksen esto, instrumentin aitous, jakaminen ja vaihtoraha tarvitsevat omat menettelynsä. SHA-tiiviste ei todista paperin alkuperäisyyttä tai allekirjoituksen aitoutta. Sähköisenkin setelin tunnisteelle on sallittava vain yksi kelvollinen lunastus, atomisesti molempien saldomuutosten kanssa.
+
+Suora ja välillinen velansiirto voisivat käyttää samaa nollasummaista saldomatematiikkaa, mutta niiden kirjausajankohta ja valvonta eroaisivat. Avoin kysymys on, kirjataanko jokainen vaihto vai vain lopulliset nettomuutokset. Välillisten vaihtojen määrä ei selviä pelkistä lopullisista saldoista. Nykyinen simulaatio ja ensimmäisen selainversion lähtökohta rekisteröivät jokaisen hyväksytyn suoran kaupan erikseen.
+
+Yksityiskohtainen pohdinta, oikeudelliset esikuvat ja avoimet ratkaisut on kirjattu [velkaseteli- ja toteutusjärjestysdokumenttiin](docs/VELKASETELIT_JA_TOTEUTUSJARJESTYS.md). Tämä ei ota setelimekanismia käyttöön, muuta nykyistä saldoidentiteettiä tai palauta v1-mallin velanluontia.
+
+## 6. Taloudellinen tulkinta ja tutkimusrajat
 
 Negatiivinen saldo tarjoaa ostovoiman kaltaista vastaanottovaraa, vaikka filosofinen velkatulkinta säilyy. Tämä toiminnallinen ominaisuus pitää raportoida eikä peittää terminologialla. Agentteja ei optimoida maksimaaliseen negatiiviseen saldoon, säästöihin tai nollavelkaan. Kulutus-, tuotanto- ja vapaa-aikapreferenssit ovat kokeellisia.
 

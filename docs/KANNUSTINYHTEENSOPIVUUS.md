@@ -2,6 +2,8 @@
 
 Lisätty 2026-10-10 käyttäjän suunnittelupäätöksen perusteella. Tämä on protokollan sitova suunnittelukriteeri ja vaatimus, ei väite siitä, että nykyinen tutkimussimulaattori jo toteuttaisi kaikki kontrollit. Suhteellisten saldojen mekanismi säilyy [mallikontekstin](../VELKATALOUS_CONTEXT.md) mukaisena.
 
+**Toteutusprioriteetti:** järjestelmä toteutetaan aluksi selainpohjaiseksi. Kaikki paperiratkaisut ovat aluksi toissijainen tavoite. Tämän dokumentin paperikohtaiset menettelyt ja hyväksymiskriteerit koskevat paperiratkaisun mahdollista myöhempää käyttöönottoa; ne eivät ole ensimmäisen selainversion valmistumisen ehto. Yhteiset hyväksyntä-, rekisteröinti- ja valvontavaatimukset koskevat selainversiota alusta asti. [Velkasetelipohdinta ja toteutusjärjestys](VELKASETELIT_JA_TOTEUTUSJARJESTYS.md).
+
 ## 1. Keskeinen suunnitteluehto
 
 > Taloudellisen tapahtuman rekisteröinnin, hyväksynnän ja valvonnan vastuut on järjestettävä siten, ettei yhden osapuolen oikeuden toteutuminen riipu toisen osapuolen myöhemmästä vapaaehtoisesta toiminnasta.
@@ -90,7 +92,7 @@ Laskentatoimiston rekisteröinti- ja valvontavelvollisuus sekä häiriöstä pal
 
 ## 5. Hyväksymiskriteerit ja nykyisen toteutuksen rajat
 
-Tapahtumaprotokollan toteutuksen on osoitettava testeillä vähintään seuraavat tapaukset:
+Tapahtumaprotokollan toteutuksen on osoitettava testeillä vähintään seuraavat tapaukset siltä osin kuin ne koskevat käyttöönotettavaa toteutusmuotoa. Paperikohtaiset tapaukset ovat myöhemmän paperiratkaisun käyttöönoton kriteerejä:
 
 1. Ostaja hyväksyy tositteen ja vaikenee; myyjän rekisteröinti toteuttaa molemmat saldomuutokset ilman ostajan jälkivahvistusta.
 2. Neljäs paperikappale puuttuu; rekisteröinti onnistuu ja riippumaton tarkastus on erillinen toiminto.

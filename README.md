@@ -2,6 +2,8 @@
 
 *Credita certa, homines liberi.* [Nimen tausta](docs/name.md).
 
+**Järjestelmä toteutetaan aluksi selainpohjaiseksi. Kaikki paperiset ratkaisut ovat aluksi toissijainen tavoite.** Nykyinen repo sisältää tutkimussimulaattorin; selainpohjainen tapahtumajärjestelmä on seuraava toteutustavoite. [Velkasetelipohdinta ja toteutusjärjestys](docs/VELKASETELIT_JA_TOTEUTUSJARJESTYS.md) kuvaa myös siirtokelpoisia välineitä ja avointa kysymystä yksittäisten vaihtojen kirjaamisesta tai lopullisesta netotuksesta.
+
 Certiratio kirjaa yhteiseen historialliseen perusvelkaan suhteutetun **etumerkillisen saldon** `x_i`. Perusvelkaa ei mitata tai tallenneta. Syntymäsaldo 0 on neutraali vertailupiste. Negatiivinen saldo kertoo poikkeamasta velka-akselilla ja antaa käytännössä lisää vastaanottovaraa.
 
 Ensimmäinen kauppa onnistuu heti nollasaldoista: A myy B:lle puuta 10 yksiköllä → A:n saldo −10, B:n +10. Hyödyke ja saldot siirtyvät atomisesti. Ostajan suostumus ja vastaanottoraja tarkistetaan.

@@ -45,9 +45,13 @@ Tuotanto ja kulutus ovat kumulatiivisia; työtunnit, toteutumaton kysyntä ja hy
 
 ## 5. Tutkimuksen seuraavat vaiheet
 
+**Ensimmäinen tapahtumajärjestelmän toteutus on selainpohjainen. Kaikki paperiset ratkaisut ovat aluksi sekundäärinen tavoite.** Ensimmäisen selainversion lähtökohta on jokaisen hyväksytyn suoran kaupan välitön rekisteröinti taustapalvelun valvomana. Paperitositteet, kuittivihkot, paperivaltuutukset ja paperiset velkasetelit suunnitellaan myöhemmässä vaiheessa; niiden valmius ei estä selainversion valmistumista.
+
+[Velkasetelipohdinta](VELKASETELIT_JA_TOTEUTUSJARJESTYS.md) säilyttää tutkimusvaihtoehdon suorien siirtojen rinnalla kiertävästä välillisestä instrumentista. Sen haltijaoikeus, kertalunastus, liikkeessä olevien vastuiden valvonta, jakaminen ja vaihtoraha on ratkaistava ennen käyttöönottoa. Avoin peruskysymys on jokaisen vaihdon rekisteröinti suhteessa lopullisten nettomuutosten kirjaamiseen. Tämä vaihtoehto ei ole ensimmäisen selainversion jo päätetty tai toteutettu ominaisuus.
+
 Tapahtumaprotokollan sitovat [kannustinyhteensopivuusvaatimukset](KANNUSTINYHTEENSOPIVUUS.md) ohjaavat jatkototeutusta. Ostaja hyväksyy tositteen kaupantekohetkellä, myyjä rekisteröi ja laskentatoimisto valvoo hyväksyttävyyttä. Myyjän hyvitystä ei saa jättää ostajan myöhemmän vapaaehtoisen toimen varaan. Hyvitystakuu edellyttää ostajan tapahtumaoikeuden tarkistamista; myös tekemättä jättäminen, toisteinen lähetys, häiriöt ja hylätyn mutta jo toimitetun kaupan selvitys määritellään.
 
-Ennen tapahtumaprotokollan katsomista toteutetuksi on osoitettava vaatimusdokumentin hyväksymiskriteerit. Nykyinen `consent=True`, vastaanottorajan tarkistus ja kirjanpidon atomisuus ovat tutkimussimulaattorin toimintoja. Ne eivät todista tositteen aitoutta, henkilöllisyyttä tai fyysistä toimitusta eivätkä toteuta paperivaltuutuksia, tositteen kertakirjausta, riitautusta tai palvelun häiriöpalautumista.
+Ennen tapahtumaprotokollan katsomista toteutetuksi on osoitettava käyttöönotettavaan toteutusmuotoon soveltuvat vaatimusdokumentin hyväksymiskriteerit. Paperikohtaiset kriteerit täytetään ennen paperiratkaisun mahdollista myöhempää käyttöönottoa. Nykyinen `consent=True`, vastaanottorajan tarkistus ja kirjanpidon atomisuus ovat tutkimussimulaattorin toimintoja. Ne eivät todista tositteen aitoutta, henkilöllisyyttä tai fyysistä toimitusta eivätkä toteuta paperivaltuutuksia, tositteen kertakirjausta, riitautusta tai palvelun häiriöpalautumista.
 
 Hinnat, kulutuksen ja työn tarjonnan vasteet, elinikärajat ja tuotantokertoimet tarvitsevat kalibrointia. Negatiivisten saldojen kannustimet ja yhteisötilin kertymä on tutkittava erikseen. Rahatalousvertailu edellyttää samoja resursseja, teknologioita, väestöä ja häiriöitä sekä erikseen määriteltyjä rahoitussääntöjä. Yksittäinen ajo tai nollasumman säilyminen ei osoita tasapainoa tai paremmuutta.
 
