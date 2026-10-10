@@ -45,6 +45,10 @@ Tuotanto ja kulutus ovat kumulatiivisia; työtunnit, toteutumaton kysyntä ja hy
 
 ## 5. Tutkimuksen seuraavat vaiheet
 
+Tapahtumaprotokollan sitovat [kannustinyhteensopivuusvaatimukset](KANNUSTINYHTEENSOPIVUUS.md) ohjaavat jatkototeutusta. Ostaja hyväksyy tositteen kaupantekohetkellä, myyjä rekisteröi ja laskentatoimisto valvoo hyväksyttävyyttä. Myyjän hyvitystä ei saa jättää ostajan myöhemmän vapaaehtoisen toimen varaan. Hyvitystakuu edellyttää ostajan tapahtumaoikeuden tarkistamista; myös tekemättä jättäminen, toisteinen lähetys, häiriöt ja hylätyn mutta jo toimitetun kaupan selvitys määritellään.
+
+Ennen tapahtumaprotokollan katsomista toteutetuksi on osoitettava vaatimusdokumentin hyväksymiskriteerit. Nykyinen `consent=True`, vastaanottorajan tarkistus ja kirjanpidon atomisuus ovat tutkimussimulaattorin toimintoja. Ne eivät todista tositteen aitoutta, henkilöllisyyttä tai fyysistä toimitusta eivätkä toteuta paperivaltuutuksia, tositteen kertakirjausta, riitautusta tai palvelun häiriöpalautumista.
+
 Hinnat, kulutuksen ja työn tarjonnan vasteet, elinikärajat ja tuotantokertoimet tarvitsevat kalibrointia. Negatiivisten saldojen kannustimet ja yhteisötilin kertymä on tutkittava erikseen. Rahatalousvertailu edellyttää samoja resursseja, teknologioita, väestöä ja häiriöitä sekä erikseen määriteltyjä rahoitussääntöjä. Yksittäinen ajo tai nollasumman säilyminen ei osoita tasapainoa tai paremmuutta.
 
 Identiteetit, fyysisen toimituksen todentaminen, yritysten oikeudelliset vastuut, perintö, julkisten palveluiden saldosiirrot ja yhteisötilin oikeudellinen käsittely ovat avoimia. API:n suostumus on testisyöte, ei henkilöllisyyden tai tietoisen hyväksynnän todentaminen. Lohkoketjua ei toteuteta.

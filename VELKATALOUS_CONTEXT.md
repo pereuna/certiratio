@@ -1,6 +1,6 @@
 # Certiratio – nykyinen mallikonteksti
 
-Päivitetty 2026-10-09 käyttäjän uuden suhteellista velka-akselia koskevan päätöksen perusteella. Tämä dokumentti on nykyisten mallisääntöjen ensisijainen lähde. Aiempi ei-negatiivisten absoluuttisten saldojen ja erääntyvien lupausten malli on korvattu; sen kuvaus on [historiallisessa v1-kontekstissa](docs/history/VELKATALOUS_CONTEXT_V1.md).
+Päivitetty 2026-10-10: suhteellisen velka-akselin malliin on lisätty käyttäjän vaatimus tapahtumaprotokollan kannustinyhteensopivuudesta. Tämä dokumentti on nykyisten mallisääntöjen ensisijainen lähde. Aiempi ei-negatiivisten absoluuttisten saldojen ja erääntyvien lupausten malli on korvattu; sen kuvaus on [historiallisessa v1-kontekstissa](docs/history/VELKATALOUS_CONTEXT_V1.md).
 
 ## 1. Suhteellinen koordinaatisto
 
@@ -17,7 +17,7 @@ Kun A myy työn tai hyödykkeen B:lle sovitulla ei-negatiivisella kokonaisvelkah
 - `x_A' = x_A - p`
 - `x_B' = x_B + p`
 
-Hyödyke ja saldomuutos toimitetaan samassa atomisessa tapahtumassa. Hylkäys ei muuta varastoja, saldoja, liikevaihtoa tai tapahtumalokia. Ostajan suostumus, myyjän hyödykevarasto ja vastaanottoraja tarkistetaan ennen muutoksia.
+Nykyisen simulaation kirjanpitoytimessä hyödyke ja saldomuutos toimitetaan samassa atomisessa tapahtumassa. Ytimen hylkäys ei muuta varastoja, saldoja, liikevaihtoa tai hyväksyttyjen tapahtumien lokia. Ostajan suostumus, myyjän hyödykevarasto ja vastaanottoraja tarkistetaan ennen muutoksia. Tapahtumaprotokollan tasolla vastaanotettu tosite ja valvonnassa hylätty tai jo fyysisesti toimitettu tapahtuma voivat silti edellyttää dokumentointia ja erillistä selvitystä; nämä eivät itsessään oikeuta normaaliin saldohyvitykseen.
 
 Myyjältä ei edellytetä positiivista saldoa tai saldokatetta. Velanluontia, myöhemmin erääntyviä velansiirtolupauksia ja niiden varauksia ei ole. Positiivinen hyödykehinta edellyttää positiivista toimitusmäärää. Erillinen `transfer`-rajapinta tekee suostumukseen perustuvan kahden tilin saldosiirron ilman hyödykettä ja säilyttää saman nollasumman; se ei luo nettosaldoa.
 
@@ -36,7 +36,19 @@ Kirjanpidon invariantti on `sum_alive(x_i) + C = 0`. Ilman kuolemia `C = 0`, jot
 
 Kuolleen fyysiset varastot tuhotaan aiemman tuotantokokeen oletuksena; perintöä ei vielä mallinneta. Juridisen yrityksen lopettaminen ei ole henkilön kuolema. Tuotantoyksiköt ovat simulaatiossa henkilöomistajien toimintoja.
 
-## 4. Taloudellinen tulkinta ja tutkimusrajat
+## 4. Kannustinyhteensopivuus: sitova suunnittelukriteeri
+
+> Taloudellisen tapahtuman rekisteröinnin, hyväksynnän ja valvonnan vastuut on järjestettävä siten, ettei yhden osapuolen oikeuden toteutuminen riipu toisen osapuolen myöhemmästä vapaaehtoisesta toiminnasta.
+
+Ostaja hyväksyy saman tositteen myyjän kanssa kaupantekohetkellä, ja myyjä tarkistaa ostajan henkilöllisyyden. Myyjä vastaa rekisteröinnistä ja saa saldohyvityksen vasta rekisteröinnissä. Laskentatoimisto valvoo tapahtuman hyväksyttävyyttä ja kirjaa molemmat saldomuutokset atomisesti. Ostajan myöhempi ilmoitus, tarkistuskappale tai lisävahvistus ei saa olla kirjauksen edellytys.
+
+Myyjän normaali saldohyvitys on taattu vain, jos ostajan oikeus tehdä kyseinen tapahtuma on asianmukaisesti tarkistettu ennen hyödykkeen luovutusta. Digitaalisessa toteutuksessa tarkistus voidaan tehdä välittömästi; paperisessa toteutuksessa voidaan käyttää rajallisia ennakkovaltuutuksia, jotka tarvitsevat aitouden tarkastuksen ja kaksoiskäytön eston. Tositteiden kertakirjaus, virheelliset ilmoitukset, henkilöllisyyspetokset ja kuvitteelliset yhteistoimintakaupat vaativat omat kontrollinsa.
+
+Kirjaamisen ja valvonnan hyväksyttävyyden ero, riitautus, häiriötilanteet ja osapuolten tekemättä jättäminen on määriteltävä eksplisiittisesti. Valvonnassa hylättyä tapahtumaa voidaan joutua käsittelemään kirjanpidossa, vaikka myyjälle ei taata normaalia hyvitystä. Yksityiskohtaiset vaatimukset, neljän paperikappaleen vastuut ja hyväksymiskriteerit ovat [kannustinyhteensopivuusvaatimuksissa](docs/KANNUSTINYHTEENSOPIVUUS.md).
+
+Tämä on toteutusta ohjaava vaatimus. Nykyinen simulaation suostumusmuuttuja ei vielä toteuta todellista tosite-, tunnistus-, valtuutus- tai riitautusprotokollaa. Matemaattisesti täsmäävä kirjanpito ei yksin osoita kannustinyhteensopivuuden toteutumista.
+
+## 5. Taloudellinen tulkinta ja tutkimusrajat
 
 Negatiivinen saldo tarjoaa ostovoiman kaltaista vastaanottovaraa, vaikka filosofinen velkatulkinta säilyy. Tämä toiminnallinen ominaisuus pitää raportoida eikä peittää terminologialla. Agentteja ei optimoida maksimaaliseen negatiiviseen saldoon, säästöihin tai nollavelkaan. Kulutus-, tuotanto- ja vapaa-aikapreferenssit ovat kokeellisia.
 

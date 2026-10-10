@@ -10,6 +10,8 @@ Kuolemassa henkilön saldo siirtyy samalla etumerkillä erilliselle yhteisön se
 
 Lue [nykyinen mallikonteksti](VELKATALOUS_CONTEXT.md), [mekanismi ja tutkimussuunnitelma](docs/MALLI_JA_SUUNNITELMA.md) sekä [ensimmäiset v2-tulokset](docs/ENSIMMAISET_TULOKSET.md).
 
+Protokollan sitova [kannustinyhteensopivuusvaatimus](docs/KANNUSTINYHTEENSOPIVUUS.md): ostaja hyväksyy kaupan kaupantekohetkellä, myyjä vastaa rekisteröinnistä ja laskentatoimisto valvonnasta. Myyjän hyvitys ei saa riippua ostajan myöhemmästä vapaaehtoisesta toiminnasta. Hyvitystakuu edellyttää ostajan tapahtumaoikeuden asianmukaista tarkistusta. Tosite-, henkilöllisyys-, valtuutus- ja riitautusmenettelyt ovat suunnitteluvaatimuksia, joita nykyinen simulaattori ei vielä kokonaisuutena toteuta.
+
 Python 3.10 tai uudempi, vain standardikirjasto. Projektin juuresta:
 
 ```bash
