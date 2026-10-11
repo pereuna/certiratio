@@ -45,7 +45,9 @@ T5: kun kanavat ovat auki, paina **Sulje signaling** tai pysäytä palvelin. Pin
 
 Saman huoneen selaimet muodostavat suoran **IPv6**-WebRTC-meshin ja jakavat yhden tekstivirran. Erillistä syöttökenttää ei ole: on yksi yhteinen kursori virran lopussa, johon kaikkien merkit menevät saapumisjärjestyksessä heti, joten samaan aikaan kirjoitettu sekoittuu ("huuda toisen päälle"). Enter (↵) on rivinvaihto, pyyhkimistä ei lähetetä. Nimiä ei näytetä: jokainen saa liittyessään arvotun, hieman eri sävyn, josta kirjoittajaa voi arvailla.
 
-Sivu: **https://jedi.ydns.eu:8443/launchpad.html** (huone `launchpad`, toisen huoneen saa `#nimi`-osalla).
+Testaajille: **https://pereuna.github.io/certiratio/** (GitHub Pages, IPv4+IPv6). Suoraan jediltä: https://jedi.ydns.eu:8443/launchpad.html. Huone on `launchpad`; toisen huoneen saa `#nimi`-osalla (`…/launchpad.html#nimi`).
+
+Esittelyteksti välttää sanaa vertaisverkko (kuulostaa useimmista darknetiltä) ja sanaa julkinen (IPv6-osoitteen julkisuus pelottaa ammattilaisiakin): käyttäjä näkee "Suoraan puhelimesta puhelimeen" ja "IPv6 OK!".
 
 - Testin kohde on IPv6-P2P. Mobiiliverkon IPv4 on operaattorin NATin (CGNAT) takana, joten puhelimesta toiseen sillä ei ole suoraa reittiä. IPv6:ssa jokaisella liittymällä on julkinen /64. Siksi IPv4- ja mDNS-kandidaatit hylätään molempiin suuntiin, ja hylätyt lasketaan. TURNia ei käytetä.
 - Signalointi on jedin Plan2001-`rtcsignal` (`monolith/tools/rtcsignal`, enintään 8 vertaista huoneessa). Palvelin vain esittelee vertaiset. Se kirjaa sivujen lokin (liittymiset, reitit, epäonnistumiset) jedin tiedostoon `~/rtcsignal/pages.log`, mutta tekstiä ei.
@@ -53,13 +55,18 @@ Sivu: **https://jedi.ydns.eu:8443/launchpad.html** (huone `launchpad`, toisen hu
 - Reitti näkyy vertaisittain. Koska kumpikaan pää ei tiedä toisen IPv4-osoitetta, onnistunut suora pari on IPv6, vaikka Chrome piilottaisi osoitteet (merkintä *päätelty*). Jos yhteys ei 20 sekunnissa ole auki, se merkitään **failed**.
 - Käynnistystesti: ennen liittymistä sivu tarkistaa, tavoittaako selain jedin (IPv6) ja löytyykö sille julkinen IPv6-osoite (2000::/3) ICE-kandidaateista. Jos jedi ei vastaa, sivu ilmoittaa puhelimen olevan vanha puukalikka ja neuvoo kokeilemaan mobiilidataa. Liittyminen on silloin estetty.
 - Koska jedi on ulospäin vain IPv6, IPv4-käyttäjä ei saa jediltä edes sivua. Siksi sivu julkaistaan myös GitHub Pagesiin (IPv4+IPv6): **https://pereuna.github.io/certiratio/launchpad.html** (`tools/publish-pages.sh`, haara `gh-pages`). Sieltä ladattuna IPv4-käyttäjä näkee varoituksen. Muualta kuin jediltä ladattu sivu signaloi oletuksena osoitteeseen `wss://jedi.ydns.eu:8443/`.
+- DataChannel on DTLS-salattu päästä päähän: operaattori ja jedi eivät näe tekstiä.
 - PoC: ei tunnistusta eikä nimien todennusta.
+- Avoinna: oma STUN jediin (Googlen STUN on ainoa suuryhtiön osa; se näkee vain osoitteet, ei tekstiä), testi kahdella puhelimella eri liittymillä.
 
-Asennus jediin (palvelinta ei käynnistetä uudelleen):
+Julkaisu molempiin paikkoihin muutoksen jälkeen (commit ja push ensin; palvelinta ei käynnistetä uudelleen):
 
 ```bash
+tools/publish-pages.sh                                   # GitHub Pages, näkyy noin minuutissa
 scp web/launchpad.html lapere@jedi.ydns.eu:rtcsignal/site/
 scp web/src/{launchpad,stream,signaling,classify}.js lapere@jedi.ydns.eu:rtcsignal/site/src/
 ```
+
+Tulokset jediltä: `ssh lapere@jedi.ydns.eu 'grep launchpad ~/rtcsignal/pages.log'` (liittymiset, IPv6-testi, reitit).
 
 Paikallisesti: `python3 ../../Plan2001/monolith/tools/rtcsignal --port 8090 --web web` ja `http://localhost:8090/launchpad.html`. `tools/drive-launchpad.mjs` ajaa kolmen vertaisen testin DevTools-protokollalla (puhelin `adb forward tcp:9223 localabstract:chrome_devtools_remote`, Chromium `--remote-debugging-port=9222`).
