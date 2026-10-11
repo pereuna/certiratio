@@ -21,10 +21,9 @@ Kohde: `poc1/` (commit 0a4efd2). Ajettu ohjausskriptillä `poc1/tools/drive-cdp.
 Havainnot:
 
 - **Testin kohde on suora IPv6 eri mobiililiittymien välillä.** Taulukon IPv4 direct -rivit kulkivat puhelimen hotspotin sisäverkossa, eivätkä ne kerro puhelinten välisestä IPv4-P2P:stä: mobiiliverkon IPv4 on CGNATin takana. Jatkotesti: [IPv6 launchpad](../../poc1/README.md#ipv6-launchpad-weblaunchpadhtml).
-
 - IPv6 direct, IPv4 direct ja unknown erottuvat. Kannettavan Chrome piilottaa omat host-osoitteensa mDNS-nimillä ja vertaisen prflx-osoitteen, joten sen puolelta pari on unknown. Puhelimen Chrome näyttää osoitteet.
 - Relay-luokkaa ei testattu: TURN-palvelinta ei ollut.
-- **Puute:** kun kandidaatteja ei ole, yhteys jää tilaan `new` eikä siirry tilaan `failed`. Sovellus ei siis erota epäonnistunutta yhteyttä, jota T6:n hyväksyntä edellyttää. Tarvitaan aikakatkaisu, joka kirjaa `failed`.
+- **Puute:** kun kandidaatteja ei ole, yhteys jää tilaan `new` eikä siirry tilaan `failed`. Sovellus ei siis erota epäonnistunutta yhteyttä, jota T6:n hyväksyntä edellyttää. Tarvitaan aikakatkaisu, joka kirjaa `failed`. Launchpadissa se on tehty (20 s); nettestissä ei vielä.
 - Puhelin ei saanut STUNilta IPv4-srflx-kandidaattia. IPv6-srflx tuli vain yhdessä neljästä ajosta.
 - Kahden eri mobiiliverkon ja kahden natiivin IPv6-päätelaitteen yhdistelmiä ei testattu.
 
