@@ -6,7 +6,7 @@
 
 import { Signaling } from './signaling.js';
 import { CLASSES, classifyPair, selectedPair } from './classify.js';
-import { appended, clampTint, filterSdp, keepCandidate, randomTint, rtcName } from './stream.js';
+import { appended, candidateAddr, clampTint, filterSdp, keepCandidate, randomTint, rtcName, v6Scope } from './stream.js';
 
 const PROTOCOL = 'certiratio-launchpad/1';
 const MAX_MESSAGE_BYTES = 64 * 1024;
@@ -19,7 +19,13 @@ const INPUT_RESET = 64; // näkymätön syöte tyhjennetään, kun siinä on nä
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
 const room = location.hash.slice(1) || 'launchpad';
-const signalUrl = params.get('signal') ?? `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/`;
+// jedi on ulospäin vain IPv6. Muualta (esim. IPv4+IPv6-palvelimelta) ladattu
+// sivu signaloi silti jediin, ja käynnistystesti näyttää, tavoittaako puhelin sen.
+const JEDI = 'jedi.ydns.eu:8443';
+const onJedi = location.host === JEDI;
+const local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const signalUrl = params.get('signal') ??
+  (onJedi || local ? `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/` : `wss://${JEDI}/`);
 // STUN vain kertoo selaimelle sen oman julkisen IPv6-osoitteen (työpöytä-Chrome
 // piilottaa host-osoitteet mDNS-nimillä); liikenne kulkee silti suoraan. ?stun= ilman arvoa: ei STUNia.
 const stun = params.get('stun') ?? 'stun:stun.l.google.com:19302';
@@ -30,6 +36,7 @@ const dropped = { local: 0, remote: 0 };
 const gathered = { host: 0, srflx: 0, other: 0 };
 let signaling = null;
 let me = null;
+let v6 = null; // käynnistystestin tulos
 const myTint = randomTint();
 const tints = new Map(); // nimi -> sävy (vertaisen lähettämä)
 
@@ -71,6 +78,7 @@ function start(existing) {
   $('say').hidden = false;
   focusInput();
   log(`liityit huoneeseen ${room} nimellä ${me}${stun ? `, STUN ${stun}` : ', ei STUNia'}`);
+  if (v6) log(`IPv6-testi: palvelin ${v6.server ? 'tavoitettu' : 'ei tavoitettu'}, oma osoite ${v6.scope ?? 'ei IPv6'}`);
   signaling.addEventListener('peer-joined', (e) => {
     const name = e.detail.name ?? e.detail.id;
     const old = peers.get(name);
@@ -306,11 +314,79 @@ function render() {
     ` · hylätty IPv4/mDNS: omat ${dropped.local}, vertaisten ${dropped.remote}`;
 }
 
+// --- Käynnistystesti: IPv6 ja sen julkisuus ------------------------------
+
+async function serverReachable() {
+  if (onJedi || local) return true; // sivu tuli jo IPv6-only-palvelimelta
+  try {
+    await fetch(`https://${JEDI}/src/stream.js`, { mode: 'no-cors', cache: 'no-store', signal: AbortSignal.timeout(6000) });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Selaimen omat IPv6-osoitteet ICE-kandidaateista (host ja STUNin srflx). */
+async function ownV6() {
+  const pc = new RTCPeerConnection(iceConfig);
+  const found = [];
+  pc.onicecandidate = (ev) => {
+    const a = ev.candidate?.candidate && candidateAddr(ev.candidate.candidate);
+    const scope = a && v6Scope(a);
+    if (scope) found.push({ a, scope });
+  };
+  pc.createDataChannel('ipv6-testi');
+  await pc.setLocalDescription(await pc.createOffer());
+  await new Promise((ok) => {
+    const t = setTimeout(ok, 5000);
+    pc.onicegatheringstatechange = () => { if (pc.iceGatheringState === 'complete') { clearTimeout(t); ok(); } };
+  });
+  pc.close();
+  for (const scope of ['global', 'ula', 'link-local', 'other']) {
+    const hit = found.find((f) => f.scope === scope);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function shortV6(a) {
+  return a.split(':').slice(0, 3).join(':') + ':…';
+}
+
+async function bootCheck() {
+  const box = $('check');
+  box.className = 'check';
+  box.textContent = 'Tutkitaan, eläkö puhelimesi jo 2010-lukua (IPv6)…';
+  $('join').disabled = true;
+  const [server, own] = await Promise.all([serverReachable(), ownV6().catch(() => null)]);
+  v6 = { server, scope: own?.scope ?? null };
+  const say = (cls, title, ...more) => {
+    box.className = `check ${cls}`;
+    box.replaceChildren(Object.assign(document.createElement('strong'), { textContent: title }),
+      ...more.map((t) => Object.assign(document.createElement('p'), { textContent: t })));
+  };
+  if (!server) {
+    say('bad', '🪵 Puhelimesi on vanha puukalikka, se ei tue IPv6-osoitteita. Osta uusi puhelin tai ota yhteyttä Claudeen tai ChatGPT:hen.',
+      'Palvelin toimii kyllä. Se vain puhuu IPv6:ta, jota puukalikka ei ymmärrä.',
+      'P.S. Puukalikka voi olla myös Wi-Fi: moni Wi-Fi tarjoaa vain IPv4:ää. Sulje Wi-Fi ja kokeile mobiilidataa – suomalaiset operaattorit antavat julkisen IPv6:n oletuksena.');
+    return;
+  }
+  $('join').disabled = false;
+  if (own?.scope === 'global') {
+    say('ok', `✅ Julkinen IPv6 (${shortV6(own.a)}). Puhelimesi elää tulevaisuudessa – tervetuloa joukkoon.`);
+  } else {
+    say('meh', '🤔 Puhelimesi puhuu IPv6:ta (palvelin vastasi), mutta selain ei näytä julkista IPv6-osoitetta.',
+      own ? `Löytyi vain ${own.scope}-osoite. Suora yhteys muihin voi silti onnistua – kokeile.`
+        : 'Selain voi piilottaa osoitteen. Suora yhteys muihin voi silti onnistua – kokeile.');
+  }
+}
+
 // --- Käynnistys -----------------------------------------------------------
 
 try { $('nick').value = localStorage.getItem('launchpad-nick') ?? ''; } catch {}
 $('pad-status').textContent = `huone ${room}` + (window.isSecureContext ? '' : ' – ei suojattu konteksti, WebRTC ei toimi');
 $('pad').onsubmit = join;
+bootCheck();
 $('text').oninput = onInput;
 $('text').addEventListener('compositionstart', () => { composing = true; });
 $('text').addEventListener('compositionend', () => { composing = false; onInput(); });
@@ -319,4 +395,4 @@ $('text').addEventListener('blur', () => $('stream').classList.remove('typing'))
 $('say').onsubmit = onEnter; // Enter (↵) on rivinvaihto virtaan
 $('stream').addEventListener('click', focusInput);
 // Testejä varten (drive-cdp): sivun tila ilman moduulin sisäisiä muuttujia.
-window.launchpad = { peers, dropped, gathered, get me() { return me; } };
+window.launchpad = { peers, dropped, gathered, get me() { return me; }, get v6() { return v6; } };

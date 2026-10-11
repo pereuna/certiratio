@@ -21,6 +21,9 @@
   #pad label { display: block; margin: 8px 0; }
   #pad input { font: inherit; padding: 6px 8px; width: min(100%, 20em); box-sizing: border-box; }
   button { font: inherit; padding: 6px 14px; }
+  .check { margin: 0 0 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line); }
+  .check p { margin: 6px 0 0; font-size: 0.9rem; }
+  .check.ok { border-color: var(--v6); } .check.bad { border-color: var(--bad); } .check.meh { border-color: #9a6700; }
   details { padding: 4px 16px; border-bottom: 1px solid var(--line); font-size: 0.85rem; }
   table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
   td, th { padding: 2px 6px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--line); }
@@ -49,6 +52,7 @@
 </header>
 
 <form id="pad">
+  <div id="check" class="check"></div>
   <label>Nimimerkki <input id="nick" type="text" maxlength="24" autocomplete="nickname" required></label>
   <button id="join">Liity</button>
   <p class="muted" id="pad-status"></p>

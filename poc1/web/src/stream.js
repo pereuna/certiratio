@@ -41,6 +41,20 @@ export function keepCandidate(line) {
   return ipFamily(candidateAddr(line)) === 6;
 }
 
+/**
+ * IPv6-osoitteen laajuus: 'global' (2000::/3, julkinen), 'ula' (fc00::/7),
+ * 'link-local' (fe80::/10), 'other'; ei-IPv6 → null.
+ */
+export function v6Scope(address) {
+  if (ipFamily(address) !== 6) return null;
+  const a = address.replace(/^\[|\]$/g, '').split('%')[0].toLowerCase();
+  const first = a.startsWith('::') ? 0 : parseInt(a.split(':')[0], 16);
+  if (first >= 0x2000 && first <= 0x3fff) return 'global';
+  if ((first & 0xfe00) === 0xfc00) return 'ula';
+  if ((first & 0xffc0) === 0xfe80) return 'link-local';
+  return 'other';
+}
+
 /** SDP:stä poistetaan muut kuin IPv6-kandidaattirivit. Palauttaa { sdp, dropped }. */
 export function filterSdp(sdp) {
   let dropped = 0;

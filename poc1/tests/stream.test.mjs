@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { appended, rtcName, candidateAddr, keepCandidate, filterSdp, randomTint, clampTint } from '../web/src/stream.js';
+import { appended, rtcName, candidateAddr, keepCandidate, filterSdp, randomTint, clampTint, v6Scope } from '../web/src/stream.js';
 
 test('appended: kirjoitus loppuun, keskelle, pyyhkiminen ja korjaus', () => {
   assert.equal(appended('', 'm'), 'm');
@@ -50,4 +50,14 @@ test('randomTint ja clampTint: sävy pysyy sallituilla väleillä', () => {
   assert.deepEqual(clampTint({ h: 400, s: 99, d: -50 }), { h: 359, s: 64, d: -6 });
   assert.equal(clampTint({ h: 'x', s: 40, d: 0 }), null);
   assert.equal(clampTint(null), null);
+});
+
+test('v6Scope: julkinen, ULA, link-local, IPv4', () => {
+  assert.equal(v6Scope('2001:999:41c:5de4::63'), 'global');
+  assert.equal(v6Scope('2a00:1450:4001::1'), 'global');
+  assert.equal(v6Scope('fd12:3456::1'), 'ula');
+  assert.equal(v6Scope('fe80::1%wlan0'), 'link-local');
+  assert.equal(v6Scope('::1'), 'other');
+  assert.equal(v6Scope('10.204.108.119'), null);
+  assert.equal(v6Scope('abcd.local'), null);
 });

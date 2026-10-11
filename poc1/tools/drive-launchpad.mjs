@@ -37,6 +37,7 @@ const url = `${base}#${room}`;
 const tabs = [];
 for (const w of who) tabs.push(await openTab(w, url));
 for (const t of tabs) {
+  for (let i = 0; i < 40 && !(await t.ev('!!launchpad.v6')); i++) await sleep(250);
   await t.ev(`(() => { document.getElementById('nick').value = ${JSON.stringify(t.label)}; document.getElementById('pad').requestSubmit(); })()`);
   await sleep(1500);
 }
