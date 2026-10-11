@@ -16,6 +16,8 @@ Lue [nykyinen mallikonteksti](VELKATALOUS_CONTEXT.md), [mekanismi ja tutkimussuu
 
 Protokollan sitova [kannustinyhteensopivuusvaatimus](docs/KANNUSTINYHTEENSOPIVUUS.md): ostaja hyväksyy kaupan kaupantekohetkellä, myyjä vastaa rekisteröinnistä ja laskentatoimisto valvonnasta. Myyjän hyvitys ei saa riippua ostajan myöhemmästä vapaaehtoisesta toiminnasta. Hyvitystakuu edellyttää ostajan tapahtumaoikeuden asianmukaista tarkistusta. Tosite-, henkilöllisyys-, valtuutus- ja riitautusmenettelyt ovat suunnitteluvaatimuksia, joita nykyinen simulaattori ei vielä kokonaisuutena toteuta.
 
+[Rekisteröityminen ja identiteetti](docs/REKISTEROITYMINEN_JA_IDENTITEETTI.md) (suunnittelumuistio): jäsenyys perustuu liittymissopimukseen, kahden tutun jäsenen henkilökohtaiseen tunnistukseen ja historiallisen ympyrärekisterin atomiseen välinjakoon; avaimet ovat käyttövälineitä, eivät ihminen. Ei vielä hyväksyttyä protokollaa.
+
 Python 3.10 tai uudempi, vain standardikirjasto. Projektin juuresta:
 
 ```bash
