@@ -416,10 +416,13 @@ function noAddress(mdns, why) {
   box.hidden = false;
   const retry = () => { box.hidden = true; offerToken ? startJoin(offerToken) : startInvite(); };
   if (mdns && !useStun) {
-    box.className = 'check meh';
-    box.textContent = '🤔 IPv6 toimii ehkä, mutta selain piilottaa osoitteensa. Ilman palvelinta toinen puhelin ei löydä sinua.';
-    $('start').textContent = 'Kokeile STUN-avulla';
-    $('start').onclick = () => { useStun = true; retry(); };
+    // iPhone (kaikki iOS-selaimet) ja työpöytä-Chrome piilottavat oman
+    // osoitteensa. STUN vain kertoo sen; liikenne kulkee silti suoraan.
+    useStun = true;
+    box.hidden = true;
+    log('selain piilottaa osoitteensa, kysytään se STUN-palvelimelta');
+    retry();
+    return;
   } else if (mdns) {
     box.className = 'check meh';
     box.textContent = '🤔 Selain piilottaa osoitteensa, eikä STUN-palvelinkaan kertonut sitä. Kokeile puhelimen Chromella tai yritä uudelleen.';
