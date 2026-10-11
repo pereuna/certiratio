@@ -3,16 +3,23 @@
 // Tila lasketaan aina tapahtumajoukosta, joten saapumisjärjestyksellä ei ole
 // väliä: kaikki, joilla on samat tapahtumat, näkevät saman renkaan.
 //
-//   found  { kind, id, ring, member, name, icon }                 renkaan aloitus
-//   admit  { kind, id, ring, left, right, member, name, icon, proof }  väliin left → right
+//   found  { kind, id: member:f, ring, member, key, salt, name, icon, sigs }        aloitus
+//   admit  { kind, id: member:a, ring, left, right, member, key, name, icon, proof, sigs }  väliin left → right
 //
-// PoC: ei allekirjoituksia; tunnisteet ovat satunnaisia. `proof` on oikean
+// Jokainen jäsen liittyy kerran, joten tapahtuman tunniste johdetaan jäsenestä.
+// Allekirjoitukset (identity.js) tarkistetaan ennen kuin tapahtuma tuodaan
+// tänne; build() on puhdas ja olettaa ne tarkistetuiksi. `proof` on oikean
 // naapurin vahvistuskoodin haaste.
 
 export const ICONS = ['🧑', '👩', '👨', '👧', '👦', '👵', '👴', '🐈', '🐕'];
 export const MAX_NAME = 24;
 const HEX8 = /^[0-9a-f]{8}$/;
-const EVENT_ID = /^[0-9a-f]{8}:\d{1,9}$/;
+const KEY = /^[A-Za-z0-9_-]{87}$/; // P-256 raw (65 tavua)
+const SIG = /^[A-Za-z0-9_-]{86}$/; // r‖s (64 tavua)
+const PROOF = /^([0-9a-f]{12})?$/;
+
+/** Tapahtuman tunniste: jäsen ja laji. */
+export const eventId = (kind, member) => `${member}:${kind === 'found' ? 'f' : 'a'}`;
 
 export function cleanName(s) {
   return String(s ?? '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, MAX_NAME);
@@ -20,10 +27,19 @@ export function cleanName(s) {
 
 /** Onko tapahtuma muodoltaan kelvollinen (tuntemattomasta lähteestä). */
 export function validEvent(ev) {
-  if (!ev || typeof ev !== 'object' || !EVENT_ID.test(ev.id ?? '') || !HEX8.test(ev.ring ?? '')) return false;
-  if (!HEX8.test(ev.member ?? '') || !ICONS.includes(ev.icon) || !cleanName(ev.name)) return false;
-  if (ev.kind === 'found') return true;
-  return ev.kind === 'admit' && HEX8.test(ev.left ?? '') && HEX8.test(ev.right ?? '');
+  if (!ev || typeof ev !== 'object' || !HEX8.test(ev.ring ?? '') || !HEX8.test(ev.member ?? '')) return false;
+  if (ev.id !== eventId(ev.kind, ev.member) || !KEY.test(ev.key ?? '')) return false;
+  if (!ICONS.includes(ev.icon) || typeof ev.name !== 'string' || ev.name !== cleanName(ev.name) || !ev.name) return false;
+  const sig = (k) => SIG.test(ev.sigs?.[k] ?? '');
+  if (ev.kind === 'found') return HEX8.test(ev.salt ?? '') && sig('member');
+  return ev.kind === 'admit' && HEX8.test(ev.left ?? '') && HEX8.test(ev.right ?? '') &&
+    typeof ev.proof === 'string' && PROOF.test(ev.proof) && sig('member') && sig('left') && (ev.left === ev.right || sig('right'));
+}
+
+/** Kahdesta saman tunnisteen tapahtumasta valitaan kaikilla sama. */
+export function preferred(a, b) {
+  if (!a || !b) return a ?? b;
+  return JSON.stringify(a) <= JSON.stringify(b) ? a : b;
 }
 
 /** Onko right heti left:n jälkeen (yhden jäsenen renkaassa left = right). */
@@ -48,14 +64,16 @@ const order = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
  * (jäseniä ei poisteta), joten silloin tapahtuma hylätään.
  */
 export function build(ring, events) {
-  const evs = [...new Map(events.filter((e) => validEvent(e) && e.ring === ring).map((e) => [e.id, e])).values()].sort(order);
+  const byId = new Map();
+  for (const e of events) if (validEvent(e) && e.ring === ring) byId.set(e.id, preferred(byId.get(e.id), e));
+  const evs = [...byId.values()].sort(order);
   const out = { members: [], info: new Map(), applied: [], rejected: [], pending: [] };
   const founds = evs.filter((e) => e.kind === 'found');
   if (!founds.length) {
     out.pending = evs.map((e) => e.id);
     return out;
   }
-  const add = (e) => { out.info.set(e.member, { name: cleanName(e.name), icon: e.icon, event: e.id }); out.applied.push(e.id); };
+  const add = (e) => { out.info.set(e.member, { name: e.name, icon: e.icon, key: e.key, event: e.id }); out.applied.push(e.id); };
   out.members.push(founds[0].member);
   add(founds[0]);
   for (const f of founds.slice(1)) out.rejected.push({ id: f.id, why: 'toinen aloitus' });

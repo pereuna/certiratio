@@ -1,0 +1,15 @@
+{
+  "name": "Certiratio rengas",
+  "short_name": "Rengas",
+  "description": "Puhelimet suoraan toisiinsa ilman palvelinta. Uusi jäsen liittyy kahden vierekkäisen jäsenen väliin.",
+  "lang": "fi",
+  "start_url": "direct.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#b25e00",
+  "icons": [
+    { "src": "icons/ring-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/ring-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

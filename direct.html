@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
 <title>Certiratio rengas</title>
+<link rel="manifest" href="direct.webmanifest">
+<link rel="apple-touch-icon" href="icons/ring-192.png">
+<link rel="icon" href="icons/ring-192.png">
+<meta name="theme-color" content="#b25e00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rengas">
 <style>
   :root { color-scheme: light dark; --bg: #fafafa; --fg: #1d1d1f; --muted: #666; --line: #ddd;
           --v6: #1a7f37; --bad: #c62828; --accent: #b25e00; --l: 38%; }
@@ -47,8 +53,8 @@
   .qr { display: block; width: min(78vw, 300px); height: auto; margin: 12px 0; background: #fff; border-radius: 6px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
   #paste { font: 14px ui-monospace, monospace; width: 100%; box-sizing: border-box; padding: 6px; }
-  #bar { display: flex; align-items: center; gap: 8px; padding: 6px 16px; border-bottom: 1px solid var(--line); }
-  #bar #status { flex: 1; font-size: 0.85rem; }
+  #bar { display: flex; align-items: center; gap: 8px; padding: 6px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  #bar #status { flex: 1 1 12em; font-size: 0.85rem; }
   #pair.overlay { border-bottom: 1px solid var(--line); }
   #status.ok { color: var(--v6); } #status.bad { color: var(--bad); }
   #step { font-size: 1.1rem; font-weight: 600; }
@@ -71,6 +77,11 @@
   #ringview .me { font-weight: 700; }
   #ringview .fresh { background: color-mix(in srgb, var(--accent) 22%, transparent); }
   #ringview .arrow { color: var(--muted); margin: 0 3px; }
+  #ringview .away { opacity: 0.45; }
+  #ringview .here:not(.me)::before { content: "● "; color: var(--v6); font-size: 0.7em; }
+  #install { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--line); font-size: 0.85rem; }
+  #install-text { flex: 1 1 14em; }
+  #me-info { margin: 6px 0; }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -79,6 +90,7 @@
   <h1>Rengas</h1>
   <div class="muted">Puhelimet ilman yhtään palvelinta. Uusi jäsen liittyy kahden vierekkäisen jäsenen väliin, ja kumpikin näyttää hänelle QR-koodin. Teksti kulkee suoraan puhelimesta toiseen.</div>
 </header>
+<div id="install" hidden><span id="install-text"></span><button id="install-go" type="button" hidden>Lisää aloitusnäyttöön</button><button id="install-close" type="button" aria-label="sulje">✕</button></div>
 
 <section id="pair">
   <div id="check" class="check" hidden></div>
@@ -91,7 +103,7 @@
   <svg id="qr" class="qr" hidden aria-label="QR-koodi"></svg>
   <div id="cam-box" hidden><video id="cam" playsinline muted></video></div>
   <p class="muted" id="pair-note"></p>
-  <div class="row"><button id="primary" class="primary" type="button" hidden></button><button id="secondary" type="button" hidden></button></div>
+  <div class="row"><button id="primary" class="primary" type="button" hidden></button><button id="secondary" type="button" hidden></button><button id="close" type="button" hidden></button></div>
   <details id="nocam" hidden>
     <summary class="muted">Ei kameraa?</summary>
     <div class="row" id="links" hidden>
@@ -110,6 +122,7 @@
 <div id="bar" hidden>
   <div id="status"></div>
   <button id="invite" type="button">Kutsu uusi</button>
+  <button id="reconnect" type="button">Yhdistä</button>
 </div>
 <details id="info" hidden>
   <summary id="info-sum">yhteydet</summary>
@@ -117,7 +130,9 @@
     <thead><tr><th>Puhelin</th><th>Yhteys</th><th>Reitti</th></tr></thead>
     <tbody id="peers"></tbody>
   </table>
+  <p id="me-info" class="muted"></p>
   <ul id="log"></ul>
+  <button id="forget" type="button" hidden>Poista jäsenyys tästä puhelimesta</button>
 </details>
 
 <div id="stream" hidden><span id="hint">Napauta ja kirjoita. Kaikkien merkit tulevat samaan kursoriin saapumisjärjestyksessä.
