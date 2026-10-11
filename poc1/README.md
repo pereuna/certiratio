@@ -43,7 +43,7 @@ T5: kun kanavat ovat auki, paina **Sulje signaling** tai pysäytä palvelin. Pin
 
 ## IPv6 launchpad (`web/launchpad.html`)
 
-Saman huoneen selaimet muodostavat suoran **IPv6**-WebRTC-meshin ja jakavat yhden tekstivirran. Jokainen syötetty merkki lähtee heti kaikille ja näkyy kirjoittajan värillä, joten samaan aikaan kirjoitetut tekstit sekoittuvat. Pyyhkimistä ei lähetetä.
+Saman huoneen selaimet muodostavat suoran **IPv6**-WebRTC-meshin ja jakavat yhden tekstivirran. Erillistä syöttökenttää ei ole: on yksi yhteinen kursori virran lopussa, johon kaikkien merkit menevät saapumisjärjestyksessä heti, joten samaan aikaan kirjoitettu sekoittuu ("huuda toisen päälle"). Enter (↵) on rivinvaihto, pyyhkimistä ei lähetetä. Nimiä ei näytetä: jokainen saa liittyessään arvotun, hieman eri sävyn, josta kirjoittajaa voi arvailla.
 
 Sivu: **https://jedi.ydns.eu:8443/launchpad.html** (huone `launchpad`, toisen huoneen saa `#nimi`-osalla).
 

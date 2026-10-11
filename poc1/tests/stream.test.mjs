@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { appended, rtcName, candidateAddr, keepCandidate, filterSdp, hueFor } from '../web/src/stream.js';
+import { appended, rtcName, candidateAddr, keepCandidate, filterSdp, randomTint, clampTint } from '../web/src/stream.js';
 
 test('appended: kirjoitus loppuun, keskelle, pyyhkiminen ja korjaus', () => {
   assert.equal(appended('', 'm'), 'm');
@@ -45,7 +45,9 @@ test('filterSdp: poistaa IPv4- ja mDNS-rivit, muu SDP säilyy', () => {
   assert.equal(r.sdp, ['v=0', 'm=application 9 UDP/DTLS/SCTP webrtc-datachannel', `a=${V6}`, 'a=mid:0', ''].join('\r\n'));
 });
 
-test('hueFor: sama nimi, sama väri', () => {
-  assert.equal(hueFor('anna'), hueFor('anna'));
-  assert.ok(hueFor('anna') >= 0 && hueFor('anna') < 360);
+test('randomTint ja clampTint: sävy pysyy sallituilla väleillä', () => {
+  for (const r of [0, 0.5, 0.999]) assert.deepEqual(clampTint(randomTint(() => r)), randomTint(() => r));
+  assert.deepEqual(clampTint({ h: 400, s: 99, d: -50 }), { h: 359, s: 64, d: -6 });
+  assert.equal(clampTint({ h: 'x', s: 40, d: 0 }), null);
+  assert.equal(clampTint(null), null);
 });

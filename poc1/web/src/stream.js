@@ -1,5 +1,5 @@
 // Launchpadin puhtaat apufunktiot: syötetyn tekstin erotus, rtcsignal-nimi,
-// IPv6-kandidaattisuodatin ja kirjoittajan väri.
+// IPv6-kandidaattisuodatin ja kirjoittajan sävy.
 
 import { ipFamily } from './classify.js';
 
@@ -52,9 +52,19 @@ export function filterSdp(sdp) {
   return { sdp: lines.join('\r\n'), dropped };
 }
 
-/** Kirjoittajan väri nimen tiivisteestä (sama nimi, sama väri kaikilla). */
-export function hueFor(name) {
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.codePointAt(0)) >>> 0;
-  return h % 360;
+/**
+ * Kirjoittajan sävy: arvotaan joka liittymisellä ja kulkee merkkien mukana,
+ * joten kaikki näkevät saman sävyn mutta nimeä ei näy (arvaa kuka kirjoittaa).
+ * h värikulma, s kylläisyys %, d vaaleuden poikkeama tekstin perusvaaleudesta %.
+ */
+export function randomTint(rand = Math.random) {
+  return { h: Math.floor(rand() * 360), s: 30 + Math.floor(rand() * 35), d: Math.floor(rand() * 13) - 6 };
+}
+
+/** Vertaisen lähettämä sävy sallituille väleille; kelvoton → null. */
+export function clampTint(t) {
+  if (!t || typeof t !== 'object') return null;
+  const n = (v, lo, hi) => (Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.round(v))) : null);
+  const h = n(t.h, 0, 359), s = n(t.s, 30, 64), d = n(t.d, -6, 6);
+  return h === null || s === null || d === null ? null : { h, s, d };
 }

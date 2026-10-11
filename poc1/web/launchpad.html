@@ -29,9 +29,16 @@
          font: 12px/1.35 ui-monospace, monospace; }
   #stream { flex: 1; overflow-y: auto; padding: 10px 16px; white-space: pre-wrap; overflow-wrap: anywhere;
             font: 17px/1.5 ui-monospace, monospace; }
-  #stream span { color: hsl(var(--h) 75% var(--l)); }
-  form#say { display: flex; gap: 8px; padding: 8px 16px; border-top: 1px solid var(--line); }
-  form#say input { flex: 1; font: 17px ui-monospace, monospace; padding: 8px; min-width: 0; }
+  #stream { cursor: text; }
+  #stream span[data-author] { color: hsl(var(--h) var(--s) calc(var(--l) + var(--d))); }
+  #caret { display: inline-block; width: 0.55em; height: 1.15em; margin-bottom: -0.2em; background: var(--fg);
+           opacity: 0.25; }
+  #stream.typing #caret { opacity: 0.8; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  #hint { color: var(--muted); font-family: system-ui, sans-serif; font-size: 0.9rem; }
+  /* Näkymätön syöte: avaa puhelimen näppäimistön, merkit menevät yhteiseen kursoriin. */
+  form#say { position: fixed; left: 0; bottom: 0; width: 100%; height: 2.5em; opacity: 0; pointer-events: none; }
+  form#say input { width: 100%; height: 100%; font-size: 16px; border: 0; padding: 0; }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -57,10 +64,11 @@
   <ul id="log"></ul>
 </details>
 
-<div id="stream" hidden></div>
+<div id="stream" hidden><span id="hint">Napauta ja kirjoita. Kaikkien merkit tulevat samaan kursoriin saapumisjärjestyksessä.
+</span><i id="caret"></i></div>
 <form id="say" hidden>
-  <input id="text" type="text" autocomplete="off" enterkeyhint="send" placeholder="kirjoita – jokainen merkki lähtee heti">
-  <button>↵</button>
+  <input id="text" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+         enterkeyhint="enter" aria-label="kirjoita yhteiseen virtaan">
 </form>
 
 <script type="module" src="src/launchpad.js"></script>
