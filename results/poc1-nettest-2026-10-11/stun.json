@@ -1,0 +1,253 @@
+{
+  "name": "stun",
+  "room": "stun-mv3fqorc",
+  "stun": "stun:stun.l.google.com:19302",
+  "relay": false,
+  "tabs": {
+    "puhelin": {
+      "state": {
+        "self": "69f615",
+        "status": "huoneessa stun-mv3fqorc",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "178bb5",
+            "connected",
+            "open",
+            "IPv4 direct",
+            "prflx → prflx, udp",
+            "8.5 ms",
+            "12 ms"
+          ],
+          [
+            "96c4bf",
+            "connected",
+            "open",
+            "IPv4 direct",
+            "prflx → prflx, udp",
+            "9.3 ms",
+            "7 ms"
+          ]
+        ],
+        "gathered": [
+          "host / IPv4 / udp: 2",
+          "host / IPv6 / udp: 2"
+        ],
+        "log": [
+          "9.21.45  96c4bf: reitti IPv4 direct (prflx → prflx, udp)",
+          "9.21.44  178bb5: reitti IPv4 direct (prflx → prflx, udp)",
+          "9.21.44  96c4bf: DataChannel auki",
+          "9.21.44  96c4bf: yhteys connected",
+          "9.21.44  96c4bf: yhteys connecting",
+          "9.21.43  vertainen 96c4bf liittyi",
+          "9.21.42  178bb5: DataChannel auki",
+          "9.21.42  178bb5: yhteys connected",
+          "9.21.42  178bb5: yhteys connecting",
+          "9.21.42  vertainen 178bb5 liittyi"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:21:54.071Z",
+        "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36",
+        "ice": {
+          "servers": [
+            "stun:stun.l.google.com:19302"
+          ],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / IPv4 / udp": 2,
+          "host / IPv6 / udp": 2
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:21:44.558Z",
+            "peer": "178bb5",
+            "class": "ipv4-direct",
+            "local": "prflx",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 6
+          },
+          {
+            "at": "2026-10-11T06:21:45.977Z",
+            "peer": "96c4bf",
+            "class": "ipv4-direct",
+            "local": "prflx",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 42
+          }
+        ]
+      }
+    },
+    "kannettava-1": {
+      "state": {
+        "self": "178bb5",
+        "status": "huoneessa stun-mv3fqorc",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "69f615",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "7.8 ms",
+            "7 ms"
+          ],
+          [
+            "96c4bf",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "2.2 ms",
+            "1 ms"
+          ]
+        ],
+        "gathered": [
+          "host / mDNS / udp: 4",
+          "srflx / IPv4 / udp: 1",
+          "srflx / IPv6 / udp: 1"
+        ],
+        "log": [
+          "9:21:46 AM  96c4bf: reitti unknown (host → host, udp)",
+          "9:21:44 AM  69f615: reitti unknown (host → prflx, udp)",
+          "9:21:44 AM  96c4bf: DataChannel auki",
+          "9:21:44 AM  96c4bf: DataChannel auki",
+          "9:21:44 AM  96c4bf: yhteys connected",
+          "9:21:44 AM  96c4bf: yhteys connecting",
+          "9:21:44 AM  vertainen 96c4bf liittyi",
+          "9:21:42 AM  69f615: DataChannel auki",
+          "9:21:42 AM  69f615: yhteys connected",
+          "9:21:42 AM  69f615: yhteys connecting"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:21:54.432Z",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+        "ice": {
+          "servers": [
+            "stun:stun.l.google.com:19302"
+          ],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / mDNS / udp": 4,
+          "srflx / IPv4 / udp": 1,
+          "srflx / IPv6 / udp": 1
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:21:44.900Z",
+            "peer": "69f615",
+            "class": "unknown",
+            "local": "host",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 9
+          },
+          {
+            "at": "2026-10-11T06:21:46.897Z",
+            "peer": "96c4bf",
+            "class": "unknown",
+            "local": "host",
+            "remote": "host",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 2
+          }
+        ]
+      }
+    },
+    "kannettava-2": {
+      "state": {
+        "self": "96c4bf",
+        "status": "huoneessa stun-mv3fqorc",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "69f615",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "8.3 ms",
+            "6 ms"
+          ],
+          [
+            "178bb5",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "2.3 ms",
+            "2 ms"
+          ]
+        ],
+        "gathered": [
+          "host / mDNS / udp: 4",
+          "srflx / IPv4 / udp: 1",
+          "srflx / IPv6 / udp: 1"
+        ],
+        "log": [
+          "9:21:46 AM  178bb5: reitti unknown (host → host, udp)",
+          "9:21:46 AM  69f615: reitti unknown (host → prflx, udp)",
+          "9:21:44 AM  69f615: DataChannel auki",
+          "9:21:44 AM  69f615: yhteys connected",
+          "9:21:44 AM  69f615: yhteys connecting",
+          "9:21:44 AM  178bb5: yhteys connected",
+          "9:21:44 AM  178bb5: DataChannel auki",
+          "9:21:44 AM  178bb5: yhteys connecting"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:21:54.448Z",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+        "ice": {
+          "servers": [
+            "stun:stun.l.google.com:19302"
+          ],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / mDNS / udp": 4,
+          "srflx / IPv6 / udp": 1,
+          "srflx / IPv4 / udp": 1
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:21:46.279Z",
+            "peer": "69f615",
+            "class": "unknown",
+            "local": "host",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 7
+          },
+          {
+            "at": "2026-10-11T06:21:46.283Z",
+            "peer": "178bb5",
+            "class": "unknown",
+            "local": "host",
+            "remote": "host",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 1
+          }
+        ]
+      }
+    }
+  }
+}

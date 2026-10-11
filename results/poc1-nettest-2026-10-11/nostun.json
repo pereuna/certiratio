@@ -1,0 +1,238 @@
+{
+  "name": "nostun",
+  "room": "nostun-mv3fr9y8",
+  "stun": "",
+  "relay": false,
+  "tabs": {
+    "puhelin": {
+      "state": {
+        "self": "4dd024",
+        "status": "huoneessa nostun-mv3fr9y8",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "fdbe70",
+            "connected",
+            "open",
+            "IPv4 direct",
+            "prflx → prflx, udp",
+            "6.6 ms",
+            "41 ms"
+          ],
+          [
+            "8ece41",
+            "connected",
+            "open",
+            "IPv4 direct",
+            "prflx → prflx, udp",
+            "7.2 ms",
+            "4 ms"
+          ]
+        ],
+        "gathered": [
+          "host / IPv4 / udp: 2",
+          "host / IPv6 / udp: 2"
+        ],
+        "log": [
+          "9.22.13  8ece41: reitti IPv4 direct (prflx → prflx, udp)",
+          "9.22.12  fdbe70: reitti IPv4 direct (prflx → prflx, udp)",
+          "9.22.11  8ece41: DataChannel auki",
+          "9.22.11  8ece41: yhteys connected",
+          "9.22.11  8ece41: yhteys connecting",
+          "9.22.11  vertainen 8ece41 liittyi",
+          "9.22.10  fdbe70: DataChannel auki",
+          "9.22.10  fdbe70: yhteys connected",
+          "9.22.10  fdbe70: yhteys connecting",
+          "9.22.10  vertainen fdbe70 liittyi"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:22:21.746Z",
+        "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36",
+        "ice": {
+          "servers": [],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / IPv4 / udp": 2,
+          "host / IPv6 / udp": 2
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:22:12.216Z",
+            "peer": "fdbe70",
+            "class": "ipv4-direct",
+            "local": "prflx",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 21
+          },
+          {
+            "at": "2026-10-11T06:22:13.694Z",
+            "peer": "8ece41",
+            "class": "ipv4-direct",
+            "local": "prflx",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 73
+          }
+        ]
+      }
+    },
+    "kannettava-1": {
+      "state": {
+        "self": "fdbe70",
+        "status": "huoneessa nostun-mv3fr9y8",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "4dd024",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "5.2 ms",
+            "7 ms"
+          ],
+          [
+            "8ece41",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "2.1 ms",
+            "2 ms"
+          ]
+        ],
+        "gathered": [
+          "host / mDNS / udp: 4"
+        ],
+        "log": [
+          "9:22:14 AM  8ece41: reitti unknown (host → host, udp)",
+          "9:22:12 AM  4dd024: reitti unknown (host → prflx, udp)",
+          "9:22:12 AM  8ece41: DataChannel auki",
+          "9:22:12 AM  8ece41: yhteys connected",
+          "9:22:12 AM  8ece41: yhteys connecting",
+          "9:22:11 AM  vertainen 8ece41 liittyi",
+          "9:22:10 AM  4dd024: DataChannel auki",
+          "9:22:10 AM  4dd024: yhteys connected",
+          "9:22:10 AM  4dd024: yhteys connecting"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:22:22.109Z",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+        "ice": {
+          "servers": [],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / mDNS / udp": 4
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:22:12.899Z",
+            "peer": "4dd024",
+            "class": "unknown",
+            "local": "host",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 7
+          },
+          {
+            "at": "2026-10-11T06:22:14.896Z",
+            "peer": "8ece41",
+            "class": "unknown",
+            "local": "host",
+            "remote": "host",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 2
+          }
+        ]
+      }
+    },
+    "kannettava-2": {
+      "state": {
+        "self": "8ece41",
+        "status": "huoneessa nostun-mv3fr9y8",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "4dd024",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "7.8 ms",
+            "5 ms"
+          ],
+          [
+            "fdbe70",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "2.3 ms",
+            "2 ms"
+          ]
+        ],
+        "gathered": [
+          "host / mDNS / udp: 4"
+        ],
+        "log": [
+          "9:22:13 AM  fdbe70: reitti unknown (host → host, udp)",
+          "9:22:13 AM  4dd024: reitti unknown (host → prflx, udp)",
+          "9:22:12 AM  4dd024: DataChannel auki",
+          "9:22:12 AM  4dd024: yhteys connected",
+          "9:22:12 AM  4dd024: yhteys connecting",
+          "9:22:12 AM  fdbe70: yhteys connected",
+          "9:22:12 AM  fdbe70: DataChannel auki",
+          "9:22:12 AM  fdbe70: yhteys connecting"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:22:22.124Z",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+        "ice": {
+          "servers": [],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / mDNS / udp": 4
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:22:13.974Z",
+            "peer": "4dd024",
+            "class": "unknown",
+            "local": "host",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 5
+          },
+          {
+            "at": "2026-10-11T06:22:13.980Z",
+            "peer": "fdbe70",
+            "class": "unknown",
+            "local": "host",
+            "remote": "host",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 2
+          }
+        ]
+      }
+    }
+  }
+}

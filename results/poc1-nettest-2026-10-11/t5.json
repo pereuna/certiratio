@@ -1,0 +1,337 @@
+{
+  "name": "t5",
+  "room": "t5-mv3fstjt",
+  "stun": "stun:stun.l.google.com:19302",
+  "relay": false,
+  "tabs": {
+    "puhelin": {
+      "state": {
+        "self": "d046f2",
+        "status": "huoneessa t5-mv3fstjt",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "79acaf",
+            "connected",
+            "open",
+            "IPv6 direct",
+            "prflx → srflx, udp",
+            "11.0 ms",
+            "40 ms"
+          ],
+          [
+            "d3fa95",
+            "connected",
+            "open",
+            "IPv4 direct",
+            "prflx → prflx, udp",
+            "11.8 ms",
+            "5 ms"
+          ]
+        ],
+        "gathered": [
+          "host / IPv4 / udp: 2",
+          "host / IPv6 / udp: 2",
+          "srflx / IPv6 / udp: 1"
+        ],
+        "log": [
+          "9.23.25  d3fa95: reitti IPv4 direct (prflx → prflx, udp)",
+          "9.23.24  79acaf: reitti IPv6 direct (prflx → srflx, udp)",
+          "9.23.23  d3fa95: DataChannel auki",
+          "9.23.23  d3fa95: yhteys connected",
+          "9.23.23  d3fa95: yhteys connecting",
+          "9.23.23  vertainen d3fa95 liittyi",
+          "9.23.22  79acaf: DataChannel auki",
+          "9.23.22  79acaf: yhteys connected",
+          "9.23.22  79acaf: yhteys connecting",
+          "9.23.22  vertainen 79acaf liittyi"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:23:33.795Z",
+        "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36",
+        "ice": {
+          "servers": [
+            "stun:stun.l.google.com:19302"
+          ],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / IPv4 / udp": 2,
+          "host / IPv6 / udp": 2,
+          "srflx / IPv6 / udp": 1
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:23:24.254Z",
+            "peer": "79acaf",
+            "class": "ipv6-direct",
+            "local": "prflx",
+            "remote": "srflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 37
+          },
+          {
+            "at": "2026-10-11T06:23:25.735Z",
+            "peer": "d3fa95",
+            "class": "ipv4-direct",
+            "local": "prflx",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 6
+          }
+        ]
+      }
+    },
+    "kannettava-1": {
+      "state": {
+        "self": "79acaf",
+        "status": "huoneessa t5-mv3fstjt",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "d046f2",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "8.6 ms",
+            "8 ms"
+          ],
+          [
+            "d3fa95",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "2.3 ms",
+            "2 ms"
+          ]
+        ],
+        "gathered": [
+          "host / mDNS / udp: 4",
+          "srflx / IPv4 / udp: 1",
+          "srflx / IPv6 / udp: 1"
+        ],
+        "log": [
+          "9:23:26 AM  d3fa95: reitti unknown (host → host, udp)",
+          "9:23:24 AM  d046f2: reitti unknown (host → prflx, udp)",
+          "9:23:24 AM  d3fa95: DataChannel auki",
+          "9:23:24 AM  d3fa95: yhteys connected",
+          "9:23:24 AM  d3fa95: yhteys connecting",
+          "9:23:23 AM  vertainen d3fa95 liittyi",
+          "9:23:22 AM  d046f2: yhteys connected",
+          "9:23:22 AM  d046f2: DataChannel auki",
+          "9:23:22 AM  d046f2: yhteys connecting"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:23:34.159Z",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+        "ice": {
+          "servers": [
+            "stun:stun.l.google.com:19302"
+          ],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / mDNS / udp": 4,
+          "srflx / IPv6 / udp": 1,
+          "srflx / IPv4 / udp": 1
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:23:24.900Z",
+            "peer": "d046f2",
+            "class": "unknown",
+            "local": "host",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 8
+          },
+          {
+            "at": "2026-10-11T06:23:26.897Z",
+            "peer": "d3fa95",
+            "class": "unknown",
+            "local": "host",
+            "remote": "host",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 2
+          }
+        ]
+      }
+    },
+    "kannettava-2": {
+      "state": {
+        "self": "d3fa95",
+        "status": "huoneessa t5-mv3fstjt",
+        "signal": "auki",
+        "open": "2",
+        "rows": [
+          [
+            "d046f2",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "7.8 ms",
+            "6 ms"
+          ],
+          [
+            "79acaf",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "2.2 ms",
+            "1 ms"
+          ]
+        ],
+        "gathered": [
+          "host / mDNS / udp: 4",
+          "srflx / IPv4 / udp: 1",
+          "srflx / IPv6 / udp: 1"
+        ],
+        "log": [
+          "9:23:26 AM  79acaf: reitti unknown (host → host, udp)",
+          "9:23:26 AM  d046f2: reitti unknown (host → prflx, udp)",
+          "9:23:24 AM  d046f2: DataChannel auki",
+          "9:23:24 AM  d046f2: yhteys connected",
+          "9:23:24 AM  d046f2: yhteys connecting",
+          "9:23:24 AM  79acaf: yhteys connected",
+          "9:23:24 AM  79acaf: DataChannel auki",
+          "9:23:24 AM  79acaf: yhteys connecting"
+        ]
+      },
+      "exported": {
+        "tool": "certiration-nettest/1",
+        "exportedAt": "2026-10-11T06:23:34.173Z",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/154.0.0.0 Safari/537.36",
+        "ice": {
+          "servers": [
+            "stun:stun.l.google.com:19302"
+          ],
+          "transportPolicy": "all"
+        },
+        "gatheredCandidates": {
+          "host / mDNS / udp": 4,
+          "srflx / IPv4 / udp": 1,
+          "srflx / IPv6 / udp": 1
+        },
+        "results": [
+          {
+            "at": "2026-10-11T06:23:26.015Z",
+            "peer": "d046f2",
+            "class": "unknown",
+            "local": "host",
+            "remote": "prflx",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 6
+          },
+          {
+            "at": "2026-10-11T06:23:26.024Z",
+            "peer": "79acaf",
+            "class": "unknown",
+            "local": "host",
+            "remote": "host",
+            "protocol": "udp",
+            "relayProtocol": null,
+            "statsRttMs": 1
+          }
+        ]
+      }
+    }
+  },
+  "t5": {
+    "token": "T5-mv3ft633",
+    "tabs": {
+      "puhelin": {
+        "signal": "suljettu (avoimet P2P-yhteydet jatkavat)",
+        "status": "huoneessa t5-mv3fstjt",
+        "rows": [
+          [
+            "79acaf",
+            "connected",
+            "open",
+            "IPv6 direct",
+            "prflx → srflx, udp",
+            "7.8 ms",
+            "6 ms"
+          ],
+          [
+            "d3fa95",
+            "connected",
+            "open",
+            "IPv4 direct",
+            "prflx → prflx, udp",
+            "10.2 ms",
+            "6 ms"
+          ]
+        ],
+        "received": 2,
+        "echoed": 2
+      },
+      "kannettava-1": {
+        "signal": "suljettu (avoimet P2P-yhteydet jatkavat)",
+        "status": "huoneessa t5-mv3fstjt",
+        "rows": [
+          [
+            "d046f2",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "8.2 ms",
+            "6 ms"
+          ],
+          [
+            "d3fa95",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "1.0 ms",
+            "1 ms"
+          ]
+        ],
+        "received": 2,
+        "echoed": 2
+      },
+      "kannettava-2": {
+        "signal": "suljettu (avoimet P2P-yhteydet jatkavat)",
+        "status": "huoneessa t5-mv3fstjt",
+        "rows": [
+          [
+            "d046f2",
+            "connected",
+            "open",
+            "unknown",
+            "host → prflx, udp",
+            "8.0 ms",
+            "5 ms"
+          ],
+          [
+            "79acaf",
+            "connected",
+            "open",
+            "unknown",
+            "host → host, udp",
+            "0.9 ms",
+            "1 ms"
+          ]
+        ],
+        "received": 2,
+        "echoed": 2
+      }
+    }
+  }
+}
