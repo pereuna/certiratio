@@ -18,7 +18,7 @@ else
 	git -C "$top" worktree add -q --detach "$tmp"
 	git -C "$tmp" checkout -q --orphan gh-pages
 fi
-git -C "$tmp" rm -rq --ignore-unmatch . >/dev/null
+git -C "$tmp" rm -rqf --ignore-unmatch . >/dev/null
 mkdir -p "$tmp/src"
 cp "$web/launchpad.html" "$tmp/"
 cp "$web/src/launchpad.js" "$web/src/stream.js" "$web/src/signaling.js" "$web/src/classify.js" "$tmp/src/"
