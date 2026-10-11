@@ -59,24 +59,31 @@ Esittelyteksti välttää sanaa vertaisverkko (kuulostaa useimmista darknetiltä
 - PoC: ei tunnistusta eikä nimien todennusta.
 - Avoinna: oma STUN jediin (Googlen STUN on ainoa suuryhtiön osa; se näkee vain osoitteet, ei tekstiä), testi kahdella puhelimella eri liittymillä.
 
-## Suora pari ilman palvelinta (`web/direct.html`)
+## Suora verkko ilman palvelinta (`web/direct.html`)
 
-Kaksi puhelinta muodostaa suoran IPv6-yhteyden ilman signalointi- ja STUN-palvelinta: WebRTC-tarjous ja -vastaus vaihdetaan QR-koodeilla. Sivun lataamisen jälkeen palvelinta ei tarvita. Yhteyden jälkeen sama tekstivirta kuin launchpadissa (`src/streamview.js`).
+Puhelimet muodostavat suoran IPv6-verkon ilman signalointi- ja STUN-palvelinta. Ensimmäinen yhteys syntyy QR-koodeilla; sen jälkeen kuka tahansa jäsen voi kutsua uuden puhelimen, ja verkko esittelee sen muille. Sivun lataamisen jälkeen palvelinta ei tarvita. Tekstivirta on sama kuin launchpadissa (`src/streamview.js`).
 
 Testaajille: **https://pereuna.github.io/certiratio/direct.html** (myös https://jedi.ydns.eu:8443/direct.html).
 
-1. A painaa **Aloita** ja näyttää QR-koodin. B skannaa sen puhelimen kameralla, ja sivu avautuu B:lle tarjous mukanaan (`direct.html#1.o.…`).
-2. B:n sivu tekee vastauksen ja näyttää sen QR-koodina. A skannaa sen omalla kamerallaan. Avautuva välilehti (`#1.a.…`) välittää vastauksen A:n alkuperäiselle välilehdelle (`BroadcastChannel`), ja A palaa siihen.
-3. Yhteys syntyy, ja ylärivi näyttää reitin (`IPv6 direct`, host → host) ja viiveen.
+1. A painaa **Aloita** ja näyttää QR-koodin. B skannaa sen puhelimen kameralla, ja sivu avautuu tarjous mukanaan (`direct.html#1.o.…`).
+2. B:n sivu näyttää vastauksen QR-koodina, ja A skannaa sen omalla kamerallaan. Avautuva välilehti (`#1.a.…`) välittää vastauksen A:n alkuperäiselle välilehdelle (`BroadcastChannel`), ja A palaa siihen.
+3. Uusi puhelin C: kuka tahansa jäsen painaa **Kutsu uusi**, ja kutsu tehdään samoin QR-koodeilla. Sen jälkeen C saa suoran yhteyden kaikkiin muihin ilman uusia koodeja.
 
-Varakeinot: **Jaa linkki** / **Kopioi linkki** (pikaviestimellä) ja A:n liitä-kenttä vastauslinkille.
+Verkon kasvu (`src/direct.js`, protokolla `certiratio-direct/2` DataChannelissa):
 
-- `src/pairing.js`: tarjous ja vastaus tiiviinä merkkijonona `1.o|a.UFRAG.PWD.SORMENJÄLKI.MID.OSOITE_PORTTI,…` (noin 150 merkkiä): ICE-tunnus ja -salasana, DTLS-sormenjälki (sha-256, base64url), mid ja vain IPv6-osoitteet (ei link-localia, IPv4:ää eikä mDNS-nimiä). Vastaanottaja kokoaa niistä SDP:n. QR-koodi on versio ≤ 11 (testi `tests/pairing.test.mjs`).
+- **hello**: jokainen lähettää naapurilistansa (8-merkkiset satunnaiset id:t) aina, kun se muuttuu. Kun puhelin näkee listalla jäsenen, johon sillä ei ole yhteyttä, pienempi id tekee tarjouksen (ei törmäyksiä).
+- **sig**: tarjous ja vastaus (koko SDP, vain IPv6-kandidaatit) osoitetaan id:lle. Välittäjä vie sen suoraan perille, jos sillä on yhteys kohteeseen, muuten kaikille naapureilleen (`ttl` 8, kaksoiskappaleet tunnistetaan `mid`:stä). Loki kertoo välittäjien määrän.
+- **chars**: tekstivirta leviää kaikille, ja jokainen välittää sen eteenpäin, joten se kiertää myös puuttuvan suoran yhteyden ohi.
+- Katkennut yhteys palautuu, kun naapurilistat seuraavan kerran muuttuvat. Yhteyttä, joka ei syntynyt 45 sekunnissa, ei yritetä uudelleen.
+
+Ensimmäisen yhteyden QR-koodi (`src/pairing.js`): tarjous ja vastaus tiiviinä merkkijonona `1.o|a.UFRAG.PWD.SORMENJÄLKI.MID.OSOITE_PORTTI,…` (noin 150 merkkiä): ICE-tunnus ja -salasana, DTLS-sormenjälki (sha-256, base64url), mid ja vain IPv6-osoitteet (ei link-localia, IPv4:ää eikä mDNS-nimiä). Vastaanottaja kokoaa niistä SDP:n. QR-koodi on versio ≤ 11 (`tests/pairing.test.mjs`).
+
 - QR-koodit tekee `src/vendor/qrcode.js` (qrcode-generator 1.4.4, Kazuhiko Arase, MIT, sellaisenaan npm:stä). Skannaus on puhelimen oma kamera; sivu ei pyydä kameralupaa.
-- Ilman STUNia selaimen on kerrottava IPv6-osoitteensa itse. Androidin Chrome tekee niin (havaittu T6:ssa); työpöytä-Chrome piilottaa osoitteet mDNS-nimillä, ja sivu tarjoaa silloin **Kokeile STUN-avulla** (`?stun`: Googlen STUN vain osoitteen selvittämiseen).
-- Yhteys, joka ei synny 45 sekunnissa, on epäonnistunut, ja sivu neuvoo aloittamaan uuden parin. Puhelin voi jäädyttää taustalle jääneen välilehden; A:n kannattaa palata alkuperäiseen välilehteen heti skannauksen jälkeen.
-- Testi: `tools/drive-direct.mjs` (kaksi Chromiumia, A:n kameravälilehti A:n selaimessa). Työpöytä-Chromen pitää käynnistyä `--disable-features=WebRtcHideLocalIpsWithMdns`, jotta se kertoo osoitteensa kuten puhelin. Kahdella selaimella samassa koneessa STUN-varakeino ei toimi: vastaaja näkee tarjoajan osoitteen omanaan eikä kysy STUNilta.
-- Avoinna: B:n esittely muille A:n kanavan kautta (signalointi vertaisverkossa), jolloin verkko laajenee ilman palvelinta.
+- Ilman STUNia selaimen on kerrottava IPv6-osoitteensa itse. Androidin Chrome tekee niin; työpöytä-Chrome piilottaa osoitteet mDNS-nimillä, ja sivu tarjoaa silloin **Kokeile STUN-avulla** (`?stun`: Googlen STUN vain osoitteen selvittämiseen).
+- Puhelin voi jäädyttää taustalle jääneen välilehden; kutsujan kannattaa palata alkuperäiseen välilehteen heti skannauksen jälkeen.
+- Testi: `tools/drive-direct.mjs URL PORTA PORTB PORTC PORTD [PORTE] [--cut]`, jokainen puhelin oma Chromium (`--disable-features=WebRtcHideLocalIpsWithMdns`, jotta se kertoo osoitteensa kuten puhelin). A ja B QR:llä, A kutsuu C:n, C kutsuu D:n; kaikilla suorat IPv6-yhteydet kaikkiin ja tekstit perillä. `--cut`: A katkaisee yhteyden D:hen, A:n teksti kulkee D:lle muiden kautta, ja E liittyy D:n kutsulla; A:n ja E:n esittely kulkee välittäjän kautta. Kahdella selaimella samassa koneessa STUN-varakeino ei toimi: vastaaja näkee tarjoajan osoitteen omanaan eikä kysy STUNilta.
+- Kahdella puhelimella testattu 2026-10-11 (pari). Kolmen tai useamman puhelimen verkko on testattu Chromiumeilla.
+- Avoinna: puhelimen taustalle jääminen ja IPv6-osoitteen vaihtuminen (yhteys katkeaa), tunnistus avaimilla (id on satunnainen ja itse ilmoitettu), suurten verkkojen rajattu naapurimäärä täyden verkon sijaan.
 
 Julkaisu molempiin paikkoihin muutoksen jälkeen (commit ja push ensin; palvelinta ei käynnistetä uudelleen):
 
