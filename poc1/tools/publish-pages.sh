@@ -19,9 +19,11 @@ else
 	git -C "$tmp" checkout -q --orphan gh-pages
 fi
 git -C "$tmp" rm -rqf --ignore-unmatch . >/dev/null
-mkdir -p "$tmp/src"
-cp "$web/launchpad.html" "$tmp/"
-cp "$web/src/launchpad.js" "$web/src/stream.js" "$web/src/signaling.js" "$web/src/classify.js" "$tmp/src/"
+mkdir -p "$tmp/src/vendor"
+cp "$web/launchpad.html" "$web/direct.html" "$tmp/"
+cp "$web/src/launchpad.js" "$web/src/direct.js" "$web/src/stream.js" "$web/src/streamview.js" \
+	"$web/src/pairing.js" "$web/src/signaling.js" "$web/src/classify.js" "$tmp/src/"
+cp "$web/src/vendor/qrcode.js" "$tmp/src/vendor/"
 : > "$tmp/.nojekyll"
 cat > "$tmp/index.html" <<'EOF'
 <!doctype html>

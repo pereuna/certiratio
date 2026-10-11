@@ -6,15 +6,13 @@
 
 import { Signaling } from './signaling.js';
 import { CLASSES, classifyPair, selectedPair } from './classify.js';
-import { appended, candidateAddr, clampTint, filterSdp, keepCandidate, randomTint, rtcName, v6Scope } from './stream.js';
+import { candidateAddr, filterSdp, keepCandidate, rtcName, v6Scope } from './stream.js';
+import { MAX_CHARS, createStreamView } from './streamview.js';
 
 const PROTOCOL = 'certiratio-launchpad/1';
 const MAX_MESSAGE_BYTES = 64 * 1024;
-const MAX_CHARS = 4096;
 const CONNECT_TIMEOUT_MS = 20000;
 const STATS_INTERVAL_MS = 2000;
-const MAX_SPANS = 4000;
-const INPUT_RESET = 64; // näkymätön syöte tyhjennetään, kun siinä on näin monta merkkiä
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -37,8 +35,6 @@ const gathered = { host: 0, srflx: 0, other: 0 };
 let signaling = null;
 let me = null;
 let v6 = null; // käynnistystestin tulos
-const myTint = randomTint();
-const tints = new Map(); // nimi -> sävy (vertaisen lähettämä)
 
 // --- Liittyminen ----------------------------------------------------------
 
@@ -76,7 +72,7 @@ function start(existing) {
   $('info').hidden = false;
   $('stream').hidden = false;
   $('say').hidden = false;
-  focusInput();
+  view.focus();
   log(`liityit huoneeseen ${room} nimellä ${me}${stun ? `, STUN ${stun}` : ', ei STUNia'}`);
   if (v6) log(`IPv6-testi: palvelin ${v6.server ? 'tavoitettu' : 'ei tavoitettu'}, oma osoite ${v6.scope ?? 'ei IPv6'}`);
   signaling.addEventListener('peer-joined', (e) => {
@@ -181,9 +177,7 @@ function onChannelMessage(p, raw) {
   let msg;
   try { msg = JSON.parse(raw); } catch { return; }
   if (msg?.protocol !== PROTOCOL || msg.type !== 'chars' || typeof msg.text !== 'string') return;
-  const tint = clampTint(msg.tint);
-  if (tint) tints.set(p.name, tint);
-  addToStream(p.name, msg.text.slice(0, MAX_CHARS));
+  view.add(p.name, msg.text.slice(0, MAX_CHARS), msg.tint);
 }
 
 function markFailed(p, why) {
@@ -221,65 +215,15 @@ async function updateStats(p) {
   render();
 }
 
-// --- Tekstivirta: yksi yhteinen kursori -----------------------------------
-// Kaikkien merkit lisätään virran loppuun saapumisjärjestyksessä, joten
-// samaan aikaan kirjoitettu sekoittuu ("huuda toisen päälle"). Nimiä ei
-// näytetä: kirjoittajan erottaa vain hänen sävystään.
+// --- Tekstivirta (streamview.js) ------------------------------------------
 
-function broadcast(text) {
-  const raw = JSON.stringify({ protocol: PROTOCOL, type: 'chars', text, tint: myTint });
-  for (const p of peers.values()) if (p.channel?.readyState === 'open') p.channel.send(raw);
-  addToStream(me, text);
-}
-
-function addToStream(author, text) {
-  if (!text) return;
-  const box = $('stream');
-  const caret = $('caret');
-  $('hint')?.remove();
-  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 40;
-  const last = caret.previousElementSibling;
-  if (last?.dataset.author === author) {
-    last.textContent += text;
-  } else {
-    const t = author === me ? myTint : tints.get(author) ?? { h: 0, s: 0, d: 0 };
-    const span = document.createElement('span');
-    span.dataset.author = author;
-    span.style.setProperty('--h', t.h);
-    span.style.setProperty('--s', `${t.s}%`);
-    span.style.setProperty('--d', `${t.d}%`);
-    span.textContent = text;
-    caret.before(span);
-    while (box.childElementCount > MAX_SPANS) box.firstElementChild.remove();
-  }
-  if (atBottom) box.scrollTop = box.scrollHeight;
-}
-
-// Näkymätön syöte avaa puhelimen näppäimistön; sen arvon muutos lähetetään.
-let prev = '';
-let composing = false;
-function onInput() {
-  const input = $('text');
-  const text = appended(prev, input.value);
-  prev = input.value;
-  if (text) broadcast(text);
-  if (!composing && input.value.length >= INPUT_RESET) {
-    input.value = '';
-    prev = '';
-  }
-}
-
-function onEnter(ev) {
-  ev.preventDefault();
-  onInput();
-  broadcast('\n');
-  $('text').value = '';
-  prev = '';
-}
-
-function focusInput() {
-  $('text').focus({ preventScroll: true });
-}
+const view = createStreamView({
+  me: () => me,
+  send: (text, tint) => {
+    const raw = JSON.stringify({ protocol: PROTOCOL, type: 'chars', text, tint });
+    for (const p of peers.values()) if (p.channel?.readyState === 'open') p.channel.send(raw);
+  },
+});
 
 // --- Näkymä ---------------------------------------------------------------
 
@@ -385,12 +329,5 @@ try { $('nick').value = localStorage.getItem('launchpad-nick') ?? ''; } catch {}
 $('pad-status').textContent = `huone ${room}` + (window.isSecureContext ? '' : ' – ei suojattu konteksti, WebRTC ei toimi');
 $('pad').onsubmit = join;
 bootCheck();
-$('text').oninput = onInput;
-$('text').addEventListener('compositionstart', () => { composing = true; });
-$('text').addEventListener('compositionend', () => { composing = false; onInput(); });
-$('text').addEventListener('focus', () => $('stream').classList.add('typing'));
-$('text').addEventListener('blur', () => $('stream').classList.remove('typing'));
-$('say').onsubmit = onEnter; // Enter (↵) on rivinvaihto virtaan
-$('stream').addEventListener('click', focusInput);
 // Testejä varten (drive-cdp): sivun tila ilman moduulin sisäisiä muuttujia.
 window.launchpad = { peers, dropped, gathered, get me() { return me; }, get v6() { return v6; } };
