@@ -298,7 +298,7 @@ Näiden riskien olemassaolo ei tarkoita, että kaikkia pitäisi estää ohjelmak
 
 Projektin nykyiset ohjeet painottavat ensin selainpohjaista tapahtumajärjestelmää. Tämä dokumentti täydentää sen tulevia jäsenyysvaatimuksia; se ei tee paperisen sopimusarkiston valmistumisesta nykyisen verkkokokeen ehdotonta edellytystä.
 
-**Vaihe 1 – rekisterin rakennetesti:** kolmen perustajajäsenen ympyrä, välin atominen jakaminen, ristiriitaisten liittymisten hylkäys, historiallinen rekonstruktio ja yksi suljettu ympyrä. Simuloidut jäsenet ja allekirjoitukset riittävät.
+**Vaihe 1 – rekisterin rakennetesti:** kolmen perustajajäsenen ympyrä, välin atominen jakaminen, ristiriitaisten liittymisten hylkäys, historiallinen rekonstruktio ja yksi suljettu ympyrä. Simuloidut jäsenet ja allekirjoitukset riittävät. *Kokeilu puhelimilla:* [`poc1/web/direct.html`](../poc1/README.md#rengas-suora-verkko-ilman-palvelinta-webdirecthtml) toteuttaa renkaan ilman allekirjoituksia: kaksi perustajaa, liittyminen vierekkäisten jäsenten väliin kahdella QR-koodilla ja ristiriitaisten liittymisten hylkäys (`poc1/web/src/ring.js`).
 
 **Vaihe 2 – sosiaalisen tunnistuksen koe:** kahden tunnistajan hyväksynnät, jakson historiallisen kasvun raportointi, kiistämismenettely, avaimen vaihto ja uudelleentunnistus. Testataan myös yhteistyössä toimivia vääriä tunnistajia.
 

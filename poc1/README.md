@@ -60,39 +60,56 @@ Esittelyteksti välttää sanaa vertaisverkko (kuulostaa useimmista darknetiltä
 - PoC: ei tunnistusta eikä nimien todennusta.
 - Avoinna: oma STUN jediin (Googlen STUN on ainoa suuryhtiön osa; se näkee vain osoitteet, ei tekstiä), testi kahdella puhelimella eri liittymillä.
 
-## Suora verkko ilman palvelinta (`web/direct.html`)
+## Rengas: suora verkko ilman palvelinta (`web/direct.html`)
 
-Puhelimet muodostavat suoran IPv6-verkon ilman signalointi- ja STUN-palvelinta. Ensimmäinen yhteys syntyy QR-koodeilla; sen jälkeen kuka tahansa jäsen voi kutsua uuden puhelimen, ja verkko esittelee sen muille. Sivun lataamisen jälkeen palvelinta ei tarvita. Tekstivirta on sama kuin launchpadissa (`src/streamview.js`).
+Puhelimet muodostavat suoran IPv6-verkon ilman signalointipalvelinta, ja jäsenet muodostavat **renkaan** ([rekisteröitymismuistio](../docs/REKISTEROITYMINEN_JA_IDENTITEETTI.md), vaiheen 1 rakennetesti). Sivun lataamisen jälkeen palvelinta ei tarvita. Tekstivirta on sama kuin launchpadissa (`src/streamview.js`).
 
 Testaajille: **https://pereuna.github.io/certiratio/direct.html** (myös https://jedi.ydns.eu:8443/direct.html).
 
-1. A painaa **Aloita** ja näyttää QR-koodin. B skannaa sen puhelimen kameralla, ja sivu avautuu tarjous mukanaan (`direct.html#1.o.…`).
-2. B:n sivu näyttää vastauksen QR-koodina, ja A skannaa sen omalla kamerallaan. Avautuva välilehti (`#1.a.…`) välittää vastauksen A:n alkuperäiselle välilehdelle (`BroadcastChannel`), ja A palaa siihen.
-3. Uusi puhelin C: kuka tahansa jäsen painaa **Kutsu uusi**, ja kutsu tehdään samoin QR-koodeilla. Sen jälkeen C saa suoran yhteyden kaikkiin muihin ilman uusia koodeja.
+Testitarina "siemenen kylväjä":
+1. **isi** kirjoittaa nimensä, valitsee kuvan ja painaa **Aloita uusi rengas**.
+2. **Törttö** 🐈 (isin toinen puhelin): isi painaa **Kutsu toinen perustaja** ja näyttää koodin. Törttö skannaa sen puhelimen kameralla, kirjoittaa nimensä ja näyttää vastauskoodin. isi painaa **Skannaa hänen vastauksensa** ja skannaa sen sivun omalla kameralla. Rengas: isi → Törttö ↺.
+3. **Liisa** liittyy isin ja Törtön väliin: isi painaa **Kutsu väliin: minä ja Törttö**, ja koodit vaihdetaan kuten edellä. Sen jälkeen Törtön puhelin näyttää itsestään vahvistuskoodin, ja Liisa skannaa sen (*Liittyminen 3/3*). Rengas: isi → Liisa → Törttö ↺.
+4. **äiti** liittyy minkä tahansa vierekkäisen parin väliin, esimerkiksi isin ja Liisan väliin. Kutsun tekee aina parin vasen jäsen (*Kutsu väliin: minä ja seuraava*), ja oikea näyttää vahvistuskoodin.
 
-Verkon kasvu (`src/direct.js`, protokolla `certiratio-direct/2` DataChannelissa):
+Liittymisruudussa on kolme hahmoa käsi kädessä (vasen 🤝 **uusi** 🤝 oikea), ja tulokas on korostettu. Renkaan järjestys näkyy yläreunassa (oma nimi lihavoituna, uusin korostettuna hetken). Tekstivirrassa ei näy nimiä; kirjoittajat erottaa sävystä.
 
-- **hello**: jokainen lähettää naapurilistansa (8-merkkiset satunnaiset id:t) aina, kun se muuttuu. Kun puhelin näkee listalla jäsenen, johon sillä ei ole yhteyttä, pienempi id tekee tarjouksen (ei törmäyksiä).
-- **sig**: tarjous ja vastaus (koko SDP, vain IPv6-kandidaatit) osoitetaan id:lle. Välittäjä vie sen suoraan perille, jos sillä on yhteys kohteeseen, muuten kaikille naapureilleen (`ttl` 8, kaksoiskappaleet tunnistetaan `mid`:stä). Loki kertoo välittäjien määrän.
-- **chars**: tekstivirta leviää kaikille, ja jokainen välittää sen eteenpäin, joten se kiertää myös puuttuvan suoran yhteyden ohi.
+Rekisteri (`src/ring.js`, testit `tests/ring.test.mjs`):
+- Tapahtumat `found` (aloitus) ja `admit` (uusi jäsen väliin vasen → oikea, nimi, kuva, vahvistuksen haaste). Rengas lasketaan aina tapahtumajoukosta deterministisessä järjestyksessä, joten saapumisjärjestyksellä ei ole väliä.
+- `admit` hyväksytään vain, jos vasen ja oikea ovat yhä vierekkäin; puuttuvaa jäsentä odotetaan. Jäsen voi olla vain kerran.
+- Vain välin vasen jäsen voi kutsua siihen, ja oikea vahvistaa yhden tulokkaan kerrallaan, joten samaan väliin ei tule kahta liittyjää.
+- Jokaisella renkaalla on oma tunniste. Se kulkee koodeissa ja hello-sanomassa: eri renkaiden puhelimet eivät yhdisty, ja toisen renkaan vastauskoodi hylätään. Kaksi erillistä paria samalla sivulla pysyvät siis erillisinä.
+- PoC: tunnisteet ovat satunnaisia, eikä tapahtumia allekirjoiteta. Avaimet ovat muistion vaihe 2. Tila katoaa, kun sivu ladataan uudelleen.
+
+Koodit (`src/pairing.js`):
+- Kutsu `2.o.RENGAS.VASEN.OIKEA.UFRAG.PWD.SORMENJÄLKI.MID.OSOITE_PORTTI,…`, vastaus `2.a.RENGAS.UFRAG.…` ja vahvistus `2.c.RENGAS.JÄSEN.HAASTE`.
+- Mukana vain IPv6-osoitteet (ei link-localia, IPv4:ää eikä mDNS-nimiä), ICE-tunnus ja -salasana, DTLS-sormenjälki (sha-256, base64url) ja mid. Vastaanottaja kokoaa niistä SDP:n. QR-koodi on versio ≤ 11.
+- Vanhat `1.`-koodit hylätään ("päivitä sivu").
+
+Verkko (`src/direct.js`, protokolla `certiratio-direct/3` DataChannelissa):
+- **hello**: naapurilista, renkaan tunniste, nimi ja kuva aina, kun lista muuttuu. Kun puhelin näkee listalla jäsenen, johon sillä ei ole yhteyttä, pienempi id tekee tarjouksen.
+- **events**: koko rekisteri heti yhteyden auettua; **ev**: uusi tapahtuma kaikille.
+- **sig**, **sponsor**, **claim**, **vouched**: osoitetut sanomat (tarjous ja vastaus, vahvistuspyyntö oikealle naapurille, tulokkaan haaste, vahvistus kutsujalle). Ne viedään suoraan perille tai muuten kaikille naapureille (`ttl` 8, kaksoiskappaleet `mid`:stä).
+- **chars**: tekstivirta leviää kaikille ja kiertää puuttuvan suoran yhteyden ohi.
 - Katkennut yhteys palautuu, kun naapurilistat seuraavan kerran muuttuvat. Yhteyttä, joka ei syntynyt 45 sekunnissa, ei yritetä uudelleen.
 
-Ensimmäisen yhteyden QR-koodi (`src/pairing.js`): tarjous ja vastaus tiiviinä merkkijonona `1.o|a.UFRAG.PWD.SORMENJÄLKI.MID.OSOITE_PORTTI,…` (noin 150 merkkiä): ICE-tunnus ja -salasana, DTLS-sormenjälki (sha-256, base64url), mid ja vain IPv6-osoitteet (ei link-localia, IPv4:ää eikä mDNS-nimiä). Vastaanottaja kokoaa niistä SDP:n. QR-koodi on versio ≤ 11 (`tests/pairing.test.mjs`).
+Kamera ja osoitteet:
+- Sivulla on oma QR-lukija (`src/scanner.js`): Android-Chromessa `BarcodeDetector`, muualla `src/vendor/jsQR.js` (jsQR 1.4.0, Apache-2.0), joka ladataan vasta tarvittaessa. Näin kaikki tapahtuu yhdessä välilehdessä. Jos koodi kuitenkin avataan järjestelmäkameralla, uusi välilehti välittää sen odottavalle välilehdelle (`BroadcastChannel`). *Ei kameraa?* -kohdassa on jakolinkki ja liittämiskenttä.
+- QR-koodit tekee `src/vendor/qrcode.js` (qrcode-generator 1.4.4, Kazuhiko Arase, MIT).
+- Ilman STUNia selaimen on kerrottava IPv6-osoitteensa itse. Androidin Chrome tekee niin. iPhone (kaikki iOS-selaimet ovat WebKitiä) ja työpöytä-Chrome piilottavat osoitteet mDNS-nimillä; sivu kysyy osoitteen silloin automaattisesti Googlen STUNilta (`?stun` pakottaa sen heti). STUN vain kertoo osoitteen, liikenne kulkee silti suoraan.
 
-- QR-koodit tekee `src/vendor/qrcode.js` (qrcode-generator 1.4.4, Kazuhiko Arase, MIT, sellaisenaan npm:stä). Skannaus on puhelimen oma kamera; sivu ei pyydä kameralupaa.
-- Ilman STUNia selaimen on kerrottava IPv6-osoitteensa itse. Androidin Chrome tekee niin. iPhone (kaikki iOS-selaimet ovat WebKitiä) ja työpöytä-Chrome piilottavat osoitteet mDNS-nimillä; sivu kysyy osoitteen silloin automaattisesti Googlen STUNilta (`?stun` pakottaa sen heti). STUN vain kertoo osoitteen, liikenne kulkee silti suoraan. Aiemmin tästä tuli erillinen nappi, jota iPhone 11:llä luultiin IPv6:n puuttumiseksi.
-- Puhelin voi jäädyttää taustalle jääneen välilehden; kutsujan kannattaa palata alkuperäiseen välilehteen heti skannauksen jälkeen.
-- Testi: `tools/drive-direct.mjs URL PORTA PORTB PORTC PORTD [PORTE] [--cut]`, jokainen puhelin oma Chromium (`--disable-features=WebRtcHideLocalIpsWithMdns`, jotta se kertoo osoitteensa kuten puhelin). A ja B QR:llä, A kutsuu C:n, C kutsuu D:n; kaikilla suorat IPv6-yhteydet kaikkiin ja tekstit perillä. `--cut`: A katkaisee yhteyden D:hen, A:n teksti kulkee D:lle muiden kautta, ja E liittyy D:n kutsulla; A:n ja E:n esittely kulkee välittäjän kautta. Kahdella selaimella samassa koneessa STUN-varakeino ei toimi: vastaaja näkee tarjoajan osoitteen omanaan eikä kysy STUNilta.
-- Kahdella puhelimella testattu 2026-10-11 (pari). Kolmen tai useamman puhelimen verkko on testattu Chromiumeilla.
-- Avoinna: puhelimen taustalle jääminen ja IPv6-osoitteen vaihtuminen (yhteys katkeaa), tunnistus avaimilla (id on satunnainen ja itse ilmoitettu), suurten verkkojen rajattu naapurimäärä täyden verkon sijaan.
+Testi: `tools/drive-direct.mjs URL PORT_ISI PORT_TORTTO PORT_LIISA PORT_AITI [PORT_Q]`. Jokainen puhelin on oma Chromium (`--disable-features=WebRtcHideLocalIpsWithMdns --use-fake-ui-for-media-stream --use-fake-device-for-media-stream`), ja kamera korvataan `direct.scan()`-kutsulla. Tarina ajetaan läpi: kaikilla on sama rengas isi → äiti → Liisa → Törttö, suorat IPv6-yhteydet kaikkiin ja tekstit perillä. Q aloittaa oman renkaan, ja isin renkaan vastaus hylätään.
+
+- Testattu Chromiumeilla 2026-10-11. Kahden puhelimen pari on testattu aiemmalla versiolla; rengasta ei ole vielä testattu puhelimilla.
+- Avoinna: tila katoaa sivun uudelleenlatauksessa, puhelimen taustalle jääminen ja IPv6-osoitteen vaihtuminen (yhteys katkeaa), avaimet ja allekirjoitukset, yhteinen järjestys verkkokatkojen aikana (muistion kohta 13), suurten verkkojen rajattu naapurimäärä täyden verkon sijaan.
 
 Julkaisu molempiin paikkoihin muutoksen jälkeen (commit ja push ensin; palvelinta ei käynnistetä uudelleen):
 
 ```bash
 tools/publish-pages.sh                                   # GitHub Pages, näkyy noin minuutissa
 scp web/launchpad.html web/direct.html lapere@jedi.ydns.eu:rtcsignal/site/
-scp web/src/{launchpad,direct,stream,streamview,pairing,signaling,classify}.js lapere@jedi.ydns.eu:rtcsignal/site/src/
-scp web/src/vendor/qrcode.js lapere@jedi.ydns.eu:rtcsignal/site/src/vendor/
+scp web/src/{launchpad,direct,stream,streamview,pairing,signaling,classify,ring,scanner}.js lapere@jedi.ydns.eu:rtcsignal/site/src/
+scp web/src/vendor/{qrcode,jsQR}.js lapere@jedi.ydns.eu:rtcsignal/site/src/vendor/
 ```
 
 Tulokset jediltä: `ssh lapere@jedi.ydns.eu 'grep launchpad ~/rtcsignal/pages.log'` (liittymiset, IPv6-testi, reitit).
