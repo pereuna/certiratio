@@ -1,48 +1,95 @@
-// Suora pari ilman palvelinta: puhelin A näyttää WebRTC-tarjouksen QR-koodina,
-// B skannaa sen kameralla (avautuu tämä sivu, #1.o.…) ja näyttää vastauksen
-// QR-koodina, jonka A skannaa (uusi välilehti #1.a.… välittää sen A:n
-// alkuperäiselle välilehdelle BroadcastChannelilla). Ei signalointi- eikä
-// STUN-palvelinta: vain IPv6-osoitteet (pairing.js), teksti DataChannelissa.
+// Suora verkko ilman palvelinta. Ensimmäinen yhteys kahden puhelimen välille
+// syntyy QR-koodeilla (pairing.js): A näyttää tarjouksen, B skannaa sen
+// kameralla (tämä sivu, #1.o.…) ja näyttää vastauksen, jonka A skannaa (uusi
+// välilehti #1.a.… välittää sen A:n välilehdelle BroadcastChannelilla).
+//
+// Verkko kasvaa samalla tavalla: kuka tahansa jäsen voi kutsua uuden puhelimen
+// QR-koodilla. Sen jälkeen jäsenet kertovat naapurinsa (hello), ja uusi puhelin
+// muodostaa suoran yhteyden kaikkiin muihin. Tarjoukset ja vastaukset kulkevat
+// olemassa olevia DataChanneleita pitkin, tarvittaessa usean puhelimen kautta
+// (sig). Tekstivirta (chars) leviää kaikille; kukin välittää sen naapureilleen,
+// joten se kiertää myös puuttuvan suoran yhteyden ohi.
+// Vain IPv6; ei signalointi- eikä STUN-palvelinta.
 
 import { CLASSES, classifyPair, selectedPair } from './classify.js';
 import { decodePairing, encodePairing } from './pairing.js';
+import { filterSdp } from './stream.js';
 import { MAX_CHARS, createStreamView } from './streamview.js';
 
-const PROTOCOL = 'certiratio-direct/1';
+const PROTOCOL = 'certiratio-direct/2';
 const MAX_MESSAGE_BYTES = 64 * 1024;
 const GATHER_MS = 5000;
 const CONNECT_TIMEOUT_MS = 45000;
+const STATS_INTERVAL_MS = 3000;
+const TTL = 8; // välityskertoja enintään
+const MAX_SEEN = 20000;
+const ID = /^[0-9a-f]{8}$/;
 const STUN = 'stun:stun.l.google.com:19302';
 
 const $ = (id) => document.getElementById(id);
 const base = location.origin + location.pathname;
 const bc = 'BroadcastChannel' in window ? new BroadcastChannel('certiratio-direct') : null;
-let pc = null;
-let channel = null;
+const myId = [...crypto.getRandomValues(new Uint8Array(4))].map((b) => b.toString(16).padStart(2, '0')).join('');
 let useStun = new URLSearchParams(location.search).has('stun');
-let offerToken = null; // B: saatu tarjous (uusintaa varten)
-let deadline = null;
-let lastUrl = null; // näytetyn koodin linkki
+
+/** Yhteydet naapureihin. Avain on naapurin id, tai 'qr-N', kunnes hello kertoo sen. */
+const links = new Map();
+const failed = new Set(); // id:t, joihin välitetty yhteys ei syntynyt (ei uusita)
+const seen = new Set(); // käsiteltyjen sanomien mid:t
+let seq = 0;
+let qrSeq = 0;
+let invite = null; // QR-kutsu, joka odottaa vastausta
+let offerToken = null; // liittyjä: saatu tarjous (uusintaa varten)
+let inMesh = false;
+let lastHello = '';
+let lastUrl = null; // näytetyn koodin linkki (testejä varten)
 let lastGather = []; // viimeksi kerätyt kandidaattirivit (testejä varten)
 
-// --- Yhteys ---------------------------------------------------------------
+// --- Yhteydet -------------------------------------------------------------
 
-function createPc() {
-  pc?.close();
-  pc = new RTCPeerConnection({ iceServers: useStun ? [{ urls: STUN }] : [] });
+function newLink(key, id = null) {
+  const pc = new RTCPeerConnection({ iceServers: useStun ? [{ urls: STUN }] : [] });
+  const link = { key, id, pc, ch: null, cls: 'unknown', detail: '', timer: null, deadline: null };
+  links.set(key, link);
   pc.onconnectionstatechange = () => {
-    if (pc.connectionState === 'connected') clearTimeout(deadline);
-    if (pc.connectionState === 'failed') fail('Yhteys ei syntynyt (ICE epäonnistui).');
+    if (pc.connectionState === 'failed') drop(link, 'ICE epäonnistui');
+    render();
   };
-  pc.ondatachannel = (ev) => attach(ev.channel);
-  return pc;
+  pc.ondatachannel = (ev) => attach(link, ev.channel);
+  link.timer = setInterval(() => updateStats(link), STATS_INTERVAL_MS);
+  armDeadline(link);
+  return link;
+}
+
+function armDeadline(link) {
+  clearTimeout(link.deadline);
+  link.deadline = setTimeout(() => {
+    if (link.ch?.readyState !== 'open') drop(link, `ei yhteyttä ${CONNECT_TIMEOUT_MS / 1000} s:ssa`);
+  }, CONNECT_TIMEOUT_MS);
+}
+
+function drop(link, why) {
+  if (links.get(link.key) !== link) return;
+  links.delete(link.key);
+  clearInterval(link.timer);
+  clearTimeout(link.deadline);
+  link.ch?.close();
+  link.pc.close();
+  if (link.id && why) failed.add(link.id);
+  log(`${link.id ?? 'uusi'}: ${why ?? 'suljettu'}`);
+  if (link === invite) {
+    invite = null;
+    if (why) inviteFailed(why);
+  }
+  sendHello();
+  render();
 }
 
 /** Odottaa kandidaattien keräämisen; palauttaa onicecandidate-rivit ja mDNS-tiedon. */
-function gather(conn) {
+function gather(pc) {
   const lines = [];
   let mdns = 0;
-  conn.onicecandidate = (ev) => {
+  pc.onicecandidate = (ev) => {
     const c = ev.candidate?.candidate;
     if (!c) return;
     lines.push(c);
@@ -50,56 +97,170 @@ function gather(conn) {
   };
   return new Promise((ok) => {
     const t = setTimeout(done, GATHER_MS);
-    conn.onicegatheringstatechange = () => { if (conn.iceGatheringState === 'complete') done(); };
-    function done() { clearTimeout(t); ok({ lines, mdns }); }
+    pc.onicegatheringstatechange = () => { if (pc.iceGatheringState === 'complete') done(); };
+    function done() { clearTimeout(t); lastGather = lines; ok({ lines, mdns }); }
   });
 }
 
-async function local(type, gathering) {
-  const g = await gathering;
-  lastGather = g.lines;
-  try {
-    return encodePairing(type, pc.localDescription.sdp, g.lines);
-  } catch (e) {
-    noAddress(g.mdns > 0, e.message);
-    return null;
-  }
-}
-
-function attach(ch) {
-  channel = ch;
-  ch.onopen = connected;
-  ch.onclose = () => status('bad', 'Yhteys katkesi. Aloita uusi pari.');
+function attach(link, ch) {
+  link.ch = ch;
+  ch.onopen = () => {
+    clearTimeout(link.deadline);
+    send(link, { type: 'hello', id: myId, peers: neighbours() });
+    if (!inMesh) enterMesh();
+    if (link === invite) { invite = null; hidePair(); }
+    render();
+  };
+  ch.onclose = () => drop(link, null);
   ch.onmessage = (ev) => {
     if (typeof ev.data !== 'string' || ev.data.length > MAX_MESSAGE_BYTES) return;
     let msg;
     try { msg = JSON.parse(ev.data); } catch { return; }
-    if (msg?.protocol === PROTOCOL && msg.type === 'chars' && typeof msg.text === 'string') {
-      view.add('toinen', msg.text.slice(0, MAX_CHARS), msg.tint);
-    }
+    if (msg?.protocol === PROTOCOL) onMessage(link, msg);
   };
 }
 
-const view = createStreamView({
-  me: () => 'minä',
-  send: (text, tint) => {
-    if (channel?.readyState === 'open') channel.send(JSON.stringify({ protocol: PROTOCOL, type: 'chars', text, tint }));
-  },
-});
+function send(link, msg) {
+  if (link.ch?.readyState === 'open') link.ch.send(JSON.stringify({ ...msg, protocol: PROTOCOL }));
+}
 
-// --- A: tarjous -----------------------------------------------------------
+function neighbours() {
+  return [...links.values()].filter((l) => l.id && l.ch?.readyState === 'open').map((l) => l.id).sort();
+}
 
-async function startA() {
+/** Naapurilista kaikille, kun se muuttuu: näin jäsenet oppivat toisensa. */
+function sendHello() {
+  const peers = neighbours();
+  const key = peers.join(',');
+  if (key === lastHello) return;
+  lastHello = key;
+  for (const l of links.values()) send(l, { type: 'hello', id: myId, peers });
+}
+
+// --- Sanomat --------------------------------------------------------------
+
+function onMessage(link, msg) {
+  if (msg.type === 'hello') {
+    if (typeof msg.id !== 'string' || !ID.test(msg.id) || msg.id === myId) return;
+    if (!link.id) {
+      const other = links.get(msg.id);
+      if (other && other.ch?.readyState === 'open') { drop(link, null); return; } // kaksoisyhteys
+      if (other) drop(other, null);
+      links.delete(link.key);
+      link.id = link.key = msg.id;
+      links.set(link.key, link);
+      log(`${link.id}: mukana`);
+    }
+    if (Array.isArray(msg.peers)) for (const p of msg.peers.slice(0, 64)) consider(p);
+    sendHello();
+    render();
+  } else if (msg.type === 'sig' || msg.type === 'chars') {
+    route(msg, link);
+  }
+}
+
+/** Uusi jäsen naapurin listalla: pienempi id aloittaa, joten tarjoukset eivät törmää. */
+function consider(p) {
+  if (typeof p !== 'string' || !ID.test(p) || p === myId) return;
+  if (links.has(p) || failed.has(p)) return;
+  if (myId < p) connectTo(p);
+}
+
+function originate(msg) {
+  msg.mid = `${myId}:${++seq}`;
+  msg.from = myId;
+  msg.ttl = TTL;
+  remember(msg.mid);
+  const direct = msg.to && links.get(msg.to);
+  if (direct?.ch?.readyState === 'open') send(direct, msg);
+  else for (const l of links.values()) send(l, msg);
+}
+
+function remember(mid) {
+  seen.add(mid);
+  if (seen.size > MAX_SEEN) seen.delete(seen.values().next().value);
+}
+
+/** Välitys: oma sanoma käsitellään, muu viedään suoraan perille tai naapureille. */
+function route(msg, via) {
+  if (typeof msg.mid !== 'string' || seen.has(msg.mid) || typeof msg.from !== 'string') return;
+  remember(msg.mid);
+  if (msg.type === 'chars' && typeof msg.text === 'string' && msg.from !== myId) {
+    view.add(msg.from, msg.text.slice(0, MAX_CHARS), msg.tint);
+  }
+  if (msg.type === 'sig' && msg.to === myId) {
+    onSig(msg.from, msg.data, TTL - (msg.ttl ?? TTL));
+    return;
+  }
+  if (!(msg.ttl > 1)) return;
+  const fwd = { ...msg, ttl: msg.ttl - 1 };
+  const direct = msg.type === 'sig' && links.get(msg.to);
+  if (direct?.ch?.readyState === 'open') send(direct, fwd);
+  else for (const l of links.values()) if (l !== via) send(l, fwd);
+}
+
+// --- Verkon kautta välitetty yhteydenmuodostus ----------------------------
+
+async function localSdp(link) {
+  await gather(link.pc);
+  return { type: link.pc.localDescription.type, sdp: filterSdp(link.pc.localDescription.sdp).sdp };
+}
+
+async function connectTo(p) {
+  const link = newLink(p, p);
+  attach(link, link.pc.createDataChannel('direct', { ordered: true }));
+  log(`${p}: esittely verkon kautta, muodostetaan yhteys`);
+  await link.pc.setLocalDescription(await link.pc.createOffer());
+  originate({ type: 'sig', to: p, data: { sdp: await localSdp(link) } });
+  render();
+}
+
+async function onSig(from, data, hops) {
+  if (!ID.test(from) || typeof data?.sdp?.sdp !== 'string') return;
+  const desc = { type: data.sdp.type, sdp: filterSdp(data.sdp.sdp).sdp };
+  try {
+    if (desc.type === 'offer') {
+      const old = links.get(from);
+      if (old?.ch?.readyState === 'open') return;
+      if (old) drop(old, null);
+      failed.delete(from);
+      const link = newLink(from, from);
+      log(`${from}: esittely verkon kautta, välittäjiä ${hops}; vastataan`);
+      await link.pc.setRemoteDescription(desc);
+      await link.pc.setLocalDescription(await link.pc.createAnswer());
+      originate({ type: 'sig', to: from, data: { sdp: await localSdp(link) } });
+      render();
+    } else if (desc.type === 'answer') {
+      const link = links.get(from);
+      if (link?.pc.signalingState === 'have-local-offer') {
+        log(`${from}: vastaus verkon kautta, välittäjiä ${hops}`);
+        await link.pc.setRemoteDescription(desc);
+      }
+    }
+  } catch (e) {
+    log(`${from}: signalointivirhe ${e.message}`);
+  }
+}
+
+// --- QR: kutsu (ensimmäinen puhelin tai kuka tahansa jäsen) -----------------
+
+async function startInvite() {
+  if (invite) drop(invite, null);
+  showPair();
   step('Kerätään omat IPv6-osoitteet…');
   $('start').hidden = true;
-  createPc();
-  attach(pc.createDataChannel('direct', { ordered: true }));
-  const gathering = gather(pc);
-  await pc.setLocalDescription(await pc.createOffer());
-  const token = await local('offer', gathering);
+  const link = newLink(`qr-${++qrSeq}`);
+  clearTimeout(link.deadline); // QR-skannaus saa kestää
+  invite = link;
+  attach(link, link.pc.createDataChannel('direct', { ordered: true }));
+  const gathering = gather(link.pc);
+  await link.pc.setLocalDescription(await link.pc.createOffer());
+  const token = await local(link, 'offer', gathering);
   if (!token) return;
-  showCode(token, '1/2 Näytä tämä koodi toiselle puhelimelle. Hän skannaa sen kameralla.',
-    'Kun toinen puhelin näyttää oman koodinsa, skannaa se omalla kamerallasi. Palaa sitten tähän välilehteen.');
+  showCode(token, inMesh
+    ? 'Uusi puhelin skannaa tämän koodin kameralla.'
+    : '1/2 Näytä tämä koodi toiselle puhelimelle. Hän skannaa sen kameralla.',
+  'Kun uusi puhelin näyttää oman koodinsa, skannaa se omalla kamerallasi. Palaa sitten tähän välilehteen.');
   $('answer-box').hidden = false;
 }
 
@@ -112,17 +273,27 @@ async function useAnswer(token) {
     step(`Koodi ei kelpaa: ${e.message}`);
     return;
   }
-  if (!pc || pc.signalingState !== 'have-local-offer') {
-    step('Tämä välilehti ei odota vastausta. Aloita uusi pari.');
+  const link = invite;
+  if (link?.pc.signalingState !== 'have-local-offer') {
+    step('Tämä välilehti ei odota vastausta.');
     return;
   }
-  await pc.setRemoteDescription({ type: 'answer', sdp: ans.sdp });
-  waitConnect();
+  await link.pc.setRemoteDescription({ type: 'answer', sdp: ans.sdp });
+  step('Yhdistetään…');
+  armDeadline(link);
 }
 
-// --- B: vastaus -----------------------------------------------------------
+function inviteFailed(why) {
+  showPair();
+  step(`Yhteys ei syntynyt (${why}). Molemmilla pitää olla IPv6 (mobiilidata), ja koodit skannataan puolin ja toisin.`);
+  $('start').textContent = inMesh ? 'Kutsu uudelleen' : 'Uusi yritys';
+  $('start').hidden = false;
+  $('start').onclick = startInvite;
+}
 
-async function startB(token) {
+// --- QR: liittyjä ---------------------------------------------------------
+
+async function startJoin(token) {
   offerToken = token;
   let offer;
   try {
@@ -133,25 +304,34 @@ async function startB(token) {
     return;
   }
   step('Tehdään vastaus…');
-  createPc();
-  const gathering = gather(pc);
-  await pc.setRemoteDescription({ type: 'offer', sdp: offer.sdp });
-  await pc.setLocalDescription(await pc.createAnswer());
-  const ans = await local('answer', gathering);
+  $('start').hidden = true;
+  const link = newLink(`qr-${++qrSeq}`);
+  const gathering = gather(link.pc);
+  await link.pc.setRemoteDescription({ type: 'offer', sdp: offer.sdp });
+  await link.pc.setLocalDescription(await link.pc.createAnswer());
+  const ans = await local(link, 'answer', gathering);
   if (!ans) return;
-  showCode(ans, '2/2 Näytä tämä koodi ensimmäiselle puhelimelle. Hän skannaa sen kameralla.',
-    'Yhteys syntyy heti, kun hän on skannannut koodin. Pidä tämä sivu auki.');
-  waitConnect();
+  armDeadline(link);
+  showCode(ans, '2/2 Näytä tämä koodi puhelimelle, jonka koodin skannasit. Hän skannaa sen kameralla.',
+    'Yhteys syntyy heti, kun hän on skannannut koodin, ja hän esittelee sinut muille. Pidä tämä sivu auki.');
 }
 
-// --- Vastauksen välitys (A:n kamera avaa uuden välilehden) -----------------
+async function local(link, type, gathering) {
+  const g = await gathering;
+  try {
+    return encodePairing(type, link.pc.localDescription.sdp, g.lines);
+  } catch (e) {
+    if (link === invite) invite = null;
+    drop(link, null);
+    noAddress(g.mdns > 0, e.message);
+    return null;
+  }
+}
+
+// --- Vastauksen välitys (kameran avaama välilehti) -------------------------
 
 function relayAnswer(token) {
-  $('start').hidden = true;
-  if (!bc) {
-    relayFailed(token);
-    return;
-  }
+  if (!bc) { relayFailed(token); return; }
   let acked = false;
   bc.onmessage = (ev) => {
     if (ev.data?.ack) {
@@ -166,20 +346,40 @@ function relayAnswer(token) {
 }
 
 function relayFailed(token) {
-  step('Avoinna olevaa paria ei löytynyt tästä selaimesta. Jos aloitit parin toisessa selaimessa, kopioi tämä linkki ja liitä se sinne.');
+  step('Kutsua odottavaa välilehteä ei löytynyt tästä selaimesta. Jos kutsuit toisessa selaimessa, kopioi tämä linkki ja liitä se sinne.');
   showLinks(`${base}#${token}`);
 }
 
 // --- Näkymä ---------------------------------------------------------------
 
-function step(text) {
-  $('step').textContent = text;
+const view = createStreamView({
+  me: () => myId,
+  send: (text, tint) => originate({ type: 'chars', text, tint }),
+});
+
+function step(text) { $('step').textContent = text; }
+
+function showPair() {
+  $('pair').hidden = false;
+  $('pair').classList.toggle('overlay', inMesh);
+  $('cancel').hidden = !inMesh;
+  $('qr').setAttribute('hidden', '');
+  $('links').hidden = true;
+  $('answer-box').hidden = true;
+  $('check').hidden = true;
+  $('pair-note').textContent = '';
+}
+
+function hidePair() {
+  $('pair').hidden = true;
+  view.focus();
 }
 
 function showLinks(url) {
   $('links').hidden = false;
   $('share').hidden = !navigator.share;
   $('share').onclick = () => navigator.share({ url }).catch(() => {});
+  $('copy').textContent = 'Kopioi linkki';
   $('copy').onclick = () => navigator.clipboard.writeText(url).then(() => { $('copy').textContent = 'Kopioitu ✓'; }, () => {});
 }
 
@@ -211,67 +411,82 @@ function drawQr(svg, text) {
 }
 
 function noAddress(mdns, why) {
+  showPair();
   const box = $('check');
   box.hidden = false;
+  const retry = () => { box.hidden = true; offerToken ? startJoin(offerToken) : startInvite(); };
   if (mdns && !useStun) {
     box.className = 'check meh';
     box.textContent = '🤔 IPv6 toimii ehkä, mutta selain piilottaa osoitteensa. Ilman palvelinta toinen puhelin ei löydä sinua.';
     $('start').textContent = 'Kokeile STUN-avulla';
-    $('start').hidden = false;
-    $('start').onclick = () => { useStun = true; box.hidden = true; offerToken ? startB(offerToken) : startA(); };
+    $('start').onclick = () => { useStun = true; retry(); };
   } else if (mdns) {
     box.className = 'check meh';
     box.textContent = '🤔 Selain piilottaa osoitteensa, eikä STUN-palvelinkaan kertonut sitä. Kokeile puhelimen Chromella tai yritä uudelleen.';
     $('start').textContent = 'Yritä uudelleen';
-    $('start').hidden = false;
-    $('start').onclick = () => { box.hidden = true; offerToken ? startB(offerToken) : startA(); };
+    $('start').onclick = retry;
   } else {
     box.className = 'check bad';
     box.textContent = '🪵 Puhelimesi on vanha puukalikka, se ei tue IPv6-osoitteita. Osta uusi puhelin tai ota yhteyttä Claudeen tai ChatGPT:hen. ' +
       '(P.S. Puukalikka voi olla myös Wi-Fi: sulje Wi-Fi ja kokeile mobiilidataa.)';
+    $('start').textContent = 'Yritä uudelleen';
+    $('start').onclick = retry;
   }
+  $('start').hidden = false;
   step(`Ei pariteltavaa IPv6-osoitetta (${why}).`);
 }
 
-function waitConnect() {
-  clearTimeout(deadline);
-  deadline = setTimeout(() => {
-    if (channel?.readyState !== 'open') fail('Yhteys ei syntynyt 45 sekunnissa.');
-  }, CONNECT_TIMEOUT_MS);
-}
-
-function fail(text) {
-  if (channel?.readyState === 'open') return;
-  status('bad', `${text} Molemmilla pitää olla IPv6 (mobiilidata), ja koodit skannataan puolin ja toisin. Aloita uusi pari.`);
-  $('start').textContent = 'Uusi pari';
-  $('start').hidden = false;
-  $('start').onclick = () => { location.href = base; };
-}
-
-function status(cls, text) {
-  $('status').hidden = false;
-  $('status').className = cls;
-  $('status').textContent = text;
-}
-
-async function connected() {
-  $('pair').hidden = true;
+function enterMesh() {
+  inMesh = true;
+  $('bar').hidden = false;
+  $('info').hidden = false;
   $('stream').hidden = false;
   $('say').hidden = false;
-  view.focus();
-  status('ok', '✅ Yhteys ilman palvelinta.');
-  for (let i = 0; i < 5; i++) {
-    const sel = selectedPair(await pc.getStats());
-    if (sel?.pair.state === 'succeeded') {
-      let cls = classifyPair({ local: sel.local, remote: sel.remote, pairState: sel.pair.state });
-      // Vain IPv6-osoitteita vaihdettiin, joten onnistunut suora pari on IPv6.
-      if (cls === 'unknown' && sel.local?.candidateType !== 'relay') cls = 'ipv6-direct';
-      const rtt = sel.pair.currentRoundTripTime != null ? `, viive ${Math.round(sel.pair.currentRoundTripTime * 1000)} ms` : '';
-      status('ok', `✅ Yhteys ilman palvelinta: ${CLASSES[cls]} (${sel.local?.candidateType} → ${sel.remote?.candidateType}${rtt}).`);
-      return;
-    }
-    await new Promise((r) => setTimeout(r, 1000));
+  hidePair();
+}
+
+async function updateStats(link) {
+  if (link.ch?.readyState !== 'open') return;
+  const sel = selectedPair(await link.pc.getStats());
+  if (!sel || sel.pair.state !== 'succeeded') return;
+  let cls = classifyPair({ local: sel.local, remote: sel.remote, pairState: sel.pair.state });
+  // Vain IPv6-osoitteita vaihdettiin, joten onnistunut suora pari on IPv6.
+  if (cls === 'unknown' && sel.local?.candidateType !== 'relay') cls = 'ipv6-direct';
+  const rtt = sel.pair.currentRoundTripTime != null ? `, ${Math.round(sel.pair.currentRoundTripTime * 1000)} ms` : '';
+  const detail = `${sel.local?.candidateType} → ${sel.remote?.candidateType}${rtt}`;
+  if (cls !== link.cls) log(`${link.id ?? 'uusi'}: ${CLASSES[cls]} (${detail})`);
+  link.cls = cls;
+  link.detail = detail;
+  render();
+}
+
+function render() {
+  const tbody = $('peers');
+  tbody.replaceChildren();
+  let open = 0;
+  for (const l of links.values()) {
+    if (l.ch?.readyState === 'open') open++;
+    const tr = document.createElement('tr');
+    [l.id ?? 'uusi', l.ch?.readyState === 'open' ? 'auki' : l.pc.connectionState, `${CLASSES[l.cls]}${l.detail ? ` (${l.detail})` : ''}`]
+      .forEach((text, i) => {
+        const td = document.createElement('td');
+        td.textContent = text;
+        if (i === 2) td.className = `cls-${l.cls}`;
+        tr.append(td);
+      });
+    tbody.append(tr);
   }
+  $('status').className = open ? 'ok' : 'bad';
+  $('status').textContent = open
+    ? `✅ Verkossa ${neighbours().length + 1} puhelinta · suoria yhteyksiä ${open}`
+    : 'Ei yhteyksiä. Kutsu uusi puhelin.';
+  $('info-sum').textContent = `minä: ${myId}`;
+}
+
+function log(text) {
+  const li = document.createElement('li');
+  li.textContent = `${new Date().toLocaleTimeString()}  ${text}`;
+  $('log').prepend(li);
 }
 
 // --- Käynnistys -----------------------------------------------------------
@@ -280,7 +495,7 @@ const hash = decodeURIComponent(location.hash.slice(1));
 history.replaceState(null, '', base + location.search);
 if (bc) {
   bc.onmessage = (ev) => {
-    if (typeof ev.data?.answer === 'string' && pc?.signalingState === 'have-local-offer') {
+    if (typeof ev.data?.answer === 'string' && invite?.pc.signalingState === 'have-local-offer') {
       bc.postMessage({ ack: true });
       useAnswer(ev.data.answer);
     }
@@ -290,15 +505,24 @@ $('use').onclick = () => {
   const v = $('paste').value.trim();
   useAnswer(v.includes('#') ? decodeURIComponent(v.slice(v.indexOf('#') + 1)) : v);
 };
+$('invite').onclick = startInvite;
+$('cancel').onclick = () => { if (invite) drop(invite, null); hidePair(); };
 
 if (hash.startsWith('1.o.')) {
-  startB(hash);
+  startJoin(hash);
 } else if (hash.startsWith('1.a.')) {
   relayAnswer(hash);
 } else {
   step('Aloita, niin saat QR-koodin. Toinen puhelin skannaa sen kameralla.');
   $('start').hidden = false;
-  $('start').onclick = startA;
+  $('start').onclick = startInvite;
 }
-// Testejä varten (drive-cdp): sivun tila.
-window.direct = { get pc() { return pc; }, get channel() { return channel; }, get url() { return lastUrl; }, get gathered() { return lastGather; } };
+// Testejä varten (drive-direct): sivun tila.
+window.direct = {
+  get id() { return myId; },
+  get url() { return lastUrl; },
+  get gathered() { return lastGather; },
+  get open() { return neighbours(); },
+  /** Katkaisee suoran yhteyden naapuriin (testaa kiertoreittiä). */
+  cut(id) { const l = links.get(id); if (l) drop(l, null); },
+};

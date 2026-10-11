@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
-<title>Certiratio suora pari</title>
+<title>Certiratio suora verkko</title>
 <style>
   :root { color-scheme: light dark; --bg: #fafafa; --fg: #1d1d1f; --muted: #666; --line: #ddd;
           --v6: #1a7f37; --bad: #c62828; --l: 38%; }
@@ -47,15 +47,17 @@
   .qr { display: block; width: min(78vw, 300px); height: auto; margin: 12px 0; background: #fff; border-radius: 6px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
   #paste { font: 14px ui-monospace, monospace; width: 100%; box-sizing: border-box; padding: 6px; }
-  #status { padding: 6px 16px; font-size: 0.85rem; border-bottom: 1px solid var(--line); }
+  #bar { display: flex; align-items: center; gap: 8px; padding: 6px 16px; border-bottom: 1px solid var(--line); }
+  #bar #status { flex: 1; font-size: 0.85rem; }
+  #pair.overlay { border-bottom: 1px solid var(--line); }
   #status.ok { color: var(--v6); } #status.bad { color: var(--bad); }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <header>
-  <h1>Suora pari</h1>
-  <div class="muted">Kaksi puhelinta, ei yhtään palvelinta. Puhelimet vaihtavat yhteystiedot QR-koodilla, ja sen jälkeen teksti kulkee suoraan puhelimesta toiseen.</div>
+  <h1>Suora verkko</h1>
+  <div class="muted">Puhelimet ilman yhtään palvelinta. Uusi puhelin liittyy QR-koodilla keneen tahansa verkossa olevaan, ja tämä esittelee sen muille. Teksti kulkee suoraan puhelimesta toiseen.</div>
 </header>
 
 <section id="pair">
@@ -71,11 +73,22 @@
     <input id="paste" type="text" autocomplete="off" placeholder="https://…#1.a.…">
     <div class="row"><button id="use" type="button">Yhdistä</button></div>
   </div>
-  <div class="row"><button id="start" type="button" hidden>Aloita</button></div>
+  <div class="row"><button id="start" type="button" hidden>Aloita</button><button id="cancel" type="button" hidden>Sulje</button></div>
   <p class="muted" id="pair-note"></p>
 </section>
 
-<div id="status" hidden></div>
+<div id="bar" hidden>
+  <div id="status"></div>
+  <button id="invite" type="button">Kutsu uusi</button>
+</div>
+<details id="info" hidden>
+  <summary id="info-sum">yhteydet</summary>
+  <table>
+    <thead><tr><th>Puhelin</th><th>Yhteys</th><th>Reitti</th></tr></thead>
+    <tbody id="peers"></tbody>
+  </table>
+  <ul id="log"></ul>
+</details>
 
 <div id="stream" hidden><span id="hint">Napauta ja kirjoita. Kaikkien merkit tulevat samaan kursoriin saapumisjärjestyksessä.
 </span><i id="caret"></i></div>
