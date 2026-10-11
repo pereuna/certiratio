@@ -40,3 +40,24 @@ T5: kun kanavat ovat auki, paina **Sulje signaling** tai pysäytä palvelin. Pin
 - Jos jompikumpi pää on `relay`, luokka on aina **relay**, vaikka osoite olisi IPv6.
 - Chrome piilottaa host-osoitteet mDNS-nimillä (`*.local`). Silloin perhe luetaan parin toisesta päästä. Jos kumpikaan pää ei paljasta osoitetta, luokka on **unknown**.
 - mDNS-nimet ratkeavat vain lähiverkossa. Verkkojen välisessä testissä ilman STUNia suora yhteys voi siksi epäonnistua, vaikka molemmilla olisi julkinen IPv6. Oletus-STUN on Googlen julkinen `stun.l.google.com:19302`, ja kenttää voi muuttaa.
+
+## IPv6 launchpad (`web/launchpad.html`)
+
+Saman huoneen selaimet muodostavat suoran **IPv6**-WebRTC-meshin ja jakavat yhden tekstivirran. Jokainen syötetty merkki lähtee heti kaikille ja näkyy kirjoittajan värillä, joten samaan aikaan kirjoitetut tekstit sekoittuvat. Pyyhkimistä ei lähetetä.
+
+Sivu: **https://jedi.ydns.eu:8443/launchpad.html** (huone `launchpad`, toisen huoneen saa `#nimi`-osalla).
+
+- Testin kohde on IPv6-P2P. Mobiiliverkon IPv4 on operaattorin NATin (CGNAT) takana, joten puhelimesta toiseen sillä ei ole suoraa reittiä. IPv6:ssa jokaisella liittymällä on julkinen /64. Siksi IPv4- ja mDNS-kandidaatit hylätään molempiin suuntiin, ja hylätyt lasketaan. TURNia ei käytetä.
+- Signalointi on jedin Plan2001-`rtcsignal` (`monolith/tools/rtcsignal`, enintään 8 vertaista huoneessa). Palvelin vain esittelee vertaiset. Se kirjaa sivujen lokin (liittymiset, reitit, epäonnistumiset) jedin tiedostoon `~/rtcsignal/pages.log`, mutta tekstiä ei.
+- STUN (`stun.l.google.com:19302`) kertoo selaimelle vain sen oman julkisen osoitteen, koska työpöytä-Chrome piilottaa host-osoitteet mDNS:llä. Liikenne kulkee silti suoraan. `?stun=` ilman arvoa poistaa STUNin, ja `?stun=URL` vaihtaa sen.
+- Reitti näkyy vertaisittain. Koska kumpikaan pää ei tiedä toisen IPv4-osoitetta, onnistunut suora pari on IPv6, vaikka Chrome piilottaisi osoitteet (merkintä *päätelty*). Jos yhteys ei 20 sekunnissa ole auki, se merkitään **failed**.
+- PoC: ei tunnistusta eikä nimien todennusta.
+
+Asennus jediin (palvelinta ei käynnistetä uudelleen):
+
+```bash
+scp web/launchpad.html lapere@jedi.ydns.eu:rtcsignal/site/
+scp web/src/{launchpad,stream,signaling,classify}.js lapere@jedi.ydns.eu:rtcsignal/site/src/
+```
+
+Paikallisesti: `python3 ../../Plan2001/monolith/tools/rtcsignal --port 8090 --web web` ja `http://localhost:8090/launchpad.html`. `tools/drive-launchpad.mjs` ajaa kolmen vertaisen testin DevTools-protokollalla (puhelin `adb forward tcp:9223 localabstract:chrome_devtools_remote`, Chromium `--remote-debugging-port=9222`).

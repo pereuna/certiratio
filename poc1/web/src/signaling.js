@@ -2,10 +2,12 @@
 // SDP- ja ICE-sanomia; kirjanpitotapahtumia ei koskaan lähetetä tätä kautta.
 
 export class Signaling extends EventTarget {
-  constructor(url, room) {
+  // `name`: Plan2001:n rtcsignal (jedi) tunnistaa vertaisen nimestä; poc1-palvelin antaa id:n.
+  constructor(url, room, name = null) {
     super();
     this.url = url;
     this.room = room;
+    this.name = name;
     this.id = null;
     this.ws = null;
   }
@@ -14,7 +16,7 @@ export class Signaling extends EventTarget {
     return new Promise((ok, fail) => {
       const ws = new WebSocket(this.url);
       this.ws = ws;
-      ws.onopen = () => ws.send(JSON.stringify({ type: 'join', room: this.room }));
+      ws.onopen = () => ws.send(JSON.stringify(this.name ? { type: 'join', room: this.room, name: this.name } : { type: 'join', room: this.room }));
       ws.onerror = () => fail(new Error('signaling-yhteys epäonnistui'));
       ws.onclose = () => this.#emit('close', {});
       ws.onmessage = (ev) => {
@@ -25,7 +27,7 @@ export class Signaling extends EventTarget {
           return;
         }
         if (msg.type === 'welcome') {
-          this.id = msg.id;
+          this.id = msg.id ?? this.name;
           ok(msg);
         } else if (msg.type === 'error' && !this.id) {
           fail(new Error(msg.reason));
