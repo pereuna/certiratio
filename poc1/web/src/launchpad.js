@@ -373,11 +373,9 @@ async function bootCheck() {
   }
   $('join').disabled = false;
   if (own?.scope === 'global') {
-    say('ok', `✅ Julkinen IPv6 (${shortV6(own.a)}). Puhelimesi elää tulevaisuudessa – tervetuloa joukkoon.`);
+    say('ok', `✅ IPv6 OK! (${shortV6(own.a)}) Puhelimesi elää tulevaisuudessa – tervetuloa joukkoon.`);
   } else {
-    say('meh', '🤔 Puhelimesi puhuu IPv6:ta (palvelin vastasi), mutta selain ei näytä julkista IPv6-osoitetta.',
-      own ? `Löytyi vain ${own.scope}-osoite. Suora yhteys muihin voi silti onnistua – kokeile.`
-        : 'Selain voi piilottaa osoitteen. Suora yhteys muihin voi silti onnistua – kokeile.');
+    say('meh', '🤔 IPv6 toimii, mutta osoitetta ei näy.', 'Yhteys muihin voi silti onnistua – kokeile.');
   }
 }
 
