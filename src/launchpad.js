@@ -30,6 +30,7 @@ const stun = params.get('stun') ?? 'stun:stun.l.google.com:19302';
 const iceConfig = { iceServers: stun ? [{ urls: stun }] : [] };
 
 const peers = new Map(); // nimi -> PeerState
+const present = new Set(); // signaloinnin mukaan huoneessa olevat (ei itse)
 const dropped = { local: 0, remote: 0 };
 const gathered = { host: 0, srflx: 0, other: 0 };
 let signaling = null;
@@ -79,13 +80,22 @@ function start(existing) {
     const name = e.detail.name ?? e.detail.id;
     const old = peers.get(name);
     if (old) { closePeer(old); peers.delete(name); }
+    present.add(name);
     log(`${name} liittyi`);
     render();
   });
-  signaling.addEventListener('peer-left', (e) => log(`${e.detail.name ?? e.detail.id} poistui signaloinnista`));
+  signaling.addEventListener('peer-left', (e) => {
+    const name = e.detail.name ?? e.detail.id;
+    present.delete(name);
+    log(`${name} poistui signaloinnista`);
+    // Avoin P2P-kanava jatkaa; muuten (esim. sivu ladattiin uudelleen) vertainen pois listalta.
+    const p = peers.get(name);
+    if (p && p.channel?.readyState !== 'open') forget(p);
+    render();
+  });
   signaling.addEventListener('signal', (e) => onSignal(e.detail.from, e.detail.data));
   signaling.addEventListener('close', () => log('signalointi katkesi (avoimet P2P-yhteydet jatkavat)'));
-  for (const name of existing) createPeer(name, true);
+  for (const name of existing) { present.add(name); createPeer(name, true); }
   render();
 }
 
@@ -168,7 +178,11 @@ async function onSignal(from, data) {
 function attachChannel(p, ch) {
   p.channel = ch;
   ch.onopen = () => { log(`${p.name}: kanava auki`); render(); };
-  ch.onclose = () => { log(`${p.name}: kanava suljettu`); render(); };
+  ch.onclose = () => {
+    log(`${p.name}: kanava suljettu`);
+    if (!present.has(p.name)) forget(p);
+    render();
+  };
   ch.onmessage = (ev) => onChannelMessage(p, ev.data);
 }
 
@@ -186,6 +200,11 @@ function markFailed(p, why) {
   p.cls = 'failed';
   log(`${p.name}: failed (${why})`);
   render();
+}
+
+function forget(p) {
+  closePeer(p);
+  if (peers.get(p.name) === p) peers.delete(p.name);
 }
 
 function closePeer(p) {
@@ -253,7 +272,12 @@ function render() {
       });
     tbody.append(tr);
   }
-  $('info-sum').textContent = `${me}: ${open}/${peers.size} vertaista auki`;
+  // Sama luku kaikilla, kun kaikki yhteydet toimivat: huoneessa N, suoria N-1.
+  const others = new Set([...present, ...[...peers.values()].filter((p) => p.channel?.readyState === 'open').map((p) => p.name)]);
+  const failedN = [...peers.values()].filter((p) => p.failed).length;
+  const waiting = others.size - open - failedN;
+  $('info-sum').textContent = `Huoneessa ${others.size + 1} · suoria yhteyksiä ${open}` +
+    (waiting > 0 ? ` · muodostetaan ${waiting}` : '') + (failedN ? ` · ei onnistunut ${failedN}` : '');
   $('cands').textContent = `omat IPv6-kandidaatit: host ${gathered.host}, srflx ${gathered.srflx}` +
     ` · hylätty IPv4/mDNS: omat ${dropped.local}, vertaisten ${dropped.remote}`;
 }
