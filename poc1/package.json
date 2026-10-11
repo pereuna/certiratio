@@ -1,0 +1,11 @@
+{
+  "name": "certiratio-poc1",
+  "private": true,
+  "type": "module",
+  "description": "Certiratio PoC 1: selain-P2P (vaihe: IPv6/WebRTC-verkkotesti)",
+  "scripts": {
+    "start": "node signal/server.mjs",
+    "test": "node --test tests/"
+  },
+  "engines": { "node": ">=20" }
+}
