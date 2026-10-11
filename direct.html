@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
-<title>Certiratio suora verkko</title>
+<title>Certiratio rengas</title>
 <style>
   :root { color-scheme: light dark; --bg: #fafafa; --fg: #1d1d1f; --muted: #666; --line: #ddd;
-          --v6: #1a7f37; --bad: #c62828; --l: 38%; }
+          --v6: #1a7f37; --bad: #c62828; --accent: #b25e00; --l: 38%; }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #161618; --fg: #e8e8ea; --muted: #9a9aa0; --line: #333;
-            --v6: #4ac26b; --bad: #ff6b6b; --l: 70%; }
+            --v6: #4ac26b; --bad: #ff6b6b; --accent: #f0a040; --l: 70%; }
   }
   html, body { margin: 0; height: 100%; }
   body { display: flex; flex-direction: column; height: 100dvh; max-width: 960px; margin: 0 auto;
@@ -51,32 +51,62 @@
   #bar #status { flex: 1; font-size: 0.85rem; }
   #pair.overlay { border-bottom: 1px solid var(--line); }
   #status.ok { color: var(--v6); } #status.bad { color: var(--bad); }
+  #step { font-size: 1.1rem; font-weight: 600; }
+  #trio { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 14px 0; }
+  #trio figure { margin: 0; padding: 8px 10px; border-radius: 12px; text-align: center; min-width: 4.5em;
+                 border: 2px solid var(--line); }
+  #trio figure.new { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  #trio .icon { font-size: 2.6rem; line-height: 1.1; }
+  #trio figcaption { font-size: 0.85rem; overflow-wrap: anywhere; }
+  #trio .hand { font-size: 1.6rem; }
+  #profile input { font: inherit; padding: 6px 8px; width: min(100%, 16em); box-sizing: border-box; }
+  #icons { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  #icons button { font-size: 1.6rem; padding: 4px 8px; border-radius: 10px; border: 2px solid var(--line); background: none; }
+  #icons button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  #cam { display: block; width: min(86vw, 360px); aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #000; margin: 12px 0; }
+  .primary { font-weight: 600; }
+  #nocam { border: 0; padding: 0; margin-top: 10px; }
+  #ringview { padding: 6px 16px; border-bottom: 1px solid var(--line); font-size: 0.95rem; line-height: 1.8; }
+  #ringview .member { white-space: nowrap; padding: 1px 6px; border-radius: 10px; }
+  #ringview .me { font-weight: 700; }
+  #ringview .fresh { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+  #ringview .arrow { color: var(--muted); margin: 0 3px; }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <header>
-  <h1>Suora verkko</h1>
-  <div class="muted">Puhelimet ilman yhtään palvelinta. Uusi puhelin liittyy QR-koodilla keneen tahansa verkossa olevaan, ja tämä esittelee sen muille. Teksti kulkee suoraan puhelimesta toiseen.</div>
+  <h1>Rengas</h1>
+  <div class="muted">Puhelimet ilman yhtään palvelinta. Uusi jäsen liittyy kahden vierekkäisen jäsenen väliin, ja kumpikin näyttää hänelle QR-koodin. Teksti kulkee suoraan puhelimesta toiseen.</div>
 </header>
 
 <section id="pair">
   <div id="check" class="check" hidden></div>
   <div id="step"></div>
+  <div id="trio" hidden></div>
+  <div id="profile" hidden>
+    <label>Nimi <input id="name" type="text" maxlength="24" autocomplete="nickname"></label>
+    <div id="icons" role="group" aria-label="kuva"></div>
+  </div>
   <svg id="qr" class="qr" hidden aria-label="QR-koodi"></svg>
-  <div class="row" id="links" hidden>
-    <button id="share" type="button">Jaa linkki</button>
-    <button id="copy" type="button">Kopioi linkki</button>
-  </div>
-  <div id="answer-box" hidden>
-    <p class="muted">Tai liitä toisen puhelimen lähettämä linkki tähän:</p>
-    <input id="paste" type="text" autocomplete="off" placeholder="https://…#1.a.…">
-    <div class="row"><button id="use" type="button">Yhdistä</button></div>
-  </div>
-  <div class="row"><button id="start" type="button" hidden>Aloita</button><button id="cancel" type="button" hidden>Sulje</button></div>
+  <div id="cam-box" hidden><video id="cam" playsinline muted></video></div>
   <p class="muted" id="pair-note"></p>
+  <div class="row"><button id="primary" class="primary" type="button" hidden></button><button id="secondary" type="button" hidden></button></div>
+  <details id="nocam" hidden>
+    <summary class="muted">Ei kameraa?</summary>
+    <div class="row" id="links" hidden>
+      <button id="share" type="button">Jaa linkki</button>
+      <button id="copy" type="button">Kopioi linkki</button>
+    </div>
+    <div id="answer-box" hidden>
+      <p class="muted">Liitä toisen puhelimen lähettämä linkki:</p>
+      <input id="paste" type="text" autocomplete="off" placeholder="https://…#2.…">
+      <div class="row"><button id="use" type="button">Käytä</button></div>
+    </div>
+  </details>
 </section>
 
+<div id="ringview" hidden></div>
 <div id="bar" hidden>
   <div id="status"></div>
   <button id="invite" type="button">Kutsu uusi</button>
