@@ -368,7 +368,7 @@ async function bootCheck() {
   if (!server) {
     say('bad', '🪵 Puhelimesi on vanha puukalikka, se ei tue IPv6-osoitteita. Osta uusi puhelin tai ota yhteyttä Claudeen tai ChatGPT:hen.',
       'Palvelin toimii kyllä. Se vain puhuu IPv6:ta, jota puukalikka ei ymmärrä.',
-      'P.S. Puukalikka voi olla myös Wi-Fi: moni Wi-Fi tarjoaa vain IPv4:ää. Sulje Wi-Fi ja kokeile mobiilidataa – suomalaiset operaattorit antavat julkisen IPv6:n oletuksena.');
+      'P.S. Puukalikka voi olla myös Wi-Fi: moni Wi-Fi tarjoaa vain IPv4:ää. Sulje Wi-Fi ja kokeile mobiilidataa – suomalaiset operaattorit antavat IPv6:n oletuksena.');
     return;
   }
   $('join').disabled = false;
