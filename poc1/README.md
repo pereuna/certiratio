@@ -79,36 +79,45 @@ Rekisteri (`src/ring.js`, testit `tests/ring.test.mjs`):
 - `admit` hyväksytään vain, jos vasen ja oikea ovat yhä vierekkäin; puuttuvaa jäsentä odotetaan. Jäsen voi olla vain kerran.
 - Vain välin vasen jäsen voi kutsua siihen, ja oikea vahvistaa yhden tulokkaan kerrallaan, joten samaan väliin ei tule kahta liittyjää.
 - Jokaisella renkaalla on oma tunniste. Se kulkee koodeissa ja hello-sanomassa: eri renkaiden puhelimet eivät yhdisty, ja toisen renkaan vastauskoodi hylätään. Kaksi erillistä paria samalla sivulla pysyvät siis erillisinä.
-- PoC: tunnisteet ovat satunnaisia, eikä tapahtumia allekirjoiteta. Avaimet ovat muistion vaihe 2. Tila katoaa, kun sivu ladataan uudelleen.
+- Tapahtumien tunniste johdetaan jäsenestä (`JÄSEN:f`, `JÄSEN:a`), koska jokainen liittyy kerran. Saman tunnisteen kahdesta versiosta kaikki valitsevat saman (`preferred`).
+
+Identiteetti ja pysyvyys (`src/identity.js`, `src/store.js`, testit `tests/identity.test.mjs`):
+- Jokaisella selaimella on ECDSA P-256 -avainpari (WebCrypto; yksityistä avainta ei voi viedä ulos). Jäsentunniste on `hex8(SHA-256(julkinen avain))`, renkaan tunniste `hex8(SHA-256(perustajan avain.suola))`.
+- Allekirjoitukset: `found` perustajalta; `admit` tulokkaalta, vasemmalta ja oikealta naapurilta (perustajaliittymisessä tulokas ja kutsuja). Tapahtuma pääsee rekisteriin vasta tarkistettuna; jos allekirjoittajan avainta ei vielä tunneta, se odottaa.
+- Jokainen yhteys todennetaan: `hello` kertoo avaimen ja haasteen, `auth` allekirjoittaa vastapuolen haasteen. Avaimen on vastattava tunnistetta ja rekisteriä. Ennen todennusta yhteydestä ei käsitellä muuta.
+- Avain, oma tunniste ja rekisteri tallentuvat selaimen IndexedDB:hen, ja sivu aukeaa suoraan jäsenenä (`navigator.storage.persist()` pyydetään). Samassa selaimessa on yksi aktiivinen välilehti (Web Locks): toinen välilehti välittää koodin sille tai voi ottaa renkaan itselleen. Info-osiossa voi poistaa jäsenyyden tästä puhelimesta.
+- **Palaava jäsen** (sivu suljettu, puhelin käynnistetty uudelleen): kuka tahansa paikalla oleva jäsen painaa **Yhdistä → Näytä yhdistämiskoodi** (`2.r…`), palaaja **Yhdistä → Skannaa yhdistämiskoodi** ja näyttää vastauksen, jonka näyttäjä skannaa. Liittymistä ja vahvistusta ei tehdä uudelleen. Verkko esittelee palaajan muille paikalla oleville, ja poissaolon aikana liittyneet tulevat rekisterin mukana. Renkaan näkymässä paikalla olevat on merkitty ●, muut himmeinä.
+- **Kotivalikko:** `direct.webmanifest` ja kuvake (`icons/`). Android-Chrome tarjoaa asennusta, iPhonessa Jaa → Lisää Koti-valikkoon. iPhonen Koti-valikon sovelluksella on oma tallennustilansa, joten iPhonella kannattaa lisätä sivu Koti-valikkoon ensin ja liittyä sieltä (sivun oma kamera). Safari voi poistaa tavallisen välilehden tallenteet, jos sivua ei käytetä noin viikkoon. Jedi (rtcsignal) tarjoilee vain .html- ja .js-tiedostoja, joten kuvake toimii vain Pagesissa.
+- PoC-rajat: 32-bittiset tunnisteet (väärennys vaatisi noin 2^32 avainta), osoitettujen sanomien lähettäjää ei allekirjoiteta päästä päähän (välittäjä voisi väärentää `sig`-tarjouksen, mutta yhteys todennetaan silti avaimella), avainta ei voi siirtää toiseen selaimeen.
 
 Koodit (`src/pairing.js`):
-- Kutsu `2.o.RENGAS.VASEN.OIKEA.UFRAG.PWD.SORMENJÄLKI.MID.OSOITE_PORTTI,…`, vastaus `2.a.RENGAS.UFRAG.…` ja vahvistus `2.c.RENGAS.JÄSEN.HAASTE`.
+- Kutsu `2.o.RENGAS.VASEN.OIKEA.UFRAG.PWD.SORMENJÄLKI.MID.OSOITE_PORTTI,…`, yhdistämiskoodi `2.r.RENGAS.NÄYTTÄJÄ.UFRAG.…`, vastaus `2.a.RENGAS.UFRAG.…` ja vahvistus `2.c.RENGAS.JÄSEN.HAASTE`.
 - Mukana vain IPv6-osoitteet (ei link-localia, IPv4:ää eikä mDNS-nimiä), ICE-tunnus ja -salasana, DTLS-sormenjälki (sha-256, base64url) ja mid. Vastaanottaja kokoaa niistä SDP:n. QR-koodi on versio ≤ 11.
 - Vanhat `1.`-koodit hylätään ("päivitä sivu").
 
-Verkko (`src/direct.js`, protokolla `certiratio-direct/3` DataChannelissa):
-- **hello**: naapurilista, renkaan tunniste, nimi ja kuva aina, kun lista muuttuu. Kun puhelin näkee listalla jäsenen, johon sillä ei ole yhteyttä, pienempi id tekee tarjouksen.
+Verkko (`src/direct.js`, protokolla `certiratio-direct/4` DataChannelissa):
+- **hello**/**auth**: naapurilista, renkaan tunniste, nimi, kuva, avain ja haaste aina, kun lista muuttuu; auth todentaa yhteyden. Kun puhelin näkee listalla jäsenen, johon sillä ei ole yhteyttä, pienempi id tekee tarjouksen.
 - **events**: koko rekisteri heti yhteyden auettua; **ev**: uusi tapahtuma kaikille.
 - **sig**, **sponsor**, **claim**, **vouched**: osoitetut sanomat (tarjous ja vastaus, vahvistuspyyntö oikealle naapurille, tulokkaan haaste, vahvistus kutsujalle). Ne viedään suoraan perille tai muuten kaikille naapureille (`ttl` 8, kaksoiskappaleet `mid`:stä).
 - **chars**: tekstivirta leviää kaikille ja kiertää puuttuvan suoran yhteyden ohi.
-- Katkennut yhteys palautuu, kun naapurilistat seuraavan kerran muuttuvat. Yhteyttä, joka ei syntynyt 45 sekunnissa, ei yritetä uudelleen.
+- Katkennut yhteys palautuu, kun naapurilistat seuraavan kerran muuttuvat. Yhteyttä, joka ei syntynyt 45 sekunnissa, yritetään uudelleen aikaisintaan kahden minuutin päästä. Uudelleen ladatun sivun yhteys korvaa vanhan (`boot`).
 
 Kamera ja osoitteet:
 - Sivulla on oma QR-lukija (`src/scanner.js`): Android-Chromessa `BarcodeDetector`, muualla `src/vendor/jsQR.js` (jsQR 1.4.0, Apache-2.0), joka ladataan vasta tarvittaessa. Näin kaikki tapahtuu yhdessä välilehdessä. Jos koodi kuitenkin avataan järjestelmäkameralla, uusi välilehti välittää sen odottavalle välilehdelle (`BroadcastChannel`). *Ei kameraa?* -kohdassa on jakolinkki ja liittämiskenttä.
 - QR-koodit tekee `src/vendor/qrcode.js` (qrcode-generator 1.4.4, Kazuhiko Arase, MIT).
 - Ilman STUNia selaimen on kerrottava IPv6-osoitteensa itse. Androidin Chrome tekee niin. iPhone (kaikki iOS-selaimet ovat WebKitiä) ja työpöytä-Chrome piilottavat osoitteet mDNS-nimillä; sivu kysyy osoitteen silloin automaattisesti Googlen STUNilta (`?stun` pakottaa sen heti). STUN vain kertoo osoitteen, liikenne kulkee silti suoraan.
 
-Testi: `tools/drive-direct.mjs URL PORT_ISI PORT_TORTTO PORT_LIISA PORT_AITI [PORT_Q]`. Jokainen puhelin on oma Chromium (`--disable-features=WebRtcHideLocalIpsWithMdns --use-fake-ui-for-media-stream --use-fake-device-for-media-stream`), ja kamera korvataan `direct.scan()`-kutsulla. Tarina ajetaan läpi: kaikilla on sama rengas isi → äiti → Liisa → Törttö, suorat IPv6-yhteydet kaikkiin ja tekstit perillä. Q aloittaa oman renkaan, ja isin renkaan vastaus hylätään.
+Testi: `tools/drive-direct.mjs URL PORT_ISI PORT_TORTTO PORT_LIISA PORT_AITI [PORT_Q]`. Jokainen puhelin on oma Chromium (`--disable-features=WebRtcHideLocalIpsWithMdns --use-fake-ui-for-media-stream --use-fake-device-for-media-stream`), ja kamera korvataan `direct.scan()`-kutsulla. Tarina ajetaan läpi: kaikilla on sama rengas isi → äiti → Liisa → Törttö, suorat IPv6-yhteydet kaikkiin ja tekstit perillä. Sen jälkeen: väärennetyt tapahtumat hylätään; Liisan välilehti suljetaan ja avataan uudelleen (sama tunniste ja rengas tallesta), toinen välilehti samassa selaimessa ei aukea jäsenenä, ja Liisa palaa äidin yhdistämiskoodilla suoriin yhteyksiin kaikkien kanssa; vieras ja toisen renkaan jäsen eivät voi käyttää yhdistämiskoodia. Selainprofiilien on oltava tyhjiä ajon alussa.
 
 - Testattu Chromiumeilla 2026-10-11. Kahden puhelimen pari on testattu aiemmalla versiolla; rengasta ei ole vielä testattu puhelimilla.
-- Avoinna: tila katoaa sivun uudelleenlatauksessa, puhelimen taustalle jääminen ja IPv6-osoitteen vaihtuminen (yhteys katkeaa), avaimet ja allekirjoitukset, yhteinen järjestys verkkokatkojen aikana (muistion kohta 13), suurten verkkojen rajattu naapurimäärä täyden verkon sijaan.
+- Avoinna: puhelimen taustalle jääminen ja IPv6-osoitteen vaihtuminen (yhteys katkeaa, palataan yhdistämiskoodilla), automaattinen uudelleenyhdistäminen ilman koodia (esim. jedi kohtaamispaikkana), avaimen siirto tai varmuuskopio toiseen laitteeseen, uudelleentunnistus kadonneen avaimen tilalle (muistion kohta 10), yhteinen järjestys verkkokatkojen aikana (kohta 13), suurten verkkojen rajattu naapurimäärä täyden verkon sijaan.
 
 Julkaisu molempiin paikkoihin muutoksen jälkeen (commit ja push ensin; palvelinta ei käynnistetä uudelleen):
 
 ```bash
 tools/publish-pages.sh                                   # GitHub Pages, näkyy noin minuutissa
 scp web/launchpad.html web/direct.html lapere@jedi.ydns.eu:rtcsignal/site/
-scp web/src/{launchpad,direct,stream,streamview,pairing,signaling,classify,ring,scanner}.js lapere@jedi.ydns.eu:rtcsignal/site/src/
+scp web/src/{launchpad,direct,stream,streamview,pairing,signaling,classify,ring,scanner,identity,store}.js lapere@jedi.ydns.eu:rtcsignal/site/src/
 scp web/src/vendor/{qrcode,jsQR}.js lapere@jedi.ydns.eu:rtcsignal/site/src/vendor/
 ```
 

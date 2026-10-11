@@ -19,10 +19,12 @@ else
 	git -C "$tmp" checkout -q --orphan gh-pages
 fi
 git -C "$tmp" rm -rqf --ignore-unmatch . >/dev/null
-mkdir -p "$tmp/src/vendor"
-cp "$web/launchpad.html" "$web/direct.html" "$tmp/"
+mkdir -p "$tmp/src/vendor" "$tmp/icons"
+cp "$web/launchpad.html" "$web/direct.html" "$web/direct.webmanifest" "$tmp/"
+cp "$web/icons/ring-192.png" "$web/icons/ring-512.png" "$tmp/icons/"
 cp "$web/src/launchpad.js" "$web/src/direct.js" "$web/src/stream.js" "$web/src/streamview.js" \
-	"$web/src/pairing.js" "$web/src/signaling.js" "$web/src/classify.js" "$web/src/ring.js" "$web/src/scanner.js" "$tmp/src/"
+	"$web/src/pairing.js" "$web/src/signaling.js" "$web/src/classify.js" "$web/src/ring.js" "$web/src/scanner.js" \
+	"$web/src/identity.js" "$web/src/store.js" "$tmp/src/"
 cp "$web/src/vendor/qrcode.js" "$web/src/vendor/jsQR.js" "$web/src/vendor/jsQR.LICENSE.txt" "$tmp/src/vendor/"
 : > "$tmp/.nojekyll"
 cat > "$tmp/index.html" <<'EOF'

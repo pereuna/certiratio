@@ -3,7 +3,10 @@
 // perustajaksi, Liisa isin ja Törtön väliin, äiti isin ja Liisan väliin.
 // Kamera korvataan direct.scan()-kutsulla: koodin linkki luetaan näytöltä
 // (direct.url) ja syötetään toiselle puhelimelle.
-// Lisäksi viides selain aloittaa oman renkaan Q; toisen renkaan vastaus hylätään.
+// Pysyvyys: Liisan välilehti suljetaan ja avataan uudelleen (sama selainprofiili),
+// ja hän palaa äidin yhdistämiskoodilla. Lisäksi toinen välilehti samassa
+// profiilissa, väärennetyt tapahtumat ja viides selain Q (vieras, sitten oma rengas).
+// Profiilihakemistojen on oltava tyhjiä ajon alussa.
 //   node --experimental-websocket drive-direct.mjs URL PORT_ISI PORT_TORTTO PORT_LIISA PORT_AITI [PORT_Q]
 // Chromium: --remote-debugging-port=PORT --disable-features=WebRtcHideLocalIpsWithMdns
 //           --use-fake-ui-for-media-stream --use-fake-device-for-media-stream
@@ -20,7 +23,7 @@ async function cdp(wsUrl) {
   return { ws, send };
 }
 
-async function open(port, url, label) {
+async function open(port, url, label, ready = '!!window.direct?.id') {
   const t = await (await fetch(`http://localhost:${port}/json/new?${encodeURIComponent(url)}`, { method: 'PUT' })).json();
   const c = await cdp(t.webSocketDebuggerUrl);
   const ev = async (expr) => {
@@ -28,7 +31,7 @@ async function open(port, url, label) {
     if (r.result?.exceptionDetails) throw new Error(`${label}: ${JSON.stringify(r.result.exceptionDetails).slice(0, 300)}`);
     return r.result?.result?.value;
   };
-  for (let i = 0; i < 40 && !(await ev('!!window.direct')); i++) await sleep(250);
+  for (let i = 0; i < 40 && !(await ev(ready)); i++) await sleep(250);
   return { label, port, ev, close: () => fetch(`http://localhost:${port}/json/close/${t.id}`) };
 }
 
@@ -107,29 +110,59 @@ for (const t of all) {
   }
 }
 
-// Toinen rengas: Q aloittaa omansa ja kutsuu. Isin renkaan vastaus ei kelpaa Q:lle.
-if (ports[4]) {
-  const q = await open(ports[4], base, 'Q');
-  await profile(q, 'Q', '🧑');
-  await until(q, `direct.ring.length === 1`);
-  await q.ev(`document.getElementById('invite').click()`);
-  await until(q, `direct.url?.includes('#2.o.')`);
-  const prev = await nodes.isi.ev('direct.url');
-  await nodes.isi.ev(`document.getElementById('invite').click()`);
-  const offer = await until(nodes.isi, `direct.url !== ${J(prev)} && direct.url?.includes('#2.o.') && direct.url`);
-  const stranger = await open(ports[4], offer, 'vieras');
-  await until(stranger, `!document.getElementById('profile').hidden`);
-  await profile(stranger, 'vieras', '🐕');
-  const answer = await until(stranger, `direct.url?.includes('#2.a.') && direct.url`);
-  await q.ev(`direct.scan(${J(answer)})`);
-  const msg = await q.ev(`document.getElementById('pair-note').textContent`);
-  const rejected = msg.includes('toiseen renkaaseen') && (await q.ev('direct.open.length')) === 0;
-  console.log(`toisen renkaan vastaus Q:lle: ${rejected ? 'hylätty' : 'HYVÄKSYTTY'} (${msg})`);
-  ok &&= rejected;
-  // Väärä vahvistuskoodi: offer-koodi jäsenelle ei käy.
-  const wrong = await q.ev(`direct.scan(${J(offer)})`);
-  ok &&= wrong === false;
-  all.push(q, stranger);
+const check = (what, fine, detail = '') => {
+  console.log(`${what}: ${fine ? 'OK' : 'VIRHE'}${detail ? ` (${detail})` : ''}`);
+  ok &&= fine;
+};
+
+// Väärennökset: äidin liittymä muutetulla nimellä ja vieras tunniste samalla avaimella.
+{
+  const evs = await nodes.isi.ev('direct.events');
+  const aiti = evs.find((e) => e.name === 'äiti');
+  await nodes.Liisa.ev(`direct.merge(${J([{ ...aiti, name: 'aaa huijari' }, { ...aiti, member: 'ffffffff', id: 'ffffffff:a' }])})`);
+  check('väärennetyt tapahtumat hylätään', (await nodes.Liisa.ev('direct.ring.join()')) === want.join() &&
+    (await nodes.Liisa.ev(`document.getElementById('log').textContent`)).includes('allekirjoitus ei kelpaa'));
+}
+
+// Pysyvyys: Liisa sulkee välilehden ja avaa sivun uudelleen.
+{
+  const liisaId = await nodes.Liisa.ev('direct.id');
+  await nodes.Liisa.close();
+  for (const t of [nodes.isi, nodes.äiti, nodes.Törttö]) await until(t, `!direct.open.includes(${J(liisaId)})`, 60000);
+  const back = await open(ports[2], base, 'Liisa');
+  await until(back, `direct.ring.join() === ${J(want.join())}`);
+  check('Liisa palaa: sama tunniste ja rengas tallesta', (await back.ev('direct.id')) === liisaId,
+    await back.ev(`document.getElementById('status').textContent`));
+  // Toinen välilehti samassa profiilissa ei aukea jäsenenä.
+  const second = await open(ports[2], base, 'Liisa-2', `!!document.getElementById('step')?.textContent`);
+  check('toinen välilehti samassa selaimessa', (await second.ev('direct.step')).includes('toisessa välilehdessä'));
+  await second.close();
+  // äiti näyttää yhdistämiskoodin, Liisa skannaa sen, äiti skannaa vastauksen.
+  await nodes.äiti.ev(`document.getElementById('reconnect').click()`);
+  await nodes.äiti.ev(`document.getElementById('primary').click()`); // Näytä yhdistämiskoodi
+  const rcode = await until(nodes.äiti, `direct.url?.includes('#2.r.') && direct.url`);
+  await back.ev(`direct.scan(${J(rcode)})`);
+  const answer = await until(back, `direct.url?.includes('#2.a.') && direct.url`);
+  await nodes.äiti.ev(`document.getElementById('primary').click()`); // Skannaa hänen vastauksensa
+  await nodes.äiti.ev(`direct.scan(${J(answer)})`);
+  await until(back, `direct.open.length === 3`, 60000);
+  await until(nodes.äiti, `direct.step.includes('taas mukana') || document.getElementById('pair').hidden`);
+  nodes.Liisa = back;
+  all.splice(all.findIndex((t) => t.label === 'Liisa'), 1, back);
+  await back.ev(`(() => { const e = document.getElementById('text'); e.value = 'palasin'; e.dispatchEvent(new Event('input')); })()`);
+  await sleep(1000);
+  const got = await nodes.Törttö.ev(`[...document.querySelectorAll('#stream span[data-author]')].filter((x) => x.dataset.author === ${J(liisaId)}).map((x) => x.textContent).join('')`);
+  check('Liisa yhdistetty äidin koodilla: suorat yhteydet kaikkiin ja teksti perillä', got.endsWith('palasin'), got);
+
+  // Vieras (Q:n selain, ei jäsen) ja toinen rengas eivät pääse yhdistämiskoodilla.
+  if (ports[4]) {
+    const q = await open(ports[4], base, 'Q');
+    check('vieras ei voi käyttää yhdistämiskoodia', (await q.ev(`direct.scan(${J(rcode)})`)) === false && (await q.ev('direct.note')).includes('jäsenille'));
+    await profile(q, 'Q', '🧑');
+    await until(q, `direct.ring.length === 1`);
+    check('toisen renkaan yhdistämiskoodi hylätään', (await q.ev(`direct.scan(${J(rcode)})`)) === false && (await q.ev('direct.note')).includes('toiseen renkaaseen'));
+    all.push(q);
+  }
 }
 console.log(ok ? 'RENGAS TOIMII' : 'VIRHE');
 if (!process.env.KEEP) for (const t of all) await t.close();

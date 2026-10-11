@@ -6,7 +6,8 @@
 // kokoaa niistä SDP:n. Ei STUN- eikä signalointipalvelinta.
 //
 //   2.o.RENGAS.VASEN.OIKEA.UFRAG.PWD.FP.MID.ADDR_PORT,…   kutsu väliin VASEN → OIKEA
-//   2.a.RENGAS.UFRAG.PWD.FP.MID.ADDR_PORT,…               vastaus
+//   2.r.RENGAS.NÄYTTÄJÄ.UFRAG.PWD.FP.MID.ADDR_PORT,…      yhdistämiskoodi palaavalle jäsenelle
+//   2.a.RENGAS.UFRAG.PWD.FP.MID.ADDR_PORT,…               vastaus (kutsuun tai yhdistämiseen)
 //   2.c.RENGAS.JÄSEN.HAASTE                               toisen naapurin vahvistus
 //
 // RENGAS on renkaan tunniste (8 heksaa), VASEN/OIKEA/JÄSEN jäsenten tunnisteita.
@@ -36,14 +37,15 @@ export function pairable(address) {
 }
 
 /**
- * SDP → tiivis merkkijono. `type` 'offer' tai 'answer'. Kandidaatit luetaan
- * SDP:stä ja `extra`sta (onicecandidate-rivit). `meta`: { ring, left, right }
- * (left/right vain tarjoukseen). Heittää, jos IPv6-osoitteita ei ole.
+ * SDP → tiivis merkkijono. `type` 'offer', 'reconnect' tai 'answer'. Kandidaatit
+ * luetaan SDP:stä ja `extra`sta (onicecandidate-rivit). `meta`: { ring, left,
+ * right } kutsuun, { ring, from } yhdistämiseen. Heittää, jos IPv6-osoitteita ei ole.
  */
 export function encodePairing(type, sdp, extra = [], meta = {}) {
-  const { ring, left, right } = meta;
+  const { ring, left, right, from } = meta;
   if (!HEX8.test(ring ?? '')) throw new Error('renkaan tunniste puuttuu');
   if (type === 'offer' && !(HEX8.test(left ?? '') && HEX8.test(right ?? ''))) throw new Error('kutsun väli puuttuu');
+  if (type === 'reconnect' && !HEX8.test(from ?? '')) throw new Error('näyttäjä puuttuu');
   const lines = sdp.split(/\r?\n/);
   const get = (key) => lines.find((l) => l.startsWith(`a=${key}:`))?.slice(key.length + 3).trim();
   const ufrag = get('ice-ufrag');
@@ -65,20 +67,25 @@ export function encodePairing(type, sdp, extra = [], meta = {}) {
     if (pairable(addr) && /^\d+$/.test(f[5]) && !cands.includes(key)) cands.push(key);
   }
   if (!cands.length) throw new Error('ei IPv6-osoitetta');
-  const head = type === 'offer' ? ['2', 'o', ring, left, right] : ['2', 'a', ring];
+  const head = type === 'offer' ? ['2', 'o', ring, left, right] : type === 'reconnect' ? ['2', 'r', ring, from] : ['2', 'a', ring];
   return [...head, ufrag, pwd, b64url(fpBytes), mid, cands.join(',')].join('.');
 }
 
-/** Tiivis merkkijono → { type, sdp, ring, left, right, … }. Heittää, jos merkkijono on rikki. */
+const FIELDS = { o: 10, r: 9, a: 8 };
+
+/** Tiivis merkkijono → { type, sdp, ring, left, right, from, … }. Heittää, jos merkkijono on rikki. */
 export function decodePairing(token) {
   const f = String(token).trim().split('.');
   if (f[0] === '1') throw new Error('vanha koodi – päivitä sivu molemmissa puhelimissa');
   const t = f[1];
-  if (f[0] !== '2' || !(t === 'o' && f.length === 10) && !(t === 'a' && f.length === 8)) throw new Error('tuntematon koodi');
+  if (f[0] !== '2' || FIELDS[t] !== f.length) throw new Error('tuntematon koodi');
   const ring = f[2];
   const [left, right] = t === 'o' ? [f[3], f[4]] : [null, null];
-  if (!HEX8.test(ring) || (t === 'o' && !(HEX8.test(left) && HEX8.test(right)))) throw new Error('rikkinäinen koodi');
-  const [ufrag, pwd, fp64, mid, list] = f.slice(t === 'o' ? 5 : 3);
+  const from = t === 'r' ? f[3] : null;
+  if (!HEX8.test(ring) || (t === 'o' && !(HEX8.test(left) && HEX8.test(right))) || (t === 'r' && !HEX8.test(from))) {
+    throw new Error('rikkinäinen koodi');
+  }
+  const [ufrag, pwd, fp64, mid, list] = f.slice(f.length - 5);
   if (!ICE_CHARS.test(ufrag) || !ICE_CHARS.test(pwd) || !/^[A-Za-z0-9]+$/.test(mid)) throw new Error('rikkinäinen koodi');
   const fp = [...unb64url(fp64)].map((b) => b.toString(16).toUpperCase().padStart(2, '0')).join(':');
   if (fp.length !== 32 * 3 - 1) throw new Error('rikkinäinen sormenjälki');
@@ -89,7 +96,7 @@ export function decodePairing(token) {
     if (!pairable(addr) || !(port > 0 && port < 65536)) throw new Error('rikkinäinen osoite');
     return { addr, port };
   });
-  const type = t === 'o' ? 'offer' : 'answer';
+  const type = { o: 'offer', r: 'reconnect', a: 'answer' }[t];
   const sdp = [
     'v=0',
     'o=- 1 2 IN IP4 127.0.0.1',
@@ -104,13 +111,14 @@ export function decodePairing(token) {
     `a=ice-ufrag:${ufrag}`,
     `a=ice-pwd:${pwd}`,
     `a=fingerprint:sha-256 ${fp}`,
-    `a=setup:${type === 'offer' ? 'actpass' : 'active'}`,
+    `a=setup:${type === 'answer' ? 'active' : 'actpass'}`,
     `a=mid:${mid}`,
     'a=sctp-port:5000',
     'a=max-message-size:262144',
     '',
   ].join('\r\n');
-  return { type, sdp, ufrag, candidates: cands, ring, left, right };
+  // sdpType: RTCSessionDescriptionin tyyppi (yhdistämiskoodi on tarjous).
+  return { type, sdpType: type === 'answer' ? 'answer' : 'offer', sdp, ufrag, candidates: cands, ring, left, right, from };
 }
 
 /** Toisen naapurin vahvistuskoodi: liittyjä skannaa sen ja lähettää haasteen takaisin verkon kautta. */

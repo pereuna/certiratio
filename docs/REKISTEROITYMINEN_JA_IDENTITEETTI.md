@@ -300,7 +300,7 @@ Projektin nykyiset ohjeet painottavat ensin selainpohjaista tapahtumajärjestelm
 
 **Vaihe 1 – rekisterin rakennetesti:** kolmen perustajajäsenen ympyrä, välin atominen jakaminen, ristiriitaisten liittymisten hylkäys, historiallinen rekonstruktio ja yksi suljettu ympyrä. Simuloidut jäsenet ja allekirjoitukset riittävät. *Kokeilu puhelimilla:* [`poc1/web/direct.html`](../poc1/README.md#rengas-suora-verkko-ilman-palvelinta-webdirecthtml) toteuttaa renkaan ilman allekirjoituksia: kaksi perustajaa, liittyminen vierekkäisten jäsenten väliin kahdella QR-koodilla ja ristiriitaisten liittymisten hylkäys (`poc1/web/src/ring.js`).
 
-**Vaihe 2 – sosiaalisen tunnistuksen koe:** kahden tunnistajan hyväksynnät, jakson historiallisen kasvun raportointi, kiistämismenettely, avaimen vaihto ja uudelleentunnistus. Testataan myös yhteistyössä toimivia vääriä tunnistajia.
+**Vaihe 2 – sosiaalisen tunnistuksen koe:** kahden tunnistajan hyväksynnät, jakson historiallisen kasvun raportointi, kiistämismenettely, avaimen vaihto ja uudelleentunnistus. Testataan myös yhteistyössä toimivia vääriä tunnistajia. *Kokeilu puhelimilla:* `poc1/web/direct.html` allekirjoittaa liittymiset (tulokas, vasen ja oikea naapuri; ECDSA P-256), todentaa jokaisen yhteyden avaimella, säilyttää avaimen ja rekisterin selaimessa ja yhdistää palaavan jäsenen ilman uutta liittymistä. Kiistäminen, avaimen vaihto ja uudelleentunnistus ovat vielä tekemättä.
 
 **Vaihe 3 – taloudellinen rasituskoe:** arvioidaan liittymismaksun, odotusajan, hyväksyjien taajuusrajojen ja alkuvaiheen vastaanottorajan yhdistelmiä. Tarkistetaan hyökkääjän kustannus ja mahdollinen hyöty, ei vain hyväksyttyjen tilien määrä.
 

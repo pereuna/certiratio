@@ -5,25 +5,33 @@
 //   1. A näyttää kutsukoodin (2.o…), uusi jäsen N skannaa sen.
 //   2. N näyttää vastauskoodin (2.a…), A skannaa sen sivun omalla kameralla:
 //      suora IPv6-yhteys A–N syntyy, ja verkko esittelee N:n muille.
-//   3. B näyttää vahvistuskoodin (2.c…), N skannaa sen ja lähettää haasteen
-//      B:lle verkon kautta. B ilmoittaa A:lle, A julkaisee liittymisen (admit).
+//   3. B näyttää vahvistuskoodin (2.c…), N skannaa sen, allekirjoittaa
+//      liittymisensä ja lähettää sen B:lle. B allekirjoittaa ja ilmoittaa A:lle,
+//      A allekirjoittaa ja julkaisee liittymisen (admit).
 // Vain vasen jäsen A voi kutsua väliin A → B, joten samaan väliin ei tule kahta
 // liittyjää yhtä aikaa.
 //
-// Verkkokerros: jäsenet kertovat naapurinsa (hello), ja kaikki muodostavat
-// suorat yhteydet kaikkiin. Tarjoukset ja vastaukset kulkevat olemassa olevia
+// Pysyvyys: avainpari (identity.js) ja rekisteri tallentuvat selaimeen
+// (store.js), ja sivu aukeaa jäsenenä. Palaava jäsen yhdistetään verkkoon
+// yhdistämiskoodilla (2.r…), jonka kuka tahansa paikalla oleva jäsen näyttää.
+//
+// Verkkokerros: jokainen yhteys todennetaan (hello: avain ja haaste, auth:
+// allekirjoitus). Jäsenet kertovat naapurinsa, ja kaikki muodostavat suorat
+// yhteydet kaikkiin. Tarjoukset ja vastaukset kulkevat olemassa olevia
 // DataChanneleita pitkin (sig). Tekstivirta (chars) ja rekisteritapahtumat (ev)
 // leviävät kaikille. Eri renkaiden puhelimet eivät yhdisty (hello.ring).
 // Vain IPv6; ei signalointipalvelinta.
 
 import { CLASSES, classifyPair, selectedPair } from './classify.js';
+import { authPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js';
 import { decodeAny, encodePairing, encodeVouch } from './pairing.js';
-import { ICONS, adjacent, build, cleanName, successor, validEvent } from './ring.js';
+import { ICONS, adjacent, build, cleanName, eventId, preferred, successor, validEvent } from './ring.js';
 import { createScanner } from './scanner.js';
+import { clear as clearStore, load, save } from './store.js';
 import { filterSdp } from './stream.js';
 import { MAX_CHARS, createStreamView } from './streamview.js';
 
-const PROTOCOL = 'certiratio-direct/3';
+const PROTOCOL = 'certiratio-direct/4';
 const MAX_MESSAGE_BYTES = 64 * 1024;
 const GATHER_MS = 5000;
 const CONNECT_TIMEOUT_MS = 45000;
@@ -31,23 +39,30 @@ const STATS_INTERVAL_MS = 3000;
 const TTL = 8; // välityskertoja enintään
 const MAX_SEEN = 20000;
 const MAX_EVENTS = 1000;
+const MAX_QUEUE = 200;
+const RETRY_MS = 120000; // epäonnistunutta yhteyttä yritetään uudelleen aikaisintaan näin pian
 const FRESH_MS = 8000; // uusi jäsen korostetaan renkaassa näin kauan
 const ID = /^[0-9a-f]{8}$/;
 const STUN = 'stun:stun.l.google.com:19302';
+const LOCK = 'certiratio-direct';
 const DIRECTED = new Set(['sig', 'sponsor', 'claim', 'vouched']);
 
 const $ = (id) => document.getElementById(id);
 const base = location.origin + location.pathname;
 const bc = 'BroadcastChannel' in window ? new BroadcastChannel('certiratio-direct') : null;
 const hex = (n) => [...crypto.getRandomValues(new Uint8Array(n))].map((b) => b.toString(16).padStart(2, '0')).join('');
-const myId = hex(4);
+const boot = hex(4); // tämä sivun lataus: vanhentuneen yhteyden tunnistamiseen
 let useStun = new URLSearchParams(location.search).has('stun');
+
+let me = null; // { priv, pub, key, id }
+let myId = null;
+let stored = true; // tallennus toimii
 
 /** Yhteydet naapureihin. Avain on naapurin id, tai 'qr-N', kunnes hello kertoo sen. */
 const links = new Map();
-const failed = new Set(); // id:t, joihin välitetty yhteys ei syntynyt (ei uusita)
+const failed = new Map(); // id -> aika: välitetty yhteys ei syntynyt (ei uusita hetkeen)
 const seen = new Set(); // käsiteltyjen sanomien mid:t
-const peerInfo = new Map(); // id -> { name, icon } (hello; myös ei-vielä-jäsenet)
+const peerInfo = new Map(); // id -> { name, icon } (todennettu hello; myös ei-vielä-jäsenet)
 let seq = 0;
 let qrSeq = 0;
 let lastHello = '';
@@ -56,22 +71,27 @@ let lastGather = []; // viimeksi kerätyt kandidaattirivit (testejä varten)
 
 // Rengas
 let ringId = null;
-const events = new Map(); // id -> tapahtuma
-let evSeq = 0;
+const events = new Map(); // id -> tarkistettu tapahtuma
+const unverified = new Map(); // allekirjoittajan avain vielä tuntematon
 let ring = build('00000000', []);
 const fresh = new Map(); // jäsen -> aika, jolloin liittyi
 let profile = { name: '', icon: ICONS[0] };
+let restoring = false; // tallennetun rekisterin lataus: ei ilmoituksia
+let persisted = false;
 
-// Käynnissä olevat liittymiset
-let invite = null; // A: { link, left, right, member, sent }
+// Käynnissä olevat liittymiset ja yhdistämiset
+let invite = null; // näyttäjä: { kind: 'join'|'reconnect', link, left, right, member, memberKey, connected }
 let joining = null; // N: { token, offer, link, stage: 'profile'|'answer'|'vouch'|'wait' }
-let sponsor = null; // B: { member, inviter, nonce, done }
+let sponsor = null; // B: { member, key, name, icon, inviter, left, nonce, done }
+let rejoin = null; // palaava jäsen: { code, link }
+let retryLast = null; // "Yritä uudelleen"
 
 // --- Yhteydet -------------------------------------------------------------
 
 function newLink(key, id = null) {
   const pc = new RTCPeerConnection({ iceServers: useStun ? [{ urls: STUN }] : [] });
-  const link = { key, id, pc, ch: null, cls: 'unknown', detail: '', timer: null, deadline: null };
+  const link = { key, id, pc, ch: null, cls: 'unknown', detail: '', timer: null, deadline: null, nonce: hex(8),
+    peerKey: null, peerBoot: null, verified: false, queue: [], chain: Promise.resolve(), peers: [] };
   links.set(key, link);
   pc.onconnectionstatechange = () => {
     if (pc.connectionState === 'failed') drop(link, 'ICE epäonnistui');
@@ -86,7 +106,7 @@ function newLink(key, id = null) {
 function armDeadline(link) {
   clearTimeout(link.deadline);
   link.deadline = setTimeout(() => {
-    if (link.ch?.readyState !== 'open') drop(link, `ei yhteyttä ${CONNECT_TIMEOUT_MS / 1000} s:ssa`);
+    if (!link.verified) drop(link, `ei yhteyttä ${CONNECT_TIMEOUT_MS / 1000} s:ssa`);
   }, CONNECT_TIMEOUT_MS);
 }
 
@@ -97,13 +117,15 @@ function drop(link, why) {
   clearTimeout(link.deadline);
   link.ch?.close();
   link.pc.close();
-  if (link.id && why) failed.add(link.id);
+  if (link.id && why && !link.verified) failed.set(link.id, Date.now()); // katkennut toimiva yhteys saa palata
   log(`${nameOf(link.id) ?? 'uusi'}: ${why ?? 'suljettu'}`);
-  if (invite?.link === link && !invite.member) {
+  if (invite?.link === link && !invite.connected) {
     invite = null;
     if (why) pairFailed(why);
   }
-  if (joining?.link === link && joining.stage === 'answer') {
+  if (joining?.link === link && joining.stage === 'answer' && why) pairFailed(why);
+  if (rejoin?.link === link && !link.verified) {
+    rejoin = null;
     if (why) pairFailed(why);
   }
   sendHello();
@@ -130,9 +152,8 @@ function gather(pc) {
 function attach(link, ch) {
   link.ch = ch;
   ch.onopen = () => {
-    clearTimeout(link.deadline);
-    send(link, { type: 'events', list: [...events.values()] }); // ennen helloa: nimet tiedossa
-    send(link, helloMsg());
+    send(link, { type: 'events', list: [...events.values()] }); // jonoon, kunnes todennettu
+    send(link, helloMsg(link));
     render();
   };
   ch.onclose = () => drop(link, null);
@@ -140,7 +161,9 @@ function attach(link, ch) {
     if (typeof ev.data !== 'string' || ev.data.length > MAX_MESSAGE_BYTES) return;
     let msg;
     try { msg = JSON.parse(ev.data); } catch { return; }
-    if (msg?.protocol === PROTOCOL) onMessage(link, msg);
+    if (msg?.protocol !== PROTOCOL) return;
+    // Sanomat käsitellään järjestyksessä, vaikka tarkistukset ovat asynkronisia.
+    link.chain = link.chain.then(() => onMessage(link, msg)).catch((e) => log(`${nameOf(link.id) ?? 'uusi'}: ${e.message}`));
   };
 }
 
@@ -148,12 +171,14 @@ function send(link, msg) {
   if (link.ch?.readyState === 'open') link.ch.send(JSON.stringify({ ...msg, protocol: PROTOCOL }));
 }
 
+/** Todennetut, avoimet naapurit. */
 function neighbours() {
-  return [...links.values()].filter((l) => l.id && l.ch?.readyState === 'open').map((l) => l.id).sort();
+  return [...links.values()].filter((l) => l.verified && l.ch?.readyState === 'open').map((l) => l.id).sort();
 }
 
-function helloMsg() {
-  return { type: 'hello', id: myId, ring: ringId, name: profile.name, icon: profile.icon, peers: neighbours() };
+function helloMsg(link) {
+  return { type: 'hello', id: myId, boot, ring: ringId, name: profile.name, icon: profile.icon, key: me.key,
+    nonce: link.nonce, peers: neighbours() };
 }
 
 /** Naapurilista kaikille, kun se muuttuu: näin jäsenet oppivat toisensa. */
@@ -161,58 +186,114 @@ function sendHello() {
   const key = neighbours().join(',');
   if (key === lastHello) return;
   lastHello = key;
-  for (const l of links.values()) send(l, helloMsg());
+  for (const l of links.values()) send(l, helloMsg(l));
 }
 
 // --- Sanomat --------------------------------------------------------------
 
-function onMessage(link, msg) {
-  if (msg.type === 'hello') {
-    if (typeof msg.id !== 'string' || !ID.test(msg.id) || msg.id === myId) return;
-    if (msg.ring && ringId && msg.ring !== ringId) {
-      log(`${msg.id}: kuuluu toiseen renkaaseen, ei yhdistetä`);
-      if (invite?.link === link || joining?.link === link) pairFailed('koodi kuuluu toiseen renkaaseen');
-      drop(link, null);
-      return;
-    }
-    const name = cleanName(msg.name);
-    if (name && ICONS.includes(msg.icon)) peerInfo.set(msg.id, { name, icon: msg.icon });
-    if (!link.id) {
-      const other = links.get(msg.id);
-      if (other && other.ch?.readyState === 'open') { drop(link, null); return; } // kaksoisyhteys
-      if (other) drop(other, null);
-      links.delete(link.key);
-      link.id = link.key = msg.id;
-      links.set(link.key, link);
-      log(`${nameOf(msg.id)}: mukana`);
-      if (invite?.link === link) inviteConnected();
-      if (joining?.link === link) joinConnected();
-    }
-    if (Array.isArray(msg.peers)) for (const p of msg.peers.slice(0, 64)) consider(p);
-    sendHello();
-    render();
-  } else if (msg.type === 'events') {
-    if (Array.isArray(msg.list)) merge(msg.list.slice(0, MAX_EVENTS));
+async function onMessage(link, msg) {
+  if (links.get(link.key) !== link) return;
+  if (msg.type === 'hello') return onHello(link, msg);
+  if (msg.type === 'auth') return onAuth(link, msg);
+  if (!link.verified) {
+    if (link.queue.length < MAX_QUEUE) link.queue.push(msg);
+    return;
+  }
+  return handle(link, msg);
+}
+
+async function handle(link, msg) {
+  if (msg.type === 'events') {
+    if (Array.isArray(msg.list)) await merge(msg.list.slice(0, MAX_EVENTS));
   } else if (msg.type === 'chars' || msg.type === 'ev' || DIRECTED.has(msg.type)) {
     route(msg, link);
   }
 }
 
+/** Naapurin tunniste ja avain. Avaimen on vastattava tunnistetta ja rekisteriä. */
+async function onHello(link, msg) {
+  if (typeof msg.id !== 'string' || !ID.test(msg.id) || msg.id === myId || typeof msg.nonce !== 'string') return;
+  if (msg.ring && ringId && msg.ring !== ringId) {
+    log(`${msg.id}: kuuluu toiseen renkaaseen, ei yhdistetä`);
+    if (invite?.link === link || joining?.link === link || rejoin?.link === link) pairFailed('koodi kuuluu toiseen renkaaseen');
+    drop(link, null);
+    return;
+  }
+  if (typeof msg.key !== 'string' || (await idOf(msg.key)) !== msg.id) {
+    log(`${msg.id}: avain ei vastaa tunnistetta, katkaistaan`);
+    drop(link, null);
+    return;
+  }
+  const registered = ring.info.get(msg.id)?.key;
+  if ((registered && registered !== msg.key) || (link.peerKey && link.peerKey !== msg.key)) {
+    log(`${nameOf(msg.id)}: väärä avain, katkaistaan`);
+    drop(link, null);
+    return;
+  }
+  if (!link.id) {
+    const other = links.get(msg.id);
+    if (other?.ch?.readyState === 'open' && other.peerBoot === msg.boot) { drop(link, null); return; } // kaksoisyhteys
+    if (other) drop(other, null); // vanhentunut: naapuri on ladannut sivun uudelleen
+    links.delete(link.key);
+    link.id = link.key = msg.id;
+    links.set(link.key, link);
+  } else if (link.id !== msg.id) {
+    drop(link, null);
+    return;
+  }
+  link.peerBoot = msg.boot;
+  link.peers = Array.isArray(msg.peers) ? msg.peers.slice(0, 64) : [];
+  const name = cleanName(msg.name);
+  if (name && ICONS.includes(msg.icon)) peerInfo.set(msg.id, { name, icon: msg.icon });
+  if (!link.peerKey) {
+    link.peerKey = msg.key;
+    send(link, { type: 'auth', sig: await sign(me.priv, authPayload(msg.nonce, myId, msg.id)) });
+  }
+  if (link.verified) {
+    for (const p of link.peers) consider(p);
+    sendHello();
+  }
+  render();
+}
+
+/** Naapuri allekirjoitti haasteemme: yhteys on todennettu. */
+async function onAuth(link, msg) {
+  if (!link.peerKey || link.verified || typeof msg.sig !== 'string') return;
+  if (!(await verify(link.peerKey, authPayload(link.nonce, link.id, myId), msg.sig))) {
+    log(`${nameOf(link.id)}: todennus epäonnistui, katkaistaan`);
+    drop(link, null);
+    return;
+  }
+  link.verified = true;
+  clearTimeout(link.deadline);
+  log(`${nameOf(link.id)}: mukana (todennettu)`);
+  // Kutsuja tietää tulokkaan ennen jonoa (siellä voi olla jo hänen hyväksyntänsä);
+  // tulokas lukee jonosta ensin rekisterin, jotta nimet ovat tiedossa.
+  if (invite?.link === link) inviteConnected();
+  for (const m of link.queue.splice(0)) await handle(link, m);
+  if (joining?.link === link) joinConnected();
+  else if (rejoin?.link === link) rejoined();
+  if (links.get(link.key) !== link) return; // esim. ei jäsen: katkaistu
+  for (const p of link.peers) consider(p);
+  sendHello();
+  render();
+}
+
 /** Uusi jäsen naapurin listalla: pienempi id aloittaa, joten tarjoukset eivät törmää. */
 function consider(p) {
   if (typeof p !== 'string' || !ID.test(p) || p === myId) return;
-  if (links.has(p) || failed.has(p)) return;
+  if (links.has(p) || Date.now() - (failed.get(p) ?? 0) < RETRY_MS) return;
   if (myId < p) connectTo(p);
 }
 
 function originate(msg) {
-  msg.mid = `${myId}:${++seq}`;
+  msg.mid = `${myId}:${boot}:${++seq}`;
   msg.from = myId;
   msg.ttl = TTL;
   remember(msg.mid);
   const direct = msg.to && links.get(msg.to);
-  if (direct?.ch?.readyState === 'open') send(direct, msg);
-  else for (const l of links.values()) send(l, msg);
+  if (direct?.verified && direct.ch?.readyState === 'open') send(direct, msg);
+  else for (const l of links.values()) if (l.verified) send(l, msg);
 }
 
 function remember(mid) {
@@ -229,21 +310,21 @@ function route(msg, via) {
   }
   if (msg.type === 'ev') merge([msg.ev]);
   if (DIRECTED.has(msg.type) && msg.to === myId) {
-    onDirected(msg, TTL - (msg.ttl ?? TTL));
+    onDirected(msg, TTL - (msg.ttl ?? TTL)).catch((e) => log(`${nameOf(msg.from)}: ${e.message}`));
     return;
   }
   if (!(msg.ttl > 1)) return;
   const fwd = { ...msg, ttl: msg.ttl - 1 };
   const direct = DIRECTED.has(msg.type) && links.get(msg.to);
-  if (direct?.ch?.readyState === 'open') send(direct, fwd);
-  else for (const l of links.values()) if (l !== via) send(l, fwd);
+  if (direct?.verified && direct.ch?.readyState === 'open') send(direct, fwd);
+  else for (const l of links.values()) if (l !== via && l.verified) send(l, fwd);
 }
 
-function onDirected(msg, hops) {
-  if (msg.type === 'sig') onSig(msg.from, msg.data, hops);
-  else if (msg.type === 'sponsor') onSponsor(msg);
-  else if (msg.type === 'claim') onClaim(msg);
-  else if (msg.type === 'vouched') onVouched(msg);
+async function onDirected(msg, hops) {
+  if (msg.type === 'sig') await onSig(msg.from, msg.data, hops);
+  else if (msg.type === 'sponsor') await onSponsor(msg);
+  else if (msg.type === 'claim') await onClaim(msg);
+  else if (msg.type === 'vouched') await onVouched(msg);
 }
 
 // --- Verkon kautta välitetty yhteydenmuodostus ----------------------------
@@ -258,7 +339,7 @@ async function connectTo(p) {
   attach(link, link.pc.createDataChannel('direct', { ordered: true }));
   log(`${nameOf(p)}: esittely verkon kautta, muodostetaan yhteys`);
   await link.pc.setLocalDescription(await link.pc.createOffer());
-  originate({ type: 'sig', to: p, data: { sdp: await localSdp(link) } });
+  originate({ type: 'sig', to: p, data: { sdp: await localSdp(link), boot } });
   render();
 }
 
@@ -268,14 +349,15 @@ async function onSig(from, data, hops) {
   try {
     if (desc.type === 'offer') {
       const old = links.get(from);
-      if (old?.ch?.readyState === 'open') return;
+      // Avoin yhteys samaan sivun lataukseen riittää; uudelleen ladattu sivu korvaa vanhan.
+      if (old?.ch?.readyState === 'open' && old.peerBoot === data.boot) return;
       if (old) drop(old, null);
       failed.delete(from);
       const link = newLink(from, from);
       log(`${nameOf(from)}: esittely verkon kautta, välittäjiä ${hops}; vastataan`);
       await link.pc.setRemoteDescription(desc);
       await link.pc.setLocalDescription(await link.pc.createAnswer());
-      originate({ type: 'sig', to: from, data: { sdp: await localSdp(link) } });
+      originate({ type: 'sig', to: from, data: { sdp: await localSdp(link), boot } });
       render();
     } else if (desc.type === 'answer') {
       const link = links.get(from);
@@ -291,7 +373,7 @@ async function onSig(from, data, hops) {
 
 // --- Rengas ---------------------------------------------------------------
 
-function isMember(id = myId) { return ring.members.includes(id); }
+function isMember(id = myId) { return !!id && ring.members.includes(id); }
 
 function nameOf(id) {
   if (!id) return null;
@@ -302,28 +384,52 @@ function iconOf(id) {
   return ring.info.get(id)?.icon ?? peerInfo.get(id)?.icon ?? '🧑';
 }
 
+const keyOf = (id) => (events.get(`${id}:f`) ?? events.get(`${id}:a`))?.key ?? null;
+
 /** Oma uusi tapahtuma: talteen ja kaikille. */
-function publish(ev) {
-  ev.id = `${myId}:${++evSeq}`;
-  ev.ring = ringId;
-  merge([ev]);
+async function publish(ev) {
+  ev.id = eventId(ev.kind, ev.member);
+  await merge([ev]);
   originate({ type: 'ev', ev });
 }
 
+/** Liittymisen allekirjoitettava luonnos. */
+function draftAdmit({ left, right, member, key, name, icon, proof }) {
+  return { kind: 'admit', ring: ringId, left, right, member, key, name, icon, proof };
+}
+
+let mergeChain = Promise.resolve();
+/** Tapahtumat rekisteriin allekirjoitusten tarkistuksen jälkeen (järjestyksessä). */
 function merge(list) {
-  let added = false;
+  mergeChain = mergeChain.then(() => mergeNow(list)).catch((e) => log(`rekisteri: ${e.message}`));
+  return mergeChain;
+}
+
+async function mergeNow(list) {
+  if (!ringId) return;
   for (const ev of list) {
-    if (!validEvent(ev) || events.has(ev.id) || events.size >= MAX_EVENTS) continue;
-    if (ringId && ev.ring !== ringId) continue;
-    events.set(ev.id, ev);
-    added = true;
+    if (!validEvent(ev) || ev.ring !== ringId) continue;
+    const have = events.get(ev.id);
+    if (have && preferred(have, ev) === have) continue;
+    if (unverified.size < MAX_EVENTS) unverified.set(ev.id, preferred(unverified.get(ev.id), ev));
+  }
+  let added = false;
+  for (let progress = true; progress;) {
+    progress = false;
+    for (const [id, ev] of unverified) {
+      const ok = await verifyEvent(ev, keyOf);
+      if (ok === null) continue; // allekirjoittajan avain tulee myöhemmin
+      unverified.delete(id);
+      progress = true;
+      if (ok) { events.set(id, ev); added = true; } else log(`rekisteri: allekirjoitus ei kelpaa (${id}), hylätty`);
+    }
   }
   if (!added) return;
   const before = new Set(ring.members);
   ring = build(ringId, [...events.values()]);
-  for (const r of ring.rejected) log(`rekisteri: hylätty ${r.id} (${r.why})`);
+  if (!restoring) for (const r of ring.rejected) log(`rekisteri: hylätty ${r.id} (${r.why})`);
   for (const m of ring.members) {
-    if (before.has(m)) continue;
+    if (before.has(m) || restoring) continue;
     fresh.set(m, Date.now());
     setTimeout(render, FRESH_MS + 50);
     const ev = events.get(ring.info.get(m).event);
@@ -332,34 +438,58 @@ function merge(list) {
         : `${nameOf(m)} liittyi väliin ${nameOf(ev.left)} → ${nameOf(ev.right)}`);
     admitted(m, ev);
   }
+  if (isMember()) {
+    save('ring', { ringId, events: [...events.values()] }).catch(() => { stored = false; });
+    if (!persisted) {
+      persisted = true;
+      navigator.storage?.persist?.().then((p) => log(`tallennus ${p ? 'pysyvä' : 'selaimen harkinnassa'}`), () => {});
+    }
+  }
   render();
 }
 
-function found(name, icon) {
-  ringId = hex(4);
-  publish({ kind: 'found', member: myId, name, icon });
+async function found(name, icon) {
+  const salt = hex(4);
+  ringId = await ringIdOf(me.key, salt);
+  const ev = { kind: 'found', ring: ringId, member: myId, key: me.key, salt, name, icon };
+  ev.sigs = { member: await sign(me.priv, payloadOf(ev)) };
+  await publish(ev);
   showMember();
 }
 
-// --- Kutsu (A, vasen naapuri) ---------------------------------------------
+// --- Kutsu ja yhdistämiskoodi (näyttäjä) ----------------------------------
 
-async function startInvite() {
+async function startInvite(kind = 'join') {
   if (!isMember()) return;
   if (invite) drop(invite.link, null);
-  const right = successor(ring.members, myId);
+  retryLast = () => startInvite(kind);
+  const right = kind === 'join' ? successor(ring.members, myId) : null;
   const link = newLink(`qr-${++qrSeq}`);
   clearTimeout(link.deadline); // QR-skannaus saa kestää
-  invite = { link, left: myId, right, member: null, sent: false };
-  panel({ step: 'Kerätään omat IPv6-osoitteet…', trio: trioNew(myId, right, null), secondary: ['Peru', cancelInvite] });
+  invite = { kind, link, left: myId, right, member: null, memberKey: null, connected: false };
+  panel({ step: 'Kerätään omat IPv6-osoitteet…', trio: kind === 'join' ? trioNew(myId, right, null) : null, secondary: ['Peru', cancelInvite] });
   attach(link, link.pc.createDataChannel('direct', { ordered: true }));
   const gathering = gather(link.pc);
   await link.pc.setLocalDescription(await link.pc.createOffer());
-  const token = await local(link, 'offer', gathering, { ring: ringId, left: myId, right });
+  const token = kind === 'join'
+    ? await local(link, 'offer', gathering, { ring: ringId, left: myId, right })
+    : await local(link, 'reconnect', gathering, { ring: ringId, from: myId });
   if (!token) return;
   showInviteCode(token);
 }
 
 function showInviteCode(token) {
+  if (invite.kind === 'reconnect') {
+    panel({
+      step: 'Yhdistä 1/2 · Näytä tämä koodi palaavalle jäsenelle. Hän skannaa sen sivun omalla kameralla.',
+      note: 'Hän painaa ensin "Yhdistä jäsen" → "Skannaa yhdistämiskoodi".',
+      qr: `${base}#${token}`,
+      primary: ['Skannaa hänen vastauksensa', () => scanAnswer(token)],
+      secondary: ['Peru', cancelInvite],
+      paste: true,
+    });
+    return;
+  }
   const founding = invite.right === myId;
   panel({
     step: 'Kutsu 1/2 · Näytä tämä koodi uudelle jäsenelle. Hän skannaa sen puhelimensa kameralla.',
@@ -375,17 +505,17 @@ function showInviteCode(token) {
 
 function scanAnswer(token) {
   panel({
-    step: 'Kutsu 2/2 · Skannaa uuden jäsenen näytöltä vastauskoodi.',
-    trio: trioNew(myId, invite.right, null),
+    step: `${invite.kind === 'join' ? 'Kutsu' : 'Yhdistä'} 2/2 · Skannaa hänen näytöltään vastauskoodi.`,
+    trio: invite.kind === 'join' ? trioNew(myId, invite.right, null) : null,
     cam: true,
-    primary: ['Näytä kutsukoodi uudelleen', () => showInviteCode(token)],
+    primary: ['Näytä koodi uudelleen', () => showInviteCode(token)],
     secondary: ['Peru', cancelInvite],
     paste: true,
   });
 }
 
 function cancelInvite() {
-  if (invite && !invite.member) drop(invite.link, null);
+  if (invite && !invite.connected) drop(invite.link, null);
   invite = null;
   showMember();
 }
@@ -396,19 +526,31 @@ async function useAnswer(ans) {
   if (ans.ring !== ringId) return note('Vastaus kuuluu toiseen renkaaseen.');
   await link.pc.setRemoteDescription({ type: 'answer', sdp: ans.sdp });
   armDeadline(link);
-  panel({ step: 'Yhdistetään…', trio: trioNew(myId, invite.right, null), secondary: ['Peru', cancelInvite] });
+  panel({ step: 'Yhdistetään…', trio: invite.kind === 'join' ? trioNew(myId, invite.right, null) : null, secondary: ['Peru', cancelInvite] });
 }
 
-/** Uusi jäsen on suoraan yhteydessä: perustaja hyväksytään heti, muut vahvistaa oikea naapuri. */
+/** Näytetyn koodin kautta tullut yhteys on todennettu. */
 function inviteConnected() {
   const n = invite.link.id;
-  invite.member = n;
-  if (invite.right === myId) {
-    publish({ kind: 'admit', left: myId, right: myId, member: n, name: nameOf(n), icon: iconOf(n), proof: '' });
+  invite.connected = true;
+  if (invite.kind === 'reconnect') {
+    const i = invite;
+    invite = null;
+    if (!isMember(n)) {
+      drop(i.link, null);
+      panel({ step: `${nameOf(n)} ei ole tämän renkaan jäsen.`, note: 'Uusi jäsen tarvitsee kutsukoodin (Kutsu väliin).', primary: ['Sulje', showMember] });
+      return;
+    }
+    done(`✅ ${nameOf(n)} on taas mukana.`, null);
     return;
   }
-  originate({ type: 'sponsor', to: invite.right, member: n, name: nameOf(n), icon: iconOf(n), left: myId });
-  invite.sent = true;
+  invite.member = n;
+  invite.memberKey = invite.link.peerKey;
+  if (invite.right === myId) {
+    panel({ step: `${nameOf(n)} on yhteydessä. Odotetaan hänen hyväksyntäänsä…`, trio: trioNew(myId, myId, n) });
+    return;
+  }
+  originate({ type: 'sponsor', to: invite.right, member: n, key: invite.memberKey, name: nameOf(n), icon: iconOf(n), left: myId });
   panel({
     step: `${nameOf(n)} on yhteydessä. Nyt ${nameOf(invite.right)} näyttää hänelle oman koodinsa.`,
     trio: trioNew(myId, invite.right, n),
@@ -416,27 +558,37 @@ function inviteConnected() {
   });
 }
 
-function onVouched(msg) {
+/** Oikea naapuri vahvisti tulokkaan: kutsuja allekirjoittaa ja julkaisee. */
+async function onVouched(msg) {
   if (!invite || invite.member !== msg.member || msg.from !== invite.right) return;
   if (!adjacent(ring.members, invite.left, invite.right)) {
     log('kutsu vanheni: naapurit eivät ole enää vierekkäin');
     return;
   }
   const n = invite.member;
-  publish({ kind: 'admit', left: invite.left, right: invite.right, member: n, name: nameOf(n), icon: iconOf(n),
+  const ev = draftAdmit({ left: myId, right: invite.right, member: n, key: invite.memberKey, name: nameOf(n), icon: iconOf(n),
     proof: String(msg.nonce ?? '') });
+  const p = payloadOf(ev);
+  if (!(await verify(ev.key, p, msg.sigMember)) || !(await verify(keyOf(invite.right), p, msg.sigRight))) {
+    log(`${nameOf(n)}: vahvistuksen allekirjoitus ei kelpaa`);
+    return;
+  }
+  ev.sigs = { member: msg.sigMember, left: await sign(me.priv, p), right: msg.sigRight };
+  await publish(ev);
 }
 
 // --- Vahvistus (B, oikea naapuri) -----------------------------------------
 
-function onSponsor(msg) {
-  const ok = ID.test(msg.member ?? '') && msg.left === msg.from && isMember() && adjacent(ring.members, msg.from, myId);
+async function onSponsor(msg) {
+  const ok = ID.test(msg.member ?? '') && msg.left === msg.from && isMember() && adjacent(ring.members, msg.from, myId) &&
+    typeof msg.key === 'string' && (await idOf(msg.key)) === msg.member;
   if (!ok || isMember(msg.member)) return;
   const name = cleanName(msg.name);
-  if (name && ICONS.includes(msg.icon)) peerInfo.set(msg.member, { name, icon: msg.icon });
-  sponsor = { member: msg.member, inviter: msg.from, nonce: hex(6), done: false };
+  if (!name || !ICONS.includes(msg.icon)) return;
+  peerInfo.set(msg.member, { name, icon: msg.icon });
+  sponsor = { member: msg.member, key: msg.key, name, icon: msg.icon, inviter: msg.from, nonce: hex(6), done: false };
   panel({
-    step: `${nameOf(msg.member)} liittyy väliin: ${nameOf(msg.from)} – sinä. Näytä tämä koodi hänelle.`,
+    step: `${name} liittyy väliin: ${nameOf(msg.from)} – sinä. Näytä tämä koodi hänelle.`,
     note: 'Hän skannaa sen omalla puhelimellaan. Näin sinäkin tunnistat hänet.',
     trio: trioNew(msg.from, myId, msg.member),
     qr: `${base}#${encodeVouch(ringId, myId, sponsor.nonce)}`,
@@ -444,11 +596,26 @@ function onSponsor(msg) {
   });
 }
 
-function onClaim(msg) {
+/** Tulokkaan allekirjoitus: perustajaliittymisessä kutsujalle, muuten oikealle naapurille. */
+async function onClaim(msg) {
+  if (typeof msg.sig !== 'string') return;
+  if (invite?.right === myId && invite.left === myId && msg.from === invite.member && msg.proof === '') {
+    const n = invite.member;
+    const ev = draftAdmit({ left: myId, right: myId, member: n, key: invite.memberKey, name: nameOf(n), icon: iconOf(n), proof: '' });
+    if (!(await verify(ev.key, payloadOf(ev), msg.sig))) return log(`${nameOf(n)}: allekirjoitus ei kelpaa`);
+    ev.sigs = { member: msg.sig, left: await sign(me.priv, payloadOf(ev)) };
+    await publish(ev);
+    return;
+  }
   if (!sponsor || sponsor.done || msg.from !== sponsor.member || msg.nonce !== sponsor.nonce) return;
+  const ev = draftAdmit({ left: sponsor.inviter, right: myId, member: sponsor.member, key: sponsor.key, name: sponsor.name,
+    icon: sponsor.icon, proof: sponsor.nonce });
+  const p = payloadOf(ev);
+  if (!(await verify(sponsor.key, p, msg.sig))) return log(`${sponsor.name}: allekirjoitus ei kelpaa`);
   sponsor.done = true;
-  originate({ type: 'vouched', to: sponsor.inviter, member: sponsor.member, nonce: sponsor.nonce });
-  panel({ step: `Vahvistettu. ${nameOf(sponsor.member)} liitetään renkaaseen…`, trio: trioNew(sponsor.inviter, myId, sponsor.member) });
+  originate({ type: 'vouched', to: sponsor.inviter, member: sponsor.member, nonce: sponsor.nonce, sigMember: msg.sig,
+    sigRight: await sign(me.priv, p) });
+  panel({ step: `Vahvistettu. ${sponsor.name} liitetään renkaaseen…`, trio: trioNew(sponsor.inviter, myId, sponsor.member) });
 }
 
 // --- Liittyjä (N) ---------------------------------------------------------
@@ -471,7 +638,7 @@ async function makeAnswer() {
   const gathering = gather(link.pc);
   await link.pc.setRemoteDescription({ type: 'offer', sdp: joining.offer.sdp });
   await link.pc.setLocalDescription(await link.pc.createAnswer());
-  const ans = await local(link, 'answer', gathering, { ring: ringId });
+  const ans = await local(link, 'answer', gathering, { ring: ringId }, makeAnswer);
   if (!ans) return;
   armDeadline(link);
   const { left, right } = joining.offer;
@@ -482,11 +649,19 @@ async function makeAnswer() {
   });
 }
 
-function joinConnected() {
+/** Oma allekirjoitus liittymiseen. */
+async function claim(to, proof) {
+  const { left, right } = joining.offer;
+  const ev = draftAdmit({ left, right, member: myId, key: me.key, name: profile.name, icon: profile.icon, proof });
+  originate({ type: 'claim', to, proof, nonce: proof, sig: await sign(me.priv, payloadOf(ev)) });
+}
+
+async function joinConnected() {
   const { left, right } = joining.offer;
   if (left === right) {
     joining.stage = 'wait';
     panel({ step: 'Yhteys syntyi. Odotetaan liittymistä…', trio: trioNew(left, right, myId) });
+    await claim(left, '');
     return;
   }
   joining.stage = 'vouch';
@@ -499,14 +674,14 @@ function joinConnected() {
   });
 }
 
-function useVouch(v) {
+async function useVouch(v) {
   if (joining?.stage !== 'vouch') return note('Tämä puhelin ei odota vahvistuskoodia.');
   if (v.ring !== ringId || v.member !== joining.offer.right) {
     return note(`Väärä koodi. Skannaa koodi, jonka ${nameOf(joining.offer.right)} näyttää.`);
   }
   joining.stage = 'wait';
-  originate({ type: 'claim', to: v.member, nonce: v.nonce });
   panel({ step: 'Vahvistetaan…', trio: trioNew(joining.offer.left, joining.offer.right, myId) });
+  await claim(v.member, v.nonce);
 }
 
 /** Rekisteriin tuli uusi jäsen: kerrotaan osallisille. */
@@ -516,9 +691,51 @@ function admitted(m, ev) {
   if (invite?.member === m) invite = null;
   if (sponsor?.member === m) sponsor = null;
   if (!involved || ev.kind === 'found') return;
-  const done = m === myId ? 'Tervetuloa renkaaseen!' : `${nameOf(m)} liittyi renkaaseen.`;
-  panel({ step: `✅ ${done}`, trio: trioNew(ev.left, ev.right, m), primary: ['Jatka', showMember] });
-  setTimeout(() => { if ($('step').textContent.startsWith('✅')) showMember(); }, 4000);
+  done(m === myId ? '✅ Tervetuloa renkaaseen!' : `✅ ${nameOf(m)} liittyi renkaaseen.`, trioNew(ev.left, ev.right, m));
+}
+
+function done(step, trio) {
+  panel({ step, trio, primary: ['Jatka', showMember] });
+  setTimeout(() => { if ($('step').textContent === step) showMember(); }, 4000);
+}
+
+// --- Palaava jäsen --------------------------------------------------------
+
+async function startRejoin(code) {
+  if (rejoin) drop(rejoin.link, null);
+  retryLast = () => startRejoin(code);
+  panel({ step: 'Tehdään vastaus…' });
+  const link = newLink(`qr-${++qrSeq}`);
+  rejoin = { code, link };
+  const gathering = gather(link.pc);
+  await link.pc.setRemoteDescription({ type: 'offer', sdp: code.sdp });
+  await link.pc.setLocalDescription(await link.pc.createAnswer());
+  const ans = await local(link, 'answer', gathering, { ring: ringId }, () => startRejoin(code));
+  if (!ans) return;
+  armDeadline(link);
+  panel({
+    step: `Yhdistä 2/2 · Näytä tämä koodi: ${nameOf(code.from)} skannaa sen.`,
+    qr: `${base}#${ans}`,
+    secondary: ['Peru', () => { drop(link, null); rejoin = null; showMember(); }],
+  });
+}
+
+function rejoined() {
+  const from = rejoin.code.from;
+  rejoin = null;
+  done(`✅ Yhdistetty: ${nameOf(from)}. Verkko esittelee sinut muille paikalla oleville.`, null);
+}
+
+function reconnectMenu() {
+  panel({
+    step: 'Yhdistä palaava jäsen: toinen näyttää yhdistämiskoodin, toinen skannaa sen.',
+    note: 'Kuka tahansa paikalla oleva jäsen voi näyttää koodin. Liittymistä ei tarvitse tehdä uudelleen.',
+    primary: ['Näytä yhdistämiskoodi', () => startInvite('reconnect')],
+    secondary: ['Skannaa yhdistämiskoodi', () => panel({
+      step: 'Skannaa yhdistämiskoodi toisen jäsenen näytöltä.', cam: true, paste: true, secondary: ['Peru', showMember],
+    })],
+    close: true,
+  });
 }
 
 // --- Koodit kamerasta, linkistä tai toisesta välilehdestä ------------------
@@ -533,10 +750,15 @@ function handleCode(text) {
   }
   if (c.type === 'answer' && invite?.link.pc.signalingState === 'have-local-offer') useAnswer(c);
   else if (c.type === 'vouch' && joining?.stage === 'vouch') useVouch(c);
-  else if (c.type === 'offer' && !ringId) { const t = text.slice(text.indexOf('#') + 1); startJoin(decodeURIComponent(t), c); }
+  else if (c.type === 'offer' && !ringId) {
+    const t = text.slice(text.indexOf('#') + 1);
+    startJoin(decodeURIComponent(t), c);
+  } else if (c.type === 'reconnect' && isMember() && c.ring === ringId && !rejoin) startRejoin(c);
   else {
-    note(c.type === 'offer' ? 'Tämä on kutsukoodi uudelle jäsenelle, ja tämä puhelin on jo renkaassa.'
-      : 'Tämä puhelin ei odota tätä koodia nyt.');
+    note(c.type === 'offer' ? 'Tämä on kutsukoodi uudelle jäsenelle, ja tämä puhelin on jo renkaassa. Palaavana jäsenenä tarvitset yhdistämiskoodin.'
+      : c.type === 'reconnect' && !isMember() ? 'Tämä on yhdistämiskoodi renkaan jäsenille. Uutena jäsenenä tarvitset kutsukoodin.'
+        : c.type === 'reconnect' && c.ring !== ringId ? 'Tämä yhdistämiskoodi kuuluu toiseen renkaaseen.'
+          : 'Tämä puhelin ei odota tätä koodia nyt.');
     return false;
   }
   return true;
@@ -544,10 +766,11 @@ function handleCode(text) {
 
 function expects(c) {
   return (c.type === 'answer' && invite?.link.pc.signalingState === 'have-local-offer') ||
-    (c.type === 'vouch' && joining?.stage === 'vouch');
+    (c.type === 'vouch' && joining?.stage === 'vouch') ||
+    (c.type === 'reconnect' && isMember() && c.ring === ringId && !rejoin);
 }
 
-/** Järjestelmäkameran avaama välilehti: koodi sitä odottavalle välilehdelle. */
+/** Toinen välilehti pitää renkaan: koodi sille. */
 function relay(token) {
   panel({ step: 'Välitetään koodia…' });
   if (!bc) { relayFailed(token); return; }
@@ -565,8 +788,40 @@ function relay(token) {
 
 function relayFailed(token) {
   panel({
-    step: 'Koodia odottavaa välilehteä ei löytynyt tästä selaimesta. Skannaa koodi mieluummin sivun omalla kameralla.',
+    step: 'Rengas on auki toisessa välilehdessä, mutta se ei vastannut. Palaa siihen ja skannaa koodi sivun omalla kameralla.',
     links: `${base}#${token}`,
+    primary: ['Käytä tätä välilehteä', takeOver],
+  });
+}
+
+// --- Välilehden lukko: yksi aktiivinen välilehti per selain ----------------
+
+function acquireLock(steal = false) {
+  if (!navigator.locks) return Promise.resolve(true);
+  return new Promise((res) => {
+    navigator.locks.request(LOCK, steal ? { steal: true } : { ifAvailable: true }, (lock) => {
+      res(!!lock);
+      return lock ? new Promise(() => {}) : undefined; // pidetään sivun elinajan
+    }).catch(() => lockLost());
+  });
+}
+
+function lockLost() {
+  scanner.stop();
+  for (const l of [...links.values()]) drop(l, null);
+  panel({ step: 'Rengas avattiin toisessa välilehdessä, ja tämä välilehti pysäytettiin.', primary: ['Käytä tätä välilehteä', takeOver] });
+}
+
+async function takeOver() {
+  await acquireLock(true);
+  location.reload();
+}
+
+function otherTab() {
+  panel({
+    step: 'Rengas on auki toisessa välilehdessä.',
+    note: 'Samassa selaimessa voi olla yksi aktiivinen välilehti kerrallaan.',
+    primary: ['Käytä tätä välilehteä', takeOver],
   });
 }
 
@@ -582,7 +837,7 @@ const scanner = createScanner($('cam'), (text) => {
 
 /**
  * Yksi näkymä kerrallaan. o: { step, note, trio, profile, qr, cam, primary: [teksti, fn],
- * secondary, paste (liittämiskenttä), links (jakolinkki ilman QR:ää) }.
+ * secondary, close (Sulje-nappi), paste (liittämiskenttä), links (jakolinkki ilman QR:ää) }.
  */
 function panel(o) {
   const p = $('pair');
@@ -607,7 +862,7 @@ function panel(o) {
   $('links').hidden = !url;
   if (url) showLinks(url);
   $('answer-box').hidden = !o.paste;
-  for (const [id, b] of [['primary', o.primary], ['secondary', o.secondary]]) {
+  for (const [id, b] of [['primary', o.primary], ['secondary', o.secondary], ['close', o.close && ['Sulje', showMember]]]) {
     $(id).hidden = !b;
     if (b) { $(id).textContent = b[0]; $(id).onclick = b[1]; }
   }
@@ -630,7 +885,7 @@ function warn(cls, text) {
   $('check').hidden = false;
 }
 
-/** Jäsenen perusnäkymä: rengas, tekstivirta ja kutsunappi. */
+/** Jäsenen perusnäkymä: rengas, tekstivirta ja napit. */
 function showMember() {
   scanner.stop();
   $('pair').hidden = true;
@@ -640,6 +895,7 @@ function showMember() {
   $('stream').hidden = false;
   $('say').hidden = false;
   render();
+  renderInstall();
   view.focus();
 }
 
@@ -690,6 +946,12 @@ function setupProfile() {
   }));
 }
 
+/** Oma nimi ja kuva rekisteristä (pysyvä jäsenyys). */
+function profileFromRing() {
+  const i = ring.info.get(myId);
+  if (i) profile = { name: i.name, icon: i.icon };
+}
+
 function showLinks(url) {
   $('share').hidden = !navigator.share;
   $('share').onclick = () => navigator.share({ url }).catch(() => {});
@@ -714,29 +976,28 @@ function drawQr(svg, text) {
   svg.append(path);
 }
 
-async function local(link, type, gathering, meta) {
+async function local(link, type, gathering, meta, retry = retryLast) {
   const g = await gathering;
   try {
     return encodePairing(type, link.pc.localDescription.sdp, g.lines, meta);
   } catch (e) {
     drop(link, null);
     if (invite?.link === link) invite = null;
-    noAddress(g.mdns > 0, e.message);
+    noAddress(g.mdns > 0, e.message, retry);
     return null;
   }
 }
 
-function noAddress(mdns, why) {
-  const retry = () => (joining ? makeAnswer() : startInvite());
+function noAddress(mdns, why, retry) {
   if (mdns && !useStun) {
     // iPhone (kaikki iOS-selaimet) ja työpöytä-Chrome piilottavat oman
     // osoitteensa. STUN vain kertoo sen; liikenne kulkee silti suoraan.
     useStun = true;
     log('selain piilottaa osoitteensa, kysytään se STUN-palvelimelta');
-    retry();
+    retry?.();
     return;
   }
-  panel({ step: `Ei IPv6-osoitetta (${why}).`, primary: ['Yritä uudelleen', retry], secondary: isMember() ? ['Peru', showMember] : null });
+  panel({ step: `Ei IPv6-osoitetta (${why}).`, primary: retry && ['Yritä uudelleen', retry], close: isMember() });
   if (mdns) {
     warn('meh', '🤔 Selain piilottaa osoitteensa, eikä STUN-palvelinkaan kertonut sitä. Kokeile puhelimen Chromella tai yritä uudelleen.');
   } else {
@@ -750,9 +1011,9 @@ function pairFailed(why) {
   if (!member) { joining = null; ringId = null; } // liittyjä aloittaa alusta uudella kutsukoodilla
   panel({
     step: `Yhteys ei syntynyt (${why}).`,
-    note: 'Molemmilla pitää olla IPv6 (mobiilidata). Kutsuja tekee uuden koodin.',
-    primary: member ? ['Kutsu uudelleen', startInvite] : ['Skannaa uusi kutsukoodi', scanOffer],
-    secondary: member ? ['Sulje', showMember] : null,
+    note: 'Molemmilla pitää olla IPv6 (mobiilidata). Koodin näyttäjä tekee uuden koodin.',
+    primary: member ? retryLast && ['Yritä uudelleen', retryLast] : ['Skannaa uusi kutsukoodi', scanOffer],
+    close: member,
   });
 }
 
@@ -774,13 +1035,16 @@ async function updateStats(link) {
 function renderRing() {
   const box = $('ringview');
   const now = Date.now();
+  const here = new Set([myId, ...neighbours()]);
   const parts = [];
   ring.members.forEach((m, i) => {
     if (i) parts.push(Object.assign(document.createElement('span'), { className: 'arrow', textContent: '→' }));
     const s = document.createElement('span');
     s.className = 'member';
     if (m === myId) s.classList.add('me');
+    s.classList.add(here.has(m) ? 'here' : 'away');
     if (now - (fresh.get(m) ?? 0) < FRESH_MS) s.classList.add('fresh');
+    s.title = here.has(m) ? 'paikalla' : 'ei yhteyttä';
     s.textContent = `${iconOf(m)} ${nameOf(m)}`;
     parts.push(s);
   });
@@ -789,14 +1053,16 @@ function renderRing() {
 }
 
 function render() {
+  if (!myId) return;
   const tbody = $('peers');
   tbody.replaceChildren();
   let open = 0;
   for (const l of links.values()) {
-    if (l.ch?.readyState === 'open') open++;
+    if (l.verified && l.ch?.readyState === 'open') open++;
     const tr = document.createElement('tr');
     const who = l.id ? `${iconOf(l.id)} ${nameOf(l.id)}${isMember(l.id) ? '' : ' (liittymässä)'}` : 'uusi';
-    [who, l.ch?.readyState === 'open' ? 'auki' : l.pc.connectionState, `${CLASSES[l.cls]}${l.detail ? ` (${l.detail})` : ''}`]
+    const state = l.ch?.readyState === 'open' ? (l.verified ? 'auki ✓' : 'todennetaan') : l.pc.connectionState;
+    [who, state, `${CLASSES[l.cls]}${l.detail ? ` (${l.detail})` : ''}`]
       .forEach((text, i) => {
         const td = document.createElement('td');
         td.textContent = text;
@@ -807,14 +1073,45 @@ function render() {
   }
   renderRing();
   const n = ring.members.length;
-  const others = neighbours().length;
+  const here = neighbours().filter((x) => isMember(x)).length + 1;
+  const joiners = neighbours().length + 1 - here;
   $('status').className = open || n === 1 ? 'ok' : 'bad';
   $('status').textContent = n === 1 && !open ? 'Rengas aloitettu. Kutsu toinen perustaja.'
-    : `Renkaassa ${n} · suoria yhteyksiä ${open}${others + 1 > n ? ` · liittymässä ${others + 1 - n}` : ''}`;
+    : !open ? `Renkaassa ${n} · ei yhteyksiä. Pyydä paikalla olevaa jäsentä näyttämään yhdistämiskoodi (Yhdistä).`
+      : `Renkaassa ${n} · paikalla ${here} · suoria yhteyksiä ${open}${joiners > 0 ? ` · liittymässä ${joiners}` : ''}`;
   const right = isMember() ? successor(ring.members, myId) : null;
   $('invite').hidden = !isMember();
   $('invite').textContent = right === myId ? 'Kutsu toinen perustaja' : `Kutsu väliin: minä ja ${nameOf(right)}`;
+  $('reconnect').hidden = !isMember() || n < 2;
   $('info-sum').textContent = `yhteydet · minä ${profile.icon} ${profile.name || myId}`;
+  $('me-info').textContent = `Tunniste ${myId} · avain ${me.key.slice(0, 12)}…` +
+    (stored ? ' · tallennettu tähän selaimeen' : ' · ⚠️ selain ei salli tallennusta: jäsenyys katoaa, kun sivu suljetaan');
+  $('forget').hidden = !isMember();
+}
+
+// --- Kotivalikkoon lisääminen ---------------------------------------------
+
+let installEvt = null;
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvt = e; renderInstall(); });
+
+function renderInstall() {
+  const box = $('install');
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  let dismissed = false;
+  try { dismissed = localStorage.getItem('direct-install-dismissed') === '1'; } catch {}
+  box.hidden = standalone || dismissed;
+  if (box.hidden) return;
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  $('install-text').textContent = ios
+    ? '📲 Lisää sivu Koti-valikkoon (Jaa → Lisää Koti-valikkoon) ja käytä rengasta sieltä, niin jäsenyys säilyy. ' +
+      'Koti-valikon sovelluksella on oma muistinsa: liity tai yhdistä sen kautta.'
+    : '📲 Lisää sivu aloitusnäyttöön, niin rengas on aina käden ulottuvilla.';
+  $('install-go').hidden = !installEvt;
+  $('install-go').onclick = async () => { installEvt.prompt(); await installEvt.userChoice.catch(() => {}); installEvt = null; renderInstall(); };
+  $('install-close').onclick = () => {
+    try { localStorage.setItem('direct-install-dismissed', '1'); } catch {}
+    box.hidden = true;
+  };
 }
 
 function log(text) {
@@ -825,23 +1122,6 @@ function log(text) {
 
 // --- Käynnistys -----------------------------------------------------------
 
-const hash = decodeURIComponent(location.hash.slice(1));
-history.replaceState(null, '', base + location.search);
-setupProfile();
-if (bc) {
-  bc.onmessage = (ev) => {
-    if (typeof ev.data?.code !== 'string') return;
-    let c;
-    try { c = decodeAny(ev.data.code); } catch { return; }
-    if (expects(c)) {
-      bc.postMessage({ ack: true });
-      handleCode(ev.data.code);
-    }
-  };
-}
-$('use').onclick = () => { if (handleCode($('paste').value)) $('paste').value = ''; };
-$('invite').onclick = startInvite;
-
 function startScreen() {
   panel({
     step: 'Aloita uusi rengas, tai skannaa sinulle näytetty kutsukoodi.',
@@ -849,19 +1129,96 @@ function startScreen() {
     primary: ['Aloita uusi rengas', () => { if (readProfile()) found(profile.name, profile.icon); }],
     secondary: ['Skannaa kutsukoodi', scanOffer],
   });
+  renderInstall();
 }
 
 function scanOffer() {
   panel({ step: 'Skannaa kutsujan näytöltä kutsukoodi.', cam: true, paste: true, secondary: ['Takaisin', startScreen] });
 }
 
-let first = null;
-try { first = hash ? decodeAny(hash) : null; } catch (e) { first = { error: e.message }; }
-if (first?.type === 'offer') startJoin(hash, first);
-else if (first?.type === 'answer' || first?.type === 'vouch') relay(hash);
-else {
-  startScreen();
-  if (first?.error) note(`Koodi ei kelpaa: ${first.error}`);
+async function loadIdentity() {
+  try {
+    me = await load('identity');
+  } catch {
+    stored = false;
+  }
+  if (!me?.priv || !me.key) {
+    me = await createIdentity();
+    try { await save('identity', me); } catch { stored = false; }
+  }
+  myId = me.id;
+}
+
+async function restoreRing() {
+  let saved = null;
+  try { saved = await load('ring'); } catch { stored = false; }
+  if (!saved?.ringId) return;
+  ringId = saved.ringId;
+  restoring = true;
+  await merge(Array.isArray(saved.events) ? saved.events : []);
+  restoring = false;
+  if (!isMember()) { // esim. vain osa tallentui: aloitetaan alusta
+    ringId = null;
+    events.clear();
+    ring = build('00000000', []);
+    return;
+  }
+  profileFromRing();
+  log(`rengas ladattu: ${ring.members.length} jäsentä`);
+}
+
+async function main() {
+  const hash = decodeURIComponent(location.hash.slice(1));
+  history.replaceState(null, '', base + location.search);
+  setupProfile();
+  let first = null;
+  try { first = hash ? decodeAny(hash) : null; } catch (e) { first = { error: e.message }; }
+
+  if (!(await acquireLock())) {
+    if (first && !first.error) relay(hash);
+    else otherTab();
+    return;
+  }
+  await loadIdentity();
+  await restoreRing();
+  if (bc) {
+    bc.onmessage = (ev) => {
+      if (typeof ev.data?.code !== 'string') return;
+      let c;
+      try { c = decodeAny(ev.data.code); } catch { return; }
+      if (expects(c)) {
+        bc.postMessage({ ack: true });
+        handleCode(ev.data.code);
+      }
+    };
+  }
+  $('use').onclick = () => { if (handleCode($('paste').value)) $('paste').value = ''; };
+  $('invite').onclick = () => startInvite('join');
+  $('reconnect').onclick = reconnectMenu;
+  $('forget').onclick = async () => {
+    if (!confirm('Poistetaanko jäsenyys ja avain tästä puhelimesta? Palataksesi renkaaseen tarvitset uuden kutsun.')) return;
+    await clearStore().catch(() => {});
+    location.reload();
+  };
+
+  const member = isMember();
+  if (member) showMember();
+  if (first?.type === 'offer' && !member) startJoin(hash, first);
+  else if (first?.type === 'reconnect') { if (!member) startScreen(); handleCode(hash); }
+  else if (first?.type === 'answer' || first?.type === 'vouch') {
+    // Lukko oli vapaa: koodia odottanut välilehti on jo suljettu.
+    if (!member) startScreen();
+    panel({
+      step: 'Koodia odottanut välilehti on suljettu, joten tämä koodi ei enää käy.',
+      note: 'Tee uusi kutsu ja skannaa koodit sivun omalla kameralla, niin kaikki tapahtuu yhdessä välilehdessä.',
+      primary: ['Jatka', member ? showMember : startScreen],
+    });
+  } else if (!member) {
+    startScreen();
+    if (first?.error) note(`Koodi ei kelpaa: ${first.error}`);
+  } else if (first?.type === 'offer') {
+    panel({ step: 'Tämä puhelin on jo renkaassa.', note: 'Kutsukoodi on uudelle jäsenelle. Palaavana jäsenenä tarvitset yhdistämiskoodin (Yhdistä).', close: true });
+  }
 }
 
 // Testejä varten (drive-direct): sivun tila.
@@ -873,8 +1230,13 @@ window.direct = {
   get ring() { return ring.members.map((m) => nameOf(m)); },
   get ringId() { return ringId; },
   get step() { return $('step').textContent; },
+  get note() { return $('pair-note').textContent; },
+  get events() { return [...events.values()]; },
   /** Kuin kamera olisi lukenut koodin. */
   scan: (text) => handleCode(text),
+  /** Kuin tapahtumat olisivat tulleet verkosta (väärennöstesti). */
+  merge: (list) => merge(list),
   /** Katkaisee suoran yhteyden naapuriin (testaa kiertoreittiä). */
   cut(id) { const l = links.get(id); if (l) drop(l, null); },
 };
+main();

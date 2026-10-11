@@ -74,6 +74,20 @@ test('QR: linkki kahdella osoitteella mahtuu pieneen koodiin', () => {
   assert.ok(qr.getModuleCount() <= 61, `koko ${qr.getModuleCount()}`); // versio ≤ 11
 });
 
+test('yhdistämiskoodi 2.r: tarjous, näyttäjä mukana, mahtuu QR-koodiin', () => {
+  const t = encodePairing('reconnect', OFFER, [], { ring: RING, from: '33333333' });
+  assert.ok(t.startsWith('2.r.0badc0de.33333333.Ab+c.'));
+  const r = decodePairing(t);
+  assert.deepEqual([r.type, r.sdpType, r.ring, r.from], ['reconnect', 'offer', RING, '33333333']);
+  assert.match(r.sdp, /a=setup:actpass\r\n/);
+  assert.throws(() => encodePairing('reconnect', OFFER, [], { ring: RING }), /näyttäjä/);
+  assert.throws(() => decodePairing(t.replace('33333333', 'xyz')));
+  const qr = qrcode(0, 'M');
+  qr.addData(`https://pereuna.github.io/certiratio/direct.html#${t}`, 'Byte');
+  qr.make();
+  assert.ok(qr.getModuleCount() <= 61);
+});
+
 test('vahvistuskoodi: 2.c.RENGAS.JÄSEN.HAASTE, myös linkkinä', () => {
   const t = encodeVouch(RING, '22222222', '0123456789ab');
   assert.equal(t, '2.c.0badc0de.22222222.0123456789ab');
