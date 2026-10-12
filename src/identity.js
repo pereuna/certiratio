@@ -60,10 +60,13 @@ export async function verify(key, payload, sig) {
 
 /** Allekirjoitettava sisältö (kanoninen taulukko). */
 export function payloadOf(ev) {
-  return ev.kind === 'found'
-    ? ['found', ev.ring, ev.member, ev.key, ev.salt, ev.name, ev.icon]
-    : ['admit', ev.ring, ev.left, ev.right, ev.member, ev.key, ev.name, ev.icon, ev.proof];
+  if (ev.kind === 'found') return ['found', ev.ring, ev.member, ev.key, ev.salt, ev.name, ev.icon];
+  if (ev.kind === 'server') return ['server', ev.ring, ev.member, ev.key, ev.operator, ev.name];
+  return ['admit', ev.ring, ev.left, ev.right, ev.member, ev.key, ev.name, ev.icon, ev.proof];
 }
+
+/** Rengaspalvelimen kortti (osoitteet ja sormenjälki), palvelimen allekirjoittama; seq kasvaa osoitteen vaihtuessa. */
+export const cardPayload = (ring, c) => ['card', ring, c.server, String(c.seq), String(c.port), c.fp, c.addrs.join(',')];
 
 export const authPayload = (nonce, signer, verifier) => ['auth', nonce, signer, verifier];
 
@@ -77,6 +80,11 @@ export async function verifyEvent(ev, keyOf) {
   const p = payloadOf(ev);
   if (!(await verify(ev.key, p, ev.sigs?.member))) return false;
   if (ev.kind === 'found') return (await ringIdOf(ev.key, ev.salt)) === ev.ring;
+  if (ev.kind === 'server') {
+    const k = keyOf(ev.operator);
+    if (!k) return null;
+    return verify(k, p, ev.sigs?.operator);
+  }
   const signers = ev.left === ev.right ? [ev.left] : [ev.left, ev.right];
   for (const s of signers) {
     const k = keyOf(s);

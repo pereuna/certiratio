@@ -5,6 +5,8 @@
 //
 //   found  { kind, id: member:f, ring, member, key, salt, name, icon, sigs }        aloitus
 //   admit  { kind, id: member:a, ring, left, right, member, key, name, icon, proof, sigs }  väliin left → right
+//   server { kind, id: member:s, ring, member, key, operator, name, sigs }  rengaspalvelin (member = palvelimen
+//            tunniste); operaattori on jäsen, joka otti palvelimen renkaaseen. Palvelin ei ole jäsen.
 //
 // Jokainen jäsen liittyy kerran, joten tapahtuman tunniste johdetaan jäsenestä.
 // Allekirjoitukset (identity.js) tarkistetaan ennen kuin tapahtuma tuodaan
@@ -19,7 +21,7 @@ const SIG = /^[A-Za-z0-9_-]{86}$/; // r‖s (64 tavua)
 const PROOF = /^([0-9a-f]{12})?$/;
 
 /** Tapahtuman tunniste: jäsen ja laji. */
-export const eventId = (kind, member) => `${member}:${kind === 'found' ? 'f' : 'a'}`;
+export const eventId = (kind, member) => `${member}:${kind === 'found' ? 'f' : kind === 'server' ? 's' : 'a'}`;
 
 export function cleanName(s) {
   return String(s ?? '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, MAX_NAME);
@@ -29,8 +31,10 @@ export function cleanName(s) {
 export function validEvent(ev) {
   if (!ev || typeof ev !== 'object' || !HEX8.test(ev.ring ?? '') || !HEX8.test(ev.member ?? '')) return false;
   if (ev.id !== eventId(ev.kind, ev.member) || !KEY.test(ev.key ?? '')) return false;
-  if (!ICONS.includes(ev.icon) || typeof ev.name !== 'string' || ev.name !== cleanName(ev.name) || !ev.name) return false;
+  if (typeof ev.name !== 'string' || ev.name !== cleanName(ev.name) || !ev.name) return false;
   const sig = (k) => SIG.test(ev.sigs?.[k] ?? '');
+  if (ev.kind === 'server') return HEX8.test(ev.operator ?? '') && sig('member') && sig('operator');
+  if (!ICONS.includes(ev.icon)) return false;
   if (ev.kind === 'found') return HEX8.test(ev.salt ?? '') && sig('member');
   return ev.kind === 'admit' && HEX8.test(ev.left ?? '') && HEX8.test(ev.right ?? '') &&
     typeof ev.proof === 'string' && PROOF.test(ev.proof) && sig('member') && sig('left') && (ev.left === ev.right || sig('right'));
@@ -58,7 +62,9 @@ export function successor(members, id) {
 const order = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
 /**
- * Tapahtumat → rengas. Palauttaa { members, info, applied, rejected, pending }.
+ * Tapahtumat → rengas. Palauttaa { members, info, servers, applied, rejected, pending }.
+ * servers: palvelimen tunniste → { name, key, operator, event }; palvelin hyväksytään,
+ * kun operaattori on jäsen (palvelimet eivät vaikuta jäsenten järjestykseen).
  * admit hyväksytään, kun left ja right ovat vierekkäin; jos toinen puuttuu
  * vielä, se odottaa. Kerran erotetut naapurit eivät enää palaa vierekkäin
  * (jäseniä ei poisteta), joten silloin tapahtuma hylätään.
@@ -67,7 +73,7 @@ export function build(ring, events) {
   const byId = new Map();
   for (const e of events) if (validEvent(e) && e.ring === ring) byId.set(e.id, preferred(byId.get(e.id), e));
   const evs = [...byId.values()].sort(order);
-  const out = { members: [], info: new Map(), applied: [], rejected: [], pending: [] };
+  const out = { members: [], info: new Map(), servers: new Map(), applied: [], rejected: [], pending: [] };
   const founds = evs.filter((e) => e.kind === 'found');
   if (!founds.length) {
     out.pending = evs.map((e) => e.id);
@@ -78,6 +84,7 @@ export function build(ring, events) {
   add(founds[0]);
   for (const f of founds.slice(1)) out.rejected.push({ id: f.id, why: 'toinen aloitus' });
   let todo = evs.filter((e) => e.kind === 'admit');
+  const servers = evs.filter((e) => e.kind === 'server');
   for (let progress = true; progress;) {
     progress = false;
     for (const e of todo) {
@@ -97,5 +104,13 @@ export function build(ring, events) {
     }
   }
   out.pending = todo.map((e) => e.id);
+  for (const e of servers) {
+    if (out.info.has(e.member)) out.rejected.push({ id: e.id, why: 'jäsen ei voi olla palvelin' });
+    else if (!out.info.has(e.operator)) out.pending.push(e.id);
+    else {
+      out.servers.set(e.member, { name: e.name, key: e.key, operator: e.operator, event: e.id });
+      out.applied.push(e.id);
+    }
+  }
   return out;
 }
