@@ -1,8 +1,6 @@
 #!/bin/sh
-# Julkaisee launchpadin GitHub Pagesiin (haara gh-pages, IPv4+IPv6):
-# https://pereuna.github.io/certiratio/launchpad.html
-# Sivu signaloi jediin (wss://jedi.ydns.eu:8443/), joten IPv4-käyttäjä näkee
-# puukalikkavaroituksen eikä selaimen virhesivua.
+# Julkaisee renkaan GitHub Pagesiin (haara gh-pages, IPv4+IPv6):
+# https://pereuna.github.io/certiratio/direct.html
 # Käyttö: poc1/tools/publish-pages.sh (repon juuresta tai mistä tahansa sen alta)
 set -eu
 top=$(git rev-parse --show-toplevel)
@@ -20,9 +18,9 @@ else
 fi
 git -C "$tmp" rm -rqf --ignore-unmatch . >/dev/null
 mkdir -p "$tmp/src/vendor" "$tmp/icons"
-cp "$web/launchpad.html" "$web/direct.html" "$web/direct.webmanifest" "$tmp/"
+cp "$web/direct.html" "$web/direct.webmanifest" "$tmp/"
 cp "$web/icons/ring-192.png" "$web/icons/ring-512.png" "$tmp/icons/"
-cp "$web/src/launchpad.js" "$web/src/direct.js" "$web/src/stream.js" "$web/src/streamview.js" \
+cp "$web/src/direct.js" "$web/src/stream.js" "$web/src/streamview.js" \
 	"$web/src/pairing.js" "$web/src/signaling.js" "$web/src/classify.js" "$web/src/ring.js" "$web/src/scanner.js" \
 	"$web/src/identity.js" "$web/src/store.js" "$tmp/src/"
 cp "$web/src/vendor/qrcode.js" "$web/src/vendor/jsQR.js" "$web/src/vendor/jsQR.LICENSE.txt" "$tmp/src/vendor/"
@@ -30,15 +28,15 @@ cp "$web/src/vendor/qrcode.js" "$web/src/vendor/jsQR.js" "$web/src/vendor/jsQR.L
 cat > "$tmp/index.html" <<'EOF'
 <!doctype html>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=launchpad.html">
-<title>IPv6 launchpad</title>
-<a href="launchpad.html">IPv6 launchpad</a>
+<meta http-equiv="refresh" content="0; url=direct.html">
+<title>Certiratio rengas</title>
+<a href="direct.html">Certiratio rengas</a>
 EOF
 git -C "$tmp" add -A
 if git -C "$tmp" diff --cached --quiet; then
 	echo "gh-pages: ei muutoksia"
 	exit 0
 fi
-git -C "$tmp" commit -qm "Launchpad poc1/web:stä ($rev)"
+git -C "$tmp" commit -qm "Rengas poc1/web:stä ($rev)"
 git -C "$tmp" push -q origin HEAD:gh-pages
 echo "gh-pages: julkaistu $rev"

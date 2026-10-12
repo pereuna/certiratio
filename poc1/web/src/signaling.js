@@ -2,7 +2,7 @@
 // SDP- ja ICE-sanomia; kirjanpitotapahtumia ei koskaan lähetetä tätä kautta.
 
 export class Signaling extends EventTarget {
-  // `name`: Plan2001:n rtcsignal (jedi) tunnistaa vertaisen nimestä; poc1-palvelin antaa id:n.
+  // `name`: rtcsignal-yhteensopiva palvelin tunnistaa vertaisen nimestä; ilman nimeä palvelin antaa id:n.
   constructor(url, room, name = null) {
     super();
     this.url = url;

@@ -5,7 +5,7 @@
 // luetaan näytöltä (direct.url) ja syötetään toiselle puhelimelle. Kutsu on
 // 2.j (kohtaamispaikka, paikallinen rtcsignal), joten vastausta ei skannata.
 // Pysyvyys: Liisan välilehti suljetaan ja avataan uudelleen (sama selainprofiili),
-// ja hän yhdistyy itsestään renkaan huoneen kautta. Sitten sama ?nojedi-tilassa:
+// ja hän yhdistyy itsestään renkaan huoneen kautta. Sitten sama ?signal=off-tilassa:
 // paluu äidin yhdistämiskoodilla. Lisäksi toinen välilehti samassa profiilissa,
 // väärennetyt tapahtumat ja viides selain Q (käytetty kutsu, vieras, oma rengas).
 // Profiilihakemistojen on oltava tyhjiä ajon alussa. URL on rtcsignalin jakama sivu.
@@ -149,13 +149,13 @@ const type = (t, text) => t.ev(`(() => { const e = document.getElementById('text
   check('toinen välilehti samassa selaimessa', (await second.ev('direct.step')).includes('toisessa välilehdessä'));
   await second.close();
 
-  // Ilman kohtaamispaikkaa (?nojedi): äiti näyttää yhdistämiskoodin, Liisa skannaa sen, äiti skannaa vastauksen.
+  // Ilman kohtaamispaikkaa (?signal=off): äiti näyttää yhdistämiskoodin, Liisa skannaa sen, äiti skannaa vastauksen.
   await back.close();
   for (const t of [nodes.isi, nodes.äiti, nodes.Törttö]) await until(t, `!direct.open.includes(${J(liisaId)})`, 60000);
-  const back2 = await open(ports[2], `${base}?nojedi`, 'Liisa');
+  const back2 = await open(ports[2], `${base}?signal=off`, 'Liisa');
   await until(back2, `direct.ring.join() === ${J(want.join())}`);
   await sleep(3000);
-  check('?nojedi: ei yhteyksiä ilman koodia', (await back2.ev('direct.open.length')) === 0,
+  check('?signal=off: ei yhteyksiä ilman koodia', (await back2.ev('direct.open.length')) === 0,
     await back2.ev(`document.getElementById('status').textContent`));
   await until(nodes.äiti, `!document.getElementById('reconnect').hidden`);
   await nodes.äiti.ev(`document.getElementById('reconnect').click()`);
@@ -172,7 +172,7 @@ const type = (t, text) => t.ev(`(() => { const e = document.getElementById('text
   await type(back2, 'palasin');
   await sleep(1000);
   const got = await textFrom(nodes.Törttö, liisaId);
-  check('?nojedi: Liisa yhdistetty äidin koodilla, suorat yhteydet kaikkiin ja teksti perillä', got.endsWith('palasin'), got);
+  check('?signal=off: Liisa yhdistetty äidin koodilla, suorat yhteydet kaikkiin ja teksti perillä', got.endsWith('palasin'), got);
 
   // Käytetty kutsu, vieras (Q:n selain, ei jäsen) ja toinen rengas eivät pääse sisään.
   if (ports[4]) {
