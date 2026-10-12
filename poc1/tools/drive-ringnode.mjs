@@ -4,8 +4,10 @@
 // leviävät Törtölle, joka yhdistää palvelimeen itsestään. Törtön välilehti
 // suljetaan ja avataan: hän yhdistää palvelimeen tallennetulla kortilla, ja
 // palvelin esittelee hänet isille ilman yhtään koodia. Vieras (oma rengas) ei
-// voi käyttää käytettyä liittämislinkkiä eikä pysy palvelimessa.
-//   node --experimental-websocket drive-ringnode.mjs BASE_URL LIITTÄMISLINKKI PORT_ISI PORT_TORTTO PORT_VIERAS
+// voi käyttää käytettyä liittämislinkkiä eikä pysy palvelimessa. Hanna liittyy
+// Törtön ja isin väliin palvelimen jo ollessa renkaassa: hän saa kortin
+// liityttyään ja yhdistää palvelimeen ilman uudelleenlatausta.
+//   node --experimental-websocket drive-ringnode.mjs BASE_URL LIITTÄMISLINKKI PORT_ISI PORT_TORTTO PORT_VIERAS [PORT_HANNA]
 // BASE_URL on direct.html (esim. http://localhost:8090/direct.html). Profiilit tyhjinä.
 const [base, enrollLink, ...ports] = process.argv.slice(2);
 const card = enrollLink.slice(enrollLink.indexOf('#') + 1).split('.').slice(0, 4).join('.');
@@ -74,6 +76,27 @@ const sent = await tortto.ev(`direct.dm(${J(isiId)}, 'miau palvelimen esittelem�
 await until(isi, `(direct.dms[${J(torttoId)}] ?? []).some((m) => m.text === 'miau palvelimen esittelemänä')`, 10000);
 check('kahdenkeskinen viesti perillä suoraan (ei palvelimen kautta)', sent);
 
+// Uusi jäsen palvelimen jo ollessa renkaassa: Törttö kutsuu, isi vahvistaa.
+if (ports[3]) {
+  await tortto.ev(`document.getElementById('invite').click()`);
+  const hoffer = await until(tortto, `direct.url?.includes('#2.o.') && direct.url`);
+  const hanna = await open(ports[3], hoffer.replace('#', '?signal=off#'), 'Hanna');
+  await until(hanna, `!document.getElementById('profile').hidden`);
+  await profile(hanna, 'Hanna', '👩');
+  const hans = await until(hanna, `direct.url?.includes('#2.a.') && direct.url`);
+  await tortto.ev(`document.getElementById('primary').click()`);
+  await tortto.ev(`direct.scan(${J(hans)})`);
+  const vouch = await until(isi, `direct.url?.includes('#2.c.') && direct.url`);
+  await until(hanna, `direct.step.includes(" · Skannaa koodi, jonka")`);
+  await hanna.ev(`direct.scan(${J(vouch)})`);
+  await until(hanna, `direct.ring.length === 3`);
+  const t1 = Date.now();
+  await until(hanna, 'direct.cards.length === 1 && direct.servers.length === 1', 20000);
+  check('Hanna liittyi palvelimen jo ollessa renkaassa: kortti ja palvelinyhteys ilman uudelleenlatausta', true,
+    `${((Date.now() - t1) / 1000).toFixed(1)} s liittymisestä · ${await hanna.ev(`document.getElementById('status').textContent`)}`);
+  await hanna.close();
+}
+
 // Vieras: oma selain ja oma rengas. Käytetty liittämislinkki ei käy, pelkkä kortti ei pidä yhteyttä.
 const vieras = await open(ports[2], page, 'vieras');
 await profile(vieras, 'vieras', '🧑');
@@ -85,7 +108,7 @@ await vieras.ev(`document.getElementById('close')?.click()`);
 await vieras.ev(`direct.server(${J(card)})`);
 await sleep(8000);
 check('vieras ei pysy palvelimessa', (await vieras.ev('direct.servers.length')) === 0);
-check('isi ei saanut yhteyttä vieraaseen', (await isi.ev('direct.open.length')) === 1);
+check('isi ei saanut yhteyttä vieraaseen', !(await isi.ev('direct.open')).includes(await vieras.ev('direct.id')), J(await isi.ev('direct.open')));
 
 for (const t of [isi, tortto, vieras]) await t.close();
 console.log(ok ? 'RENGASPALVELIN TOIMII' : 'VIRHE');

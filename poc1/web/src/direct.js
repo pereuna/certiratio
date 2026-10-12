@@ -653,6 +653,13 @@ async function connectServer(card, { expect = null, enroll = null } = {}) {
 const serverLink = (id) => [...links.values()].find((l) => l.server && l.id === id && l.ch?.readyState === 'open');
 
 /** Yhteys renkaan palvelimiin, joihin ei ole yhteyttä (sivu auki, näkyviin, verkko palasi, kortti vaihtui). */
+/** Yhteys rengaspalvelimiin nyt ja 30 sekunnin välein (myös juuri liittyneellä). */
+let serverTimer = null;
+function startServers() {
+  if (!serverTimer) serverTimer = setInterval(autoServers, 30000);
+  autoServers();
+}
+
 function autoServers() {
   if (!isMember() || stopped) return;
   for (const [id, c] of cards) {
@@ -685,6 +692,7 @@ async function onCard(via, c) {
 
 function shareCards(link) {
   if (!link.verified || !(isMember(link.id) || link.server)) return;
+  link.cardsSent = true;
   for (const card of cards.values()) send(link, { type: 'card', card });
 }
 
@@ -795,7 +803,10 @@ async function mergeNow(list) {
       navigator.storage?.persist?.().then((p) => log(`tallennus ${p ? 'pysyvä' : 'selaimen harkinnassa'}`), () => {});
     }
     shareMeet();
+    // Liittyjä ei ollut jäsen, kun yhteys todennettiin: kortit hänelle vasta nyt.
+    for (const l of links.values()) if (!l.cardsSent) shareCards(l);
     connectMeet();
+    startServers();
   }
   render();
 }
@@ -1741,7 +1752,7 @@ async function main() {
   addEventListener('online', kickMeet);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) kickMeet(); });
   const member = isMember();
-  if (member) { showMember(); connectMeet(); autoServers(); setInterval(autoServers, 30000); }
+  if (member) { showMember(); connectMeet(); startServers(); }
   if (first?.type === 'card') {
     if (!member) startScreen();
     handleCode(hash);

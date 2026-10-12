@@ -117,8 +117,9 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
    - palvelin renkaassa
    - Liisa suljetaan ja avataan, ja hän palaa ilman koodeja
    - palvelimen osoite vaihdetaan, ja kortti leviää
-4. **Termux Nokialla:** binääri adb:llä. OnePlus ja kolmas laite Pagesin sivulla mobiilidatalla. Testataan sivujen sulkeminen ja avaaminen, Nokian datayhteyden katkaisu (osoite vaihtuu) ja vuorokauden ajo.
-5. **App** (gomobile ja foreground service), kun Termux-versio on osoittanut mallin.
+4. **Kenttätesti 2026-10-12** (G50:llä ei ole Termuxia, joten binääri ajetaan adb:n `shell`-käyttäjänä hakemistosta `/data/local/tmp`): palvelin liitettiin käyttäjän oikeaan renkaaseen isi → Törttö, ja isi ja Törttö yhdistivät siihen itsestään. Hanna liittyi myöhemmin, mutta hänen tilarivinsä näytti "palvelin ei vastaa", eikä palvelimelle tullut häneltä yhtään pakettia: liittyjälle ei lähetetty kortteja, koska hän ei ollut vielä jäsen, kun yhteys todennettiin. Hän sai kortin vasta, kun isi yhdisti hänet paluukoodilla; sen jälkeen yhteys palvelimeen syntyi (Elisan mobiiliverkossa). Korjaus: kortit lähetetään, kun liittyjästä tulee jäsen, ja juuri liittynyt aloittaa palvelinyhteydet heti (`drive-ringnode.mjs`: Hanna liittyy palvelimen jo ollessa renkaassa ja yhdistää siihen 0,3 sekunnissa).
+5. **Termux Nokialla:** binääri adb:llä. OnePlus ja kolmas laite Pagesin sivulla mobiilidatalla. Testataan sivujen sulkeminen ja avaaminen, Nokian datayhteyden katkaisu (osoite vaihtuu) ja vuorokauden ajo.
+6. **App** (gomobile ja foreground service), kun Termux-versio on osoittanut mallin.
 
 ## Avoimet kysymykset
 
