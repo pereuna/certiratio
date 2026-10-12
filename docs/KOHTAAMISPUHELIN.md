@@ -32,6 +32,12 @@ Palvelin toimii kuten libp2p:n *WebRTC Direct*: se on **ICE-lite**-vertainen kii
 
 **Ennakkoehto täyttyi 2026-10-12:** pyytämätön UDP pääsi perille ja vastaus palasi. Lähettäjä oli OnePlus mobiilidatalla (Termux, `nc -u`, `2001:999:3003:704::/64`), vastaanottaja G50 mobiilidatalla (`2001:999:408:763a::/64`, kuuntelija `udpecho` portissa 40123). Pyytämätön TCP portissa 40124 pääsi myös perille. Molemmat liittymät olivat samalla operaattorilla, joten eri operaattoreiden välinen testi on vielä tekemättä.
 
+**Prototyyppi toimi puhelinten välillä 2026-10-12:**
+- **Palvelin:** `poc1/ringserver` ajettiin G50:llä (`adb shell`, arm64-binääri, mobiilidata, kaksi IPv6-osoitetta kortissa).
+- **Asiakas:** OnePlusin Chrome avasi Pagesin `palvelin.html#s1.…`-kortin mobiilidatalla.
+- **Tulos:** yhteys syntyi 1,6 sekunnissa (ICE connected 0,7 s), reitti oli `2001:999:3003:704::8b → 2001:999:408:763a:…:40123`, ja palvelin vastasi viestiin. Uusi yhteys napista *Yhdistä* toimi samoin.
+- Signalointia, DNS:ää ja varmentajaa ei käytetty.
+
 **Alkuperäinen ennakkoehto:** pääseekö puhelimeen mobiiliverkossa *pyytämätön* UDP-paketti toisesta liittymästä? Ssh todisti TCP:n, mutta ICE-lite-palvelin ei lähetä ensimmäisenä. Testi tehdään kahdella USB-puhelimella (`nc -u -l` toisessa, lähetys toisesta). Jos operaattori suodattaa, palvelin ei voi olla pelkästään ICE-lite, vaan tarvitaan reiän avaus molemmista päistä. Se puolestaan vaatii signalointia.
 
 ## Palvelinrekisteri renkaassa
@@ -103,7 +109,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
 ## Vaiheet ja testaus
 
 1. **Ennakkoehto:** pyytämätön UDP toisesta liittymästä perille. ✅ Samalla operaattorilla toimii, eri operaattoreiden välillä testaamatta.
-2. **Prototyyppi koneella:**
+2. **Prototyyppi koneella:** ✅ (`tools/drive-ringserver.mjs`: kolme asiakasta samassa portissa, väärä sormenjälki hylätään) ja puhelinten välillä ✅.
    - Go-palvelin (pion, ICE-lite, kiinteä portti), johon Chromium yhdistää pelkällä kortilla (ULA-verkkonimiavaruus)
    - useita asiakkaita samaan porttiin
    - väärä sormenjälki hylätään
@@ -117,6 +123,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
 ## Avoimet kysymykset
 
 - **UDP eri operaattoreiden välillä:** saman operaattorin sisällä pyytämätön UDP kulkee (testattu). Eri operaattorilta testaamatta.
+- **Piilotettu oma osoite (mDNS):** jos selain piilottaa oman host-osoitteensa (työpöytä-Chrome, iPhone/WebKit), yhteys kortilla ei syntynyt paikallisessa testissä. Android-Chrome ei piilota. Ratkaisuvaihtoehtoja: STUN, kuten renkaassa nyt (antaa selaimelle srflx-kandidaatin), tai palvelin myös vastaanottajaksi, joka hyväksyy vertaisheijastetut osoitteet. Testattava iPhonella.
 - **Safari ja iPhone:** WebRTC Direct -tyyppisen yhteyden (koottu ICE-lite-vastaus) toimivuus iOS:n WebKitissä on testattava. Chrome ja Firefox toimivat libp2p:n kokemuksen perusteella.
 - **Palvelinten määrä ja sijoittelu:** riittääkö yksi palvelin per kotitalous?
 - **Säilyttääkö palvelin tekstiä poissaolijoille?** Ei tässä vaiheessa. Tekstivirta on hetkellinen kuten nyt.

@@ -112,3 +112,15 @@ Testi: `tools/drive-direct.mjs URL PORT_ISI PORT_TORTTO PORT_LIISA PORT_AITI [PO
 Julkaisu muutoksen jälkeen (commit ja push ensin): `tools/publish-pages.sh` (GitHub Pages, näkyy noin minuutissa).
 
 Paikallisesti: `python3 ../../Plan2001/monolith/tools/rtcsignal --port 8090 --web web` ja `http://localhost:8090/direct.html` (paikallisesta palvelimesta ladattu sivu käyttää sitä kohtaamispaikkana).
+
+## Rengaspalvelimen prototyyppi (`ringserver/`, `web/palvelin.html`)
+
+Puhelimessa ajettava WebRTC-vertainen, johon selain ottaa yhteyden pelkällä kortilla `s1.SORMENJÄLKI.PORTTI.OSOITTEET` ilman signalointia, DNS:ää tai varmentajaa ([suunnitelma](../docs/KOHTAAMISPUHELIN.md)). Palvelin on ICE-lite yhdessä UDP-portissa (pion), ja sillä on pysyvä DTLS-varmenne (`-dir`). Selain (`src/servercard.js`) kokoaa palvelimen vastauksen kortista ja tarkistaa sormenjäljen. Prototyypin DataChannel vain kaiuttaa viestit.
+
+```bash
+cd ringserver && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ringserver-arm64 .   # puhelimeen (adb push / Termux)
+./ringserver -port 40123 -dir ringserver-tila     # tulostaa kortin ja testisivun linkin
+```
+
+Testi: `tools/drive-ringserver.mjs PAGE_URL KORTTI DEVTOOLS_PORT` (kolme asiakasta samaan porttiin, väärä sormenjälki hylätään; Chromium `--disable-features=WebRtcHideLocalIpsWithMdns`). Testattu 2026-10-12 G50 palvelimena ja OnePlusin Chrome asiakkaana, molemmat mobiilidatalla: yhteys 1,6 s.
+
