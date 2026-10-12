@@ -1,118 +1,120 @@
-# Kohtaamispuhelin: yhteyksien esittely puhelimella palvelimen sijaan
+# Rengaspalvelin puhelimessa: renkaan sisäinen palvelinrekisteri ilman DNS:ää
 
-*Suunnitelma 2026-10-12. Ei vielä toteutettu.*
+*Suunnitelma 2026-10-12 (versio 2). Ei vielä toteutettu.*
 
 ## Tavoite
 
-Rengas (`poc1/web/direct.html`) toimii ilman palvelinta QR-koodeilla, mutta paluu suljetun sivun jälkeen vaatii kaksi skannausta. Jedi-kokeessa paluu tapahtui itsestään, kun kohtaamispaikka vei tarjouksen ja vastauksen perille (kahdella puhelimella 1,1 s). Jedi on kuitenkin varattu muuhun käyttöön, ja kohtaamispaikka on poistettu sieltä.
+Rengas (`poc1/web/direct.html`) toimii ilman palvelinta QR-koodeilla, mutta paluu suljetun sivun jälkeen vaatii kaksi skannausta. Jedi-kokeessa paluu tapahtui itsestään (kahdella puhelimella 1,1 s), mutta jedi on varattu muuhun käyttöön.
 
-Tavoite on, että kohtaamispaikka toimii **renkaan jäsenen omassa puhelimessa**, esimerkiksi Nokia G50:ssä. Puhelimen IPv6-osoite (tai nimi) on muiden tiedossa, ja sen sovellus esittelee yhteydet. Liikenne kulkee edelleen suoraan selainten välillä, eikä kohtaamispuhelin näe tekstiä eikä rekisteriä.
+Uusi malli:
+- Osa jäsenistä (esimerkiksi Nokia G50) ajaa puhelimessaan **rengaspalvelinta**. Nyt se on Termux-ohjelma, lopullisesti oma App.
+- Renkaalla on **sisäinen palvelinrekisteri**: kunkin palvelimen IPv6-osoitteet, portti ja varmenteen sormenjälki. DNS-nimiä, ulkopuolista palvelua ja varmentajaa ei tarvita.
+- Palvelin pitää osoitelistansa ajan tasalla. Selain ottaa sivun avautuessa yhteyden suoraan palvelimen IPv6-osoitteeseen, ja palvelin esittelee sen muille paikalla oleville jäsenille. Asiakas palaa linjoille itsestään.
 
-Pohja on olemassa. Androidin puhelin kelpaa palvelimeksi IPv6-verkossa: Termuxin sshd on toiminut muilta puhelimilta. Selainpuolen kohtaamispaikkakoodi (`direct.js`: renkaan huone, kertakäyttöinen kutsuhuone 2.j, automaattinen paluu, todennus avaimilla) on jo testattu.
+## Ratkaiseva tekninen kohta: selaimesta suoraan IPv6-osoitteeseen
 
-## Miksi pelkkä IPv6-osoite ei riitä selaimelle
+Pagesin HTTPS-sivu ei voi avata WebSocketia (`wss://`) pelkkään IPv6-osoitteeseen, koska luotettua varmennetta ei saa ilman nimeä. **WebRTC ei tarvitse varmentajaa.** DTLS:n vastapuoli tunnistetaan SDP:n sormenjäljestä, ja sormenjälki on nyt renkaan omassa rekisterissä.
 
-- Sivu ladataan HTTPS:llä (GitHub Pages). HTTPS-sivu saa avata vain salatun WebSocket-yhteyden (`wss://`).
-- Selain hyväksyy `wss://`-yhteyden vain, jos palvelimen varmenne on luotettu. Itse allekirjoitettua varmennetta selain ei kysy WebSocketille, vaan yhteys vain epäonnistuu.
-- Luotetun varmenteen saa käytännössä vain **nimelle**, ei puhelimen IPv6-osoitteelle. Let's Encryptin IP-varmenteet vaatisivat portin 80 tai 443, eikä Android ilman roottia salli niitä.
-- Pelkkä osoite ei kelpaa myöskään toisin päin. Jos sivu ladattaisiin suoraan puhelimesta osoitteesta `http://[osoite]:8443/`, sivu ei olisi suojattu konteksti. Silloin WebCrypto (avaimet) ja kamera eivät toimi.
+Palvelin toimii kuten libp2p:n *WebRTC Direct*: se on **ICE-lite**-vertainen kiinteässä UDP-portissa, ja sillä on pysyvä DTLS-varmenne. Selain ei tarvitse signalointia, koska se kokoaa palvelimen vastauksen itse, kuten renkaan 2.o-koodi jo nyt:
 
-**Siksi kohtaamispuhelin tarvitsee DNS-nimen**, jonka AAAA-tietue seuraa puhelimen osoitetta, ja nimelle luotetun varmenteen. DNS-palvelu kertoo vain osoitteen, eikä liikennettä kulje sen kautta.
+1. Selain luo tarjouksen ja lukee oman ICE-tunnuksensa `U`.
+2. Selain asettaa palvelimen vastaukseksi SDP:n, jossa on:
+   - palvelimen osoitteet ja portti rekisteristä
+   - `ice-lite`
+   - ICE-tunnus `U` ja salasana `f(U)` (kiinteä johdos, esimerkiksi `"certiratio-" + U` täydennettynä 22 merkkiin)
+   - rekisterin sormenjälki
+   - `setup:passive`
+3. Selain lähettää STUN-tarkistuksen, jonka käyttäjätunnus on `U:U`. Palvelin näkee siitä tuntemattoman tunnuksen, laskee salasanan `f(U)`, tarkistaa viestin eheyden ja luo tälle asiakkaalle uuden yhteyden samaan UDP-porttiin. ICE-lite ei lähetä omia tarkistuksia, joten se ei tarvitse selaimen salasanaa.
+4. **DTLS:** selain on asiakas ja tarkistaa palvelimen sormenjäljen rekisteristä, joten väärä palvelin ei kelpaa. Palvelin ei tunne selaimen sormenjälkeä, joten se hyväksyy minkä tahansa varmenteen ja todentaa jäsenen sovellustasolla. Tähän käytetään nykyinen hello/auth rekisterin avaimilla.
+5. DataChannel aukeaa, ja palvelin on tavallinen verkon solmu. Nykyinen esittely (`hello`-naapurilistat, `sig` välitettynä) yhdistää palaajan suoraan muihin paikalla oleviin.
 
-| Vaihtoehto | Toimiiko HTTPS-sivulta | Arvio |
-|---|---|---|
-| WebSocket, nimi ja Let's Encrypt (DNS-01) | kyllä, myös iPhonessa | **suositus**: vakiotekniikkaa, ja repossa on valmis palvelin |
-| WebSocket, itse allekirjoitettu varmenne IP:lle | ei (WebSocket ei kysy hyväksyntää) | hylätty |
-| Sivu puhelimesta `http://[IPv6]` | sivu lataa, mutta WebCrypto ja kamera eivät toimi | hylätty |
-| WebRTC-direct: puhelin on ICE-lite-vertainen, jolla on kiinteät tunnukset | kyllä, ilman nimeä ja varmennetta | myöhempi tutkimus, ks. lopuksi |
+**Palvelinkortti** on siis vain `{ id, osoitteet, portti, sormenjälki }`. ICE-tunnuksia ei tarvita, koska ne johdetaan selaimen omasta tunnuksesta. SDP:n peukalointia selaimessa ei tarvita, koska selain muuttaa vain vastapuolen kuvausta.
 
-## Rakenne
+**Ennakkoehto, joka testataan ensin:** pääseekö puhelimeen mobiiliverkossa *pyytämätön* UDP-paketti toisesta liittymästä? Ssh todisti TCP:n, mutta ICE-lite-palvelin ei lähetä ensimmäisenä. Testi tehdään kahdella USB-puhelimella (`nc -u -l` toisessa, lähetys toisesta). Jos operaattori suodattaa, palvelin ei voi olla pelkästään ICE-lite, vaan tarvitaan reiän avaus molemmista päistä. Se puolestaan vaatii signalointia.
 
-```
- selain (Pages, https)            Nokia G50 / Termux                    selain
-   │  wss://nokia.<dns>:8443/  ┌──────────────────────────┐   wss://…    │
-   ├──────────────────────────►│ kohtaamispalvelin (node)  │◄────────────┤
-   │   tarjous / vastaus       │ huoneet muistissa, ei lokia│             │
-   │                           └──────────────────────────┘             │
-   └──────────── suora IPv6 WebRTC DataChannel (DTLS) ───────────────────┘
-```
+## Palvelinrekisteri renkaassa
 
-### Puhelimen sovellus (Termux, Nokia G50)
+Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet muuttuvat, joten ne ovat erillinen tila, jossa uusin versio voittaa:
 
-1. **Palvelin:** `poc1/signal/server.mjs` (node, ei riippuvuuksia, TLS valmiina). Siihen lisätään rtcsignal-yhteensopivuus, jotta selaimen `Signaling` toimii sellaisenaan:
-   - nimetyt jäsenet (`join {room, name}`, nimi = jäsentunniste, `name-taken`)
-   - WebSocket polussa `/`
-   - huoneen koko 3 → 16
-   - sivuja ei jaeta (`--no-web`)
-   - lokiin vain käynnistys ja virheet, ei huoneiden nimiä eikä osoitteita
-   - Asennus: `pkg install nodejs`, ja repon `poc1/signal` kopioidaan puhelimeen.
-2. **Portti 8443.** Ilman roottia portit alle 1024 eivät ole käytössä, mutta selaimelle portti on yhdentekevä.
-3. **Nimi ja osoitteen seuranta:**
-   - Ilmainen dynaaminen DNS, jossa on rajapinta sekä AAAA- että TXT-tietueille. Ehdotus on deSEC (`dedyn.io`, Saksa, voittoa tavoittelematon); acme.sh tukee sitä (`dns_desec`).
-   - Termuxin skripti tarkistaa minuutin välein puhelimen pysyvän globaalin IPv6-osoitteen (`mngtmpaddr`, ei väliaikaista yksityisyysosoitetta). Jos osoite on muuttunut, skripti päivittää AAAA-tietueen (TTL 60 s).
-   - Mobiiliverkko vaihtaa /64-etuliitettä istunnon katketessa.
-4. **Varmenne:** `acme.sh --issue --dns dns_desec -d nokia.dedyn.io` (Let's Encrypt, DNS-01). Uusinta tehdään Termuxin cronilla (`termux-services`), ja palvelin käynnistetään uudelleen, kun varmenne vaihtuu.
-5. **Pysyminen käynnissä:**
-   - `termux-wake-lock`
-   - akunsäästö pois Termuxilta
-   - Termux:Boot käynnistää palvelimen ja osoitteen seurannan käynnistyksessä
-   - mieluiten puhelin laturissa
-6. **Itsetesti:** skripti tarkistaa toisesta verkosta, että `wss://nokia.dedyn.io:8443/` vastaa, ja varoittaa, jos operaattori estää tulevat yhteydet.
+- **`server`-tapahtuma** (rekisteriin, kerran per palvelin):
+  - Kentät: `{ kind: 'server', id: SERVER:s, ring, server, key, operator, name, sigs: { server, operator } }`.
+  - Palvelimella on oma P-256-avain, ja `server = idOf(key)`.
+  - Palvelin ei ole jäsen, koska se ei voi skannata koodeja. Sen ottaa renkaaseen sitä ylläpitävä jäsen (`operator`), joka allekirjoittaa sen.
+  - Palvelimen voi myöhemmin poistaa (`unserver`, operaattorin allekirjoitus).
+- **Kortti** (`card`, ei rekisterissä):
+  - Kentät: `{ server, seq, addrs: [...], port, fp, sig }`, ja palvelin allekirjoittaa kortin omalla avaimellaan.
+  - Kun palvelimen osoite vaihtuu, palvelin kasvattaa `seq`:tä ja lähettää kortin kaikille yhteydessä oleville.
+  - Kortit leviävät verkossa kuten tapahtumat. Jokainen jäsen tallentaa kustakin palvelimesta suurimman `seq`:n kortin IndexedDB:hen.
+- **Palvelin pitää osoitelistaa:**
+  - kaikkien renkaan palvelinten tuoreimmat kortit (palvelimet ovat yhteydessä myös toisiinsa)
+  - koko rekisteri, joten palaaja saa poissaolon aikana liittyneet palvelimelta
+  - jäsenten viimeksi nähdyt osoitteet. Näitä ei tarvita yhdistämiseen, koska esittely kulkee palvelimen kautta, mutta niistä on apua vianetsinnässä.
+- **Selain sivun avautuessa:** yhteys kaikkiin tallennettujen korttien palvelimiin, kaikkiin niiden osoitteisiin rinnakkain. Ensimmäinen todennettu yhteys riittää, ja esittely hoitaa loput.
 
-### Selaimen muutokset (`direct.js`, `pairing.js`)
+**Vanhentunut osoite** on mallin heikko kohta. Jos *kaikkien* palvelinten osoitteet vaihtuivat palaajan poissa ollessa, hän ei löydä niitä. Mobiiliverkon /64 vaihtuu, kun datayhteys katkeaa, eli ei kovin usein, mutta varmasti joskus. Lieventävät keinot:
+- useita palvelimia eri liittymissä
+- palvelin pitää myös vanhat osoitteensa korttissa niin kauan kuin ne ovat voimassa
+- vara on yhdistämiskoodi (2.r), kuten nyt
+- myöhemmin mahdollisesti valinnainen DNS-nimi kortissa
 
-1. **Kohtaamispaikat ovat renkaan asetus,** eivät sivun osoitteessa:
-   - Tallennetaan `meet`-salaisuuden rinnalle: `{ ringId, events, meet, meetUrls: ['wss://nokia.dedyn.io:8443/'] }`.
-   - Lista kulkee jäsenille samalla `meet`-sanomalla todennettuja yhteyksiä pitkin.
-   - Asetuksen lisää kohtaamispuhelimen omistaja. Info-osioon tulee kenttä *Kohtaamispaikka*, ja sinne voi liittää `wss://`-osoitteen tai skannata sen QR-koodina puhelimen näytöltä.
-2. **Useita kohtaamispaikkoja:** sivu liittyy kaikkiin listan paikkoihin samaan huoneeseen. Jos yksi puhelin on poissa, muut riittävät. Palvelimien välillä ei tarvita mitään yhteistä tilaa.
-3. **Kutsu kertoo kohtaamispaikan:**
-   - `2.j.RENGAS.VASEN.OIKEA.TUNNUS.PAIKKA`, jossa PAIKKA on isäntänimi ja portti (`nokia.dedyn.io:8443`).
-   - Tulokas tietää näin, mistä kutsuhuone löytyy, vaikka hänellä ei ole vielä renkaan asetuksia. QR-koodi pysyy pienenä (versio ≤ 7).
-4. **Ilman kohtaamispaikkaa** kaikki toimii kuten nyt, QR-koodeilla.
+## Palvelinohjelma
+
+**Nyt: Termux (Nokia G50).**
+- **Ohjelma:** Go ja pion/webrtc v4. Pion tukee ICE-liteä, kiinteää UDP-porttia (`UDPMux`) ja sormenjäljen tarkistuksen ohittamista. Tuntemattoman ICE-tunnuksen tunnistus otetaan go-libp2p:n WebRTC-direct-toteutuksen `udpmux`-paketista tai tehdään sen mallin mukaan.
+- **Käännös:** koneella `GOOS=android GOARCH=arm64` yhdeksi binääriksi, joka siirretään adb:llä Termuxiin. Puhelimeen ei tarvita kääntäjää eikä Nodea.
+- **Protokolla:** sama `certiratio-direct` DataChannelissa. Go-puolelle siirretään:
+  - hello/auth: P-256 ja raw-avain sekä allekirjoitus r‖s, kuten WebCrypto
+  - `verifyEvent` ja `build` (`ring.js`, `identity.js`, noin 200 riviä)
+  - välitys (`route`)
+  - korttien ylläpito
+- **Kanoninen allekirjoitettava sisältö** on JSON-taulukko. Go:n `json.Marshal` koodaa merkit `<>&` eri tavalla kuin selain, joten Go-puolella käytetään kooderia, jolla `SetEscapeHTML(false)`. Yhteiset testivektorit (JSON-tiedosto) ajetaan sekä Noden että Go:n testeissä.
+- **Pysyvä tila** tiedostoina: avain, DTLS-varmenne, rekisteri ja kortit.
+- **Osoitteen seuranta:** liitäntöjen globaalit IPv6-osoitteet minuutin välein. Väliaikaiset yksityisyysosoitteet jätetään pois, jos pysyvä löytyy.
+- **Käynnissä pysyminen:** `termux-wake-lock`, akunsäästö pois ja Termux:Boot.
+- **Renkaaseen liittäminen:**
+  1. Ohjelma tulostaa korttinsa QR-koodina terminaaliin.
+  2. Operaattori painaa selaimessa *Lisää palvelin* ja skannaa koodin.
+  3. Selain ottaa yhteyden palvelimeen, palvelin todistaa avaimensa, ja operaattori allekirjoittaa `server`-tapahtuman.
+  4. Palvelin saa rekisterin.
+
+**Lopullinen: Android-App.** Sama Go-ydin gomobilella Kotlin-sovelluksen *foreground service* -palveluun. Pysyvä ilmoitus pitää palvelun käynnissä paremmin kuin Termux. Sovelluksessa on käynnistys, tila (osoitteet, yhteydet, paikalla olevat) ja kortin QR. Sovellus voi myöhemmin olla myös renkaan jäsen omalla käyttöliittymällään.
+
+## Selaimen muutokset
+
+- **`pairing.js`:** palvelinkortti `2.s.RENGAS.PALVELIN.SORMENJÄLKI.PORTTI.OSOITTEET` QR-koodiksi ja linkiksi. Kortista kootaan ICE-lite-vastaus (`setup:passive`, `a=ice-lite`).
+- **`ring.js` ja `identity.js`:** `server`-tapahtuma, kortin allekirjoitus, testit.
+- **`direct.js`:**
+  - korttien tallennus ja levitys (`card`)
+  - yhteys palvelimiin sivun avautuessa sekä näkyviin palatessa ja verkon palatessa
+  - *Lisää palvelin*
+  - tilarivillä palvelinten tila ("palvelin Nokia ✓")
+  - nykyinen `?signal=`-kohtaamispaikka poistetaan, kun tämä toimii
+- **Kutsu:** kutsukoodi voi sisältää yhden palvelinkortin. Silloin tulokkaan tarjous ja vastaus kulkevat palvelimen kautta, ja tulokas skannaa vain kutsujan ja oikean naapurin koodit kuten 2.j-kokeessa. QR pysyy kohtuullisena (osoite, portti ja sormenjälki noin 90 merkkiä).
 
 ## Turva ja yksityisyys
 
-- **Kohtaamispuhelin näkee** jäsentunnisteet, huoneiden nimet ja SDP:t (IPv6-osoitteet ja portit), kuten jedi aiemmin. Se ei näe tekstiä (DTLS), rekisteriä eikä renkaan salaisuutta, koska huoneen nimi on salaisuuden tiiviste.
-- **Se ei voi esiintyä jäsenenä eikä päästää vierasta sisään.** Jokainen yhteys todennetaan rekisterin avaimilla (hello/auth), ja liittyminen vaatii molempien naapurien allekirjoitukset.
-- **Pahimmillaan se voi estää esittelyn** (palvelunesto). Siihen auttavat useat kohtaamispaikat ja QR-koodit varalla.
-- **DNS-palvelu näkee** vain puhelimen osoitteen ja sen muutokset.
-- **Kohtaamispuhelimen osoite on julkisessa DNS:ssä.** Puhelimessa on silloin auki portti 8443 (ja sshd, jos se on käytössä). Palvelin hyväksyy vain WebSocket-sanomat, ja sanoman koko on rajattu.
-
-## Riskit ja avoimet kysymykset
-
-- **Android pysäyttää taustaprosesseja.** Wake lock ja akunsäästön poisto auttavat, mutta valmistajakohtaiset säästötilat voivat silti pysäyttää Termuxin. Tämä testataan Nokialla vuorokauden ajolla.
-- **Operaattorin palomuuri:** tulevat IPv6-yhteydet ovat toimineet (sshd), mutta eri operaattoreilla ja liittymillä tilanne voi vaihdella. Itsetesti kertoo sen.
-- **Osoitteen vaihtuminen:** DNS-päivitys kestää TTL:n verran (≤ 1 min). Selain avaa yhteyden uudelleen itsestään (2 s → 30 s).
-- **Varmenteen uusinta** 60–90 päivän välein: acme.sh ja cron, epäonnistumisesta ilmoitus Termuxin ilmoituksena.
-- **Valinnat käyttäjälle:**
-  - DNS-palvelu: deSEC, DuckDNS tai ydns, jos sen rajapinta tukee TXT-tietueita.
-  - Onko Nokia pysyvästi laturissa kohtaamispuhelimena?
-  - Onko Termux jo asennettu F-Droidista tai GitHubista? Play-kaupan versio on vanhentunut.
+- **Palvelin näkee** jäsentunnisteet, välittämänsä SDP:t (jäsenten IPv6-osoitteet) ja rekisterin, koska se säilyttää rekisterin palaajia varten. Tekstiä se ei näe, kun jäsenten välinen yhteys on suora. Jos suora yhteys puuttuu, tekstivirta kiertää palvelimen kautta, kuten minkä tahansa solmun kautta nyt.
+- **Palvelin ei voi lisätä jäseniä.** Liittyminen vaatii naapurien allekirjoitukset, ja yhteydet todennetaan rekisterin avaimilla.
+- **Väärä palvelin:** selain hyväksyy vain sormenjäljen, joka on rekisteriin allekirjoitetussa kortissa.
+- **Palvelimen julkinen pinta:** yksi UDP-portti. Vieras, joka ei tunne sormenjälkeä eikä ole rekisterissä, ei pääse hello/authin ohi. Palvelin rajaa yhteyksien määrän ja katkaisee todentamattomat 10 sekunnissa.
 
 ## Vaiheet ja testaus
 
-1. **Palvelin repossa:**
-   - `server.mjs` rtcsignal-yhteensopivaksi
-   - `tests/signal.test.mjs`: nimetyt jäsenet, `name-taken`, huoneen koko, välitys ja poistuminen
-   - `drive-direct.mjs` ajetaan sitä vasten (ULA-verkkonimiavaruus)
-2. **Selain:**
-   - `meetUrls` renkaan asetukseksi ja jako jäsenille
-   - 2.j:hin PAIKKA
-   - useita kohtaamispaikkoja
-   - testit: pairing ja tarina kahdella paikallisella palvelimella, joista toinen sammutetaan kesken
-3. **Nokia:** Termux, node, palvelin, deSEC-nimi, acme.sh-varmenne ja Termux:Boot. Tarkistus OnePlusilta mobiilidatalla: `wss://nokia.dedyn.io:8443/` vastaa.
-4. **Kenttätesti:**
-   - Pagesin sivu, Nokia kohtaamispaikkana, OnePlus ja kolmas puhelin jäseninä
-   - liittyminen 2.j:llä, sivujen sulkeminen ja avaaminen, automaattinen paluu
-   - Nokian verkon katkaisu ja palautus (osoite vaihtuu)
-   - vuorokauden ajo
+1. **Ennakkoehto** (kaksi puhelinta USB:ssä, mobiilidata): pyytämätön UDP toisesta liittymästä perille, molempiin suuntiin, myös eri operaattoreiden välillä, jos mahdollista.
+2. **Prototyyppi koneella:**
+   - Go-palvelin (pion, ICE-lite, kiinteä portti), johon Chromium yhdistää pelkällä kortilla (ULA-verkkonimiavaruus)
+   - useita asiakkaita samaan porttiin
+   - väärä sormenjälki hylätään
+3. **Protokolla Go:ssa:** hello/auth, rekisteri, välitys ja kortit. Yhteiset testivektorit Node- ja Go-testeissä. `drive-direct.mjs`:
+   - palvelin renkaassa
+   - Liisa suljetaan ja avataan, ja hän palaa ilman koodeja
+   - palvelimen osoite vaihdetaan, ja kortti leviää
+4. **Termux Nokialla:** binääri adb:llä. OnePlus ja kolmas laite Pagesin sivulla mobiilidatalla. Testataan sivujen sulkeminen ja avaaminen, Nokian datayhteyden katkaisu (osoite vaihtuu) ja vuorokauden ajo.
+5. **App** (gomobile ja foreground service), kun Termux-versio on osoittanut mallin.
 
-## Myöhemmin: kohtaamispuhelin ilman nimeä ja varmennetta (WebRTC-direct)
+## Avoimet kysymykset
 
-Selaimeen voi muodostaa WebRTC-yhteyden ilman signalointia, jos vastapuoli on **ICE-lite** ja sen tunnukset ovat kiinteät: osoite ja portti, ICE-käyttäjätunnus ja -salasana sekä DTLS-varmenteen sormenjälki. Selain kokoaa vastapuolen vastauksen itse, kuten renkaan 2.o-koodissa jo nyt (libp2p:n *WebRTC Direct* toimii näin).
-
-- **Hyöty:** kohtaamispuhelimen "osoite" olisi vain `IPv6, portti, sormenjälki`. DNS:ää, varmennetta ja HTTPS-porttia ei tarvita.
-- **Hinta:** palvelin tarvitsee WebRTC-pinon, joka erottelee asiakkaat ICE-käyttäjätunnuksen mukaan, esimerkiksi Go ja pion tai libp2p. Se on paljon isompi työ kuin node-palvelin.
-
-Tämä jätetään tutkittavaksi, kun nimellinen versio on osoittanut, että kohtaamispuhelin pysyy käynnissä.
+- **UDP-ennakkoehto** (kohta 1) ratkaisee, toimiiko ICE-lite sellaisenaan.
+- **Safari ja iPhone:** WebRTC Direct -tyyppisen yhteyden (koottu ICE-lite-vastaus) toimivuus iOS:n WebKitissä on testattava. Chrome ja Firefox toimivat libp2p:n kokemuksen perusteella.
+- **Palvelinten määrä ja sijoittelu:** riittääkö yksi palvelin per kotitalous?
+- **Säilyttääkö palvelin tekstiä poissaolijoille?** Ei tässä vaiheessa. Tekstivirta on hetkellinen kuten nyt.
