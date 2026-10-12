@@ -2,36 +2,41 @@
 //
 // Rengas alkaa yhdestä puhelimesta. Toinen jäsen liittyy perustajan kutsulla.
 // Siitä eteenpäin uusi jäsen liittyy kahden vierekkäisen jäsenen väliin A → B:
-//   1. A näyttää kutsukoodin (2.o…), uusi jäsen N skannaa sen.
-//   2. N näyttää vastauskoodin (2.a…), A skannaa sen sivun omalla kameralla:
-//      suora IPv6-yhteys A–N syntyy, ja verkko esittelee N:n muille.
-//   3. B näyttää vahvistuskoodin (2.c…), N skannaa sen, allekirjoittaa
+//   1. A näyttää kutsukoodin (2.j…), uusi jäsen N skannaa sen. Tarjous ja
+//      vastaus kulkevat kertakäyttöisen kutsuhuoneen kautta (jedi): suora
+//      IPv6-yhteys A–N syntyy, ja verkko esittelee N:n muille. Jos jedi ei
+//      vastaa, A näyttää SDP-koodin (2.o…) ja skannaa N:n vastauksen (2.a…).
+//   2. B näyttää vahvistuskoodin (2.c…), N skannaa sen, allekirjoittaa
 //      liittymisensä ja lähettää sen B:lle. B allekirjoittaa ja ilmoittaa A:lle,
 //      A allekirjoittaa ja julkaisee liittymisen (admit).
 // Vain vasen jäsen A voi kutsua väliin A → B, joten samaan väliin ei tule kahta
 // liittyjää yhtä aikaa.
 //
 // Pysyvyys: avainpari (identity.js) ja rekisteri tallentuvat selaimeen
-// (store.js), ja sivu aukeaa jäsenenä. Palaava jäsen yhdistetään verkkoon
-// yhdistämiskoodilla (2.r…), jonka kuka tahansa paikalla oleva jäsen näyttää.
+// (store.js), ja sivu aukeaa jäsenenä. Jäsenet tapaavat toisensa renkaan
+// huoneessa jedin rtcsignalissa (huoneen nimi johdetaan jäsenten yhteisestä
+// salaisuudesta), joten palaava jäsen yhdistyy itsestään. Jedi välittää vain
+// tarjoukset ja vastaukset; jokainen yhteys todennetaan rekisterin avaimilla.
+// Ilman jediä (?nojedi tai ei vastaa) paluu käy yhdistämiskoodilla (2.r…).
 //
 // Verkkokerros: jokainen yhteys todennetaan (hello: avain ja haaste, auth:
 // allekirjoitus). Jäsenet kertovat naapurinsa, ja kaikki muodostavat suorat
 // yhteydet kaikkiin. Tarjoukset ja vastaukset kulkevat olemassa olevia
 // DataChanneleita pitkin (sig). Tekstivirta (chars) ja rekisteritapahtumat (ev)
 // leviävät kaikille. Eri renkaiden puhelimet eivät yhdisty (hello.ring).
-// Vain IPv6; ei signalointipalvelinta.
+// Vain IPv6.
 
 import { CLASSES, classifyPair, selectedPair } from './classify.js';
 import { authPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js';
-import { decodeAny, encodePairing, encodeVouch } from './pairing.js';
+import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js';
 import { ICONS, adjacent, build, cleanName, eventId, preferred, successor, validEvent } from './ring.js';
 import { createScanner } from './scanner.js';
+import { Signaling } from './signaling.js';
 import { clear as clearStore, load, save } from './store.js';
-import { filterSdp } from './stream.js';
+import { candidateAddr, filterSdp } from './stream.js';
 import { MAX_CHARS, createStreamView } from './streamview.js';
 
-const PROTOCOL = 'certiratio-direct/4';
+const PROTOCOL = 'certiratio-direct/5';
 const MAX_MESSAGE_BYTES = 64 * 1024;
 const GATHER_MS = 5000;
 const CONNECT_TIMEOUT_MS = 45000;
@@ -46,13 +51,22 @@ const ID = /^[0-9a-f]{8}$/;
 const STUN = 'stun:stun.l.google.com:19302';
 const LOCK = 'certiratio-direct';
 const DIRECTED = new Set(['sig', 'sponsor', 'claim', 'vouched']);
+const INVITE_MS = 10 * 60000; // kutsuhuone suljetaan, jos kukaan ei tule
+const SIGNAL_MS = 8000;
+const SECRET = /^[0-9a-f]{32}$/;
+const JEDI = 'jedi.ydns.eu:8443';
 
 const $ = (id) => document.getElementById(id);
 const base = location.origin + location.pathname;
 const bc = 'BroadcastChannel' in window ? new BroadcastChannel('certiratio-direct') : null;
 const hex = (n) => [...crypto.getRandomValues(new Uint8Array(n))].map((b) => b.toString(16).padStart(2, '0')).join('');
 const boot = hex(4); // tämä sivun lataus: vanhentuneen yhteyden tunnistamiseen
-let useStun = new URLSearchParams(location.search).has('stun');
+const params = new URLSearchParams(location.search);
+let useStun = params.has('stun');
+// Kohtaamispaikka: jediltä tai paikallisesta rtcsignalista ladattuna sama palvelin, muuten jedi.
+const signalUrl = params.has('nojedi') ? null : params.get('signal') ??
+  (location.host === JEDI || ['localhost', '127.0.0.1'].includes(location.hostname)
+    ? `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/` : `wss://${JEDI}/`);
 
 let me = null; // { priv, pub, key, id }
 let myId = null;
@@ -85,13 +99,24 @@ let joining = null; // N: { token, offer, link, stage: 'profile'|'answer'|'vouch
 let sponsor = null; // B: { member, key, name, icon, inviter, left, nonce, done }
 let rejoin = null; // palaava jäsen: { code, link }
 let retryLast = null; // "Yritä uudelleen"
+let inviteSeq = 0; // peruttu kutsu ei avaudu myöhässä
+
+// Kohtaamispaikka (renkaan huone jedissä)
+let meet = null; // jäsenten yhteinen salaisuus (32 heksaa); ei tapahtumissa
+let meetSig = null; // Signaling renkaan huoneeseen
+let meetBusy = false;
+let meetState = signalUrl ? 'connecting' : 'off'; // 'off' | 'connecting' | 'ok' | 'down'
+let meetDelay = 2000;
+let meetTimer = null;
+const present = new Set(); // renkaan huoneessa nyt olevat tunnisteet
+let stopped = false; // toinen välilehti otti renkaan
 
 // --- Yhteydet -------------------------------------------------------------
 
 function newLink(key, id = null) {
   const pc = new RTCPeerConnection({ iceServers: useStun ? [{ urls: STUN }] : [] });
   const link = { key, id, pc, ch: null, cls: 'unknown', detail: '', timer: null, deadline: null, nonce: hex(8),
-    peerKey: null, peerBoot: null, verified: false, queue: [], chain: Promise.resolve(), peers: [] };
+    peerKey: null, peerBoot: null, verified: false, queue: [], chain: Promise.resolve(), peers: [], via: 'qr', meetSent: null };
   links.set(key, link);
   pc.onconnectionstatechange = () => {
     if (pc.connectionState === 'failed') drop(link, 'ICE epäonnistui');
@@ -120,7 +145,10 @@ function drop(link, why) {
   if (link.id && why && !link.verified) failed.set(link.id, Date.now()); // katkennut toimiva yhteys saa palata
   log(`${nameOf(link.id) ?? 'uusi'}: ${why ?? 'suljettu'}`);
   if (invite?.link === link && !invite.connected) {
+    const i = invite;
     invite = null;
+    clearTimeout(i.expire);
+    i.sig?.close();
     if (why) pairFailed(why);
   }
   if (joining?.link === link && joining.stage === 'answer' && why) pairFailed(why);
@@ -128,6 +156,8 @@ function drop(link, why) {
     rejoin = null;
     if (why) pairFailed(why);
   }
+  // Renkaan huoneessa oleva jäsen: uusi yritys (esim. hän latasi sivun uudelleen).
+  if (link.id && present.has(link.id)) setTimeout(() => consider(link.id), 1000);
   sendHello();
   render();
 }
@@ -205,6 +235,9 @@ async function onMessage(link, msg) {
 async function handle(link, msg) {
   if (msg.type === 'events') {
     if (Array.isArray(msg.list)) await merge(msg.list.slice(0, MAX_EVENTS));
+  } else if (msg.type === 'meet') {
+    // Rekisterin jälkeen: tuore jäsen tietää jo olevansa jäsen.
+    mergeChain = mergeChain.then(() => onMeet(link, msg.secret));
   } else if (msg.type === 'chars' || msg.type === 'ev' || DIRECTED.has(msg.type)) {
     route(msg, link);
   }
@@ -274,6 +307,14 @@ async function onAuth(link, msg) {
   if (joining?.link === link) joinConnected();
   else if (rejoin?.link === link) rejoined();
   if (links.get(link.key) !== link) return; // esim. ei jäsen: katkaistu
+  if (link.via === 'meet') {
+    // Renkaan huoneeseen pääsee vain salaisuudella; jäsenyys silti tarkistetaan
+    // (rekisteri voi olla vielä tulossa, jos hän liittyi poissaolon aikana).
+    setTimeout(() => {
+      if (links.get(link.key) === link && !isMember(link.id)) { log(`${nameOf(link.id)}: ei renkaan jäsen, katkaistaan`); drop(link, null); }
+    }, 5000);
+  }
+  shareMeet();
   for (const p of link.peers) consider(p);
   sendHello();
   render();
@@ -334,17 +375,24 @@ async function localSdp(link) {
   return { type: link.pc.localDescription.type, sdp: filterSdp(link.pc.localDescription.sdp).sdp };
 }
 
+/** Tarjous jäsenelle: jedin kautta, jos hän on renkaan huoneessa, muuten verkon kautta. */
 async function connectTo(p) {
+  const jedi = !!meetSig && present.has(p);
   const link = newLink(p, p);
+  link.via = jedi ? 'meet' : 'mesh';
   attach(link, link.pc.createDataChannel('direct', { ordered: true }));
-  log(`${nameOf(p)}: esittely verkon kautta, muodostetaan yhteys`);
+  log(`${nameOf(p)}: ${jedi ? 'kohtaamispaikan' : 'esittely verkon'} kautta, muodostetaan yhteys`);
   await link.pc.setLocalDescription(await link.pc.createOffer());
-  originate({ type: 'sig', to: p, data: { sdp: await localSdp(link), boot } });
+  const data = { sdp: await localSdp(link), boot };
+  if (jedi) meetSig?.send(p, data);
+  else originate({ type: 'sig', to: p, data });
   render();
 }
 
-async function onSig(from, data, hops) {
-  if (typeof data?.sdp?.sdp !== 'string') return;
+/** Tarjous tai vastaus; `reply` vie vastauksen samaa reittiä takaisin. */
+async function onSig(from, data, hops, reply = (d) => originate({ type: 'sig', to: from, data: d })) {
+  if (typeof data?.sdp?.sdp !== 'string' || !ID.test(from) || from === myId) return;
+  const via = hops === 'jedi' ? 'kohtaamispaikan kautta' : `esittely verkon kautta, välittäjiä ${hops}`;
   const desc = { type: data.sdp.type, sdp: filterSdp(data.sdp.sdp).sdp };
   try {
     if (desc.type === 'offer') {
@@ -354,21 +402,159 @@ async function onSig(from, data, hops) {
       if (old) drop(old, null);
       failed.delete(from);
       const link = newLink(from, from);
-      log(`${nameOf(from)}: esittely verkon kautta, välittäjiä ${hops}; vastataan`);
+      link.via = hops === 'jedi' ? 'meet' : 'mesh';
+      log(`${nameOf(from)}: ${via}; vastataan`);
       await link.pc.setRemoteDescription(desc);
       await link.pc.setLocalDescription(await link.pc.createAnswer());
-      originate({ type: 'sig', to: from, data: { sdp: await localSdp(link), boot } });
+      reply({ sdp: await localSdp(link), boot });
       render();
     } else if (desc.type === 'answer') {
       const link = links.get(from);
       if (link?.pc.signalingState === 'have-local-offer') {
-        log(`${nameOf(from)}: vastaus verkon kautta, välittäjiä ${hops}`);
+        log(`${nameOf(from)}: vastaus ${hops === 'jedi' ? 'kohtaamispaikan kautta' : `verkon kautta, välittäjiä ${hops}`}`);
         await link.pc.setRemoteDescription(desc);
       }
     }
   } catch (e) {
     log(`${nameOf(from)}: signalointivirhe ${e.message}`);
   }
+}
+
+// --- Kohtaamispaikka (jedi) -----------------------------------------------
+
+function withTimeout(promise, ms) {
+  return Promise.race([promise, new Promise((_, bad) => setTimeout(() => bad(new Error('ei vastausta')), ms))]);
+}
+
+/** Huone, jonka nimi on `room`; nimi on oma tunniste. Palauttaa { s, peers }. */
+async function openSignal(room, ms = SIGNAL_MS) {
+  const s = new Signaling(signalUrl, room, myId);
+  try {
+    const w = await withTimeout(s.connect(), ms);
+    return { s, peers: Array.isArray(w.peers) ? w.peers : [] };
+  } catch (e) {
+    s.close();
+    throw e;
+  }
+}
+
+let probe = null;
+/** Näkyykö oma IPv6-osoite ilman STUNia? iPhone ja työpöytä-Chrome piilottavat sen (mDNS). */
+function checkAddress() {
+  probe ??= (async () => {
+    if (useStun) return;
+    const pc = new RTCPeerConnection();
+    pc.createDataChannel('probe');
+    const g = gather(pc);
+    await pc.setLocalDescription(await pc.createOffer());
+    const { lines, mdns } = await g;
+    pc.close();
+    if (mdns && !lines.some((l) => pairable(candidateAddr(l) ?? ''))) {
+      useStun = true;
+      log('selain piilottaa osoitteensa, kysytään se STUN-palvelimelta');
+    }
+  })().catch(() => {});
+  return probe;
+}
+
+async function meetRoom() {
+  const d = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`meet.${meet}`)));
+  return `m-${[...d.slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/** Renkaan huoneeseen: paikalla olevat jäsenet yhdistyvät suoraan. */
+async function connectMeet() {
+  if (!signalUrl || !meet || !isMember() || meetSig || meetBusy || stopped) return;
+  meetBusy = true;
+  clearTimeout(meetTimer);
+  try {
+    await checkAddress();
+    const room = await meetRoom();
+    const s = new Signaling(signalUrl, room, myId);
+    meetSig = s;
+    s.addEventListener('peer-joined', (e) => {
+      if (meetSig !== s) return;
+      present.add(e.detail.name);
+      consider(e.detail.name);
+      render();
+    });
+    s.addEventListener('peer-left', (e) => { if (meetSig === s) { present.delete(e.detail.name); render(); } });
+    s.addEventListener('signal', (e) => {
+      if (meetSig === s) onSig(e.detail.from, e.detail.data, 'jedi', (d) => s.send(e.detail.from, d));
+    });
+    s.addEventListener('close', () => meetDown(s));
+    let w;
+    try {
+      w = await withTimeout(s.connect(), SIGNAL_MS);
+    } catch (e) {
+      if (meetState !== 'down') log(`kohtaamispaikka: ${e.message}`);
+      s.close();
+      meetDown(s);
+      return;
+    }
+    if (meetSig !== s) { s.close(); return; }
+    meetState = 'ok';
+    meetDelay = 2000;
+    const peers = Array.isArray(w.peers) ? w.peers : [];
+    log(`kohtaamispaikka: renkaan huoneessa ${peers.length} muuta`);
+    present.clear();
+    for (const p of peers) present.add(p);
+    for (const p of peers) consider(p);
+    render();
+  } finally {
+    meetBusy = false;
+  }
+}
+
+function meetDown(s) {
+  if (meetSig !== s) return;
+  meetSig = null;
+  present.clear();
+  meetState = 'down';
+  if (!stopped) {
+    meetTimer = setTimeout(connectMeet, meetDelay);
+    meetDelay = Math.min(meetDelay * 2, 30000);
+  }
+  render();
+}
+
+function closeMeet() {
+  const s = meetSig;
+  meetSig = null;
+  present.clear();
+  clearTimeout(meetTimer);
+  s?.close();
+}
+
+/** Takaisin näkyviin tai verkkoon: yritetään heti. */
+function kickMeet() {
+  if (meetSig || meetBusy || !isMember()) return;
+  meetDelay = 2000;
+  connectMeet();
+}
+
+/** Salaisuus todennetuille jäsenille, joilla sitä ei vielä ole tältä. */
+function shareMeet() {
+  if (!meet || !isMember()) return;
+  for (const l of links.values()) {
+    if (l.verified && isMember(l.id) && l.meetSent !== meet) {
+      l.meetSent = meet;
+      send(l, { type: 'meet', secret: meet });
+    }
+  }
+}
+
+/** Naapurin salaisuus: eri arvoista pienempi voittaa, joten kaikki päätyvät samaan huoneeseen. */
+function onMeet(link, secret) {
+  if (typeof secret !== 'string' || !SECRET.test(secret) || !isMember() || !isMember(link.id)) return;
+  if (meet && secret >= meet) return;
+  meet = secret;
+  persistRing();
+  log('kohtaamispaikka: renkaan huone saatu');
+  closeMeet();
+  meetDelay = 2000;
+  connectMeet();
+  shareMeet();
 }
 
 // --- Rengas ---------------------------------------------------------------
@@ -389,8 +575,8 @@ const keyOf = (id) => (events.get(`${id}:f`) ?? events.get(`${id}:a`))?.key ?? n
 /** Oma uusi tapahtuma: talteen ja kaikille. */
 async function publish(ev) {
   ev.id = eventId(ev.kind, ev.member);
+  originate({ type: 'ev', ev }); // ennen omaa mergeä: tulokas saa liittymisensä ennen salaisuutta
   await merge([ev]);
-  originate({ type: 'ev', ev });
 }
 
 /** Liittymisen allekirjoitettava luonnos. */
@@ -439,18 +625,25 @@ async function mergeNow(list) {
     admitted(m, ev);
   }
   if (isMember()) {
-    save('ring', { ringId, events: [...events.values()] }).catch(() => { stored = false; });
+    persistRing();
     if (!persisted) {
       persisted = true;
       navigator.storage?.persist?.().then((p) => log(`tallennus ${p ? 'pysyvä' : 'selaimen harkinnassa'}`), () => {});
     }
+    shareMeet();
+    connectMeet();
   }
   render();
+}
+
+function persistRing() {
+  save('ring', { ringId, events: [...events.values()], meet }).catch(() => { stored = false; });
 }
 
 async function found(name, icon) {
   const salt = hex(4);
   ringId = await ringIdOf(me.key, salt);
+  meet = hex(16);
   const ev = { kind: 'found', ring: ringId, member: myId, key: me.key, salt, name, icon };
   ev.sigs = { member: await sign(me.priv, payloadOf(ev)) };
   await publish(ev);
@@ -461,8 +654,11 @@ async function found(name, icon) {
 
 async function startInvite(kind = 'join') {
   if (!isMember()) return;
-  if (invite) drop(invite.link, null);
+  endInvite();
+  const ticket = ++inviteSeq;
   retryLast = () => startInvite(kind);
+  if (kind === 'join' && signalUrl && (await startJediInvite(ticket))) return;
+  if (ticket !== inviteSeq) return;
   const right = kind === 'join' ? successor(ring.members, myId) : null;
   const link = newLink(`qr-${++qrSeq}`);
   clearTimeout(link.deadline); // QR-skannaus saa kestää
@@ -476,6 +672,69 @@ async function startInvite(kind = 'join') {
     : await local(link, 'reconnect', gathering, { ring: ringId, from: myId });
   if (!token) return;
   showInviteCode(token);
+}
+
+/** Kutsu kertakäyttöisen kutsuhuoneen kautta: tulokas skannaa yhden koodin. */
+async function startJediInvite(ticket) {
+  const right = successor(ring.members, myId);
+  panel({ step: 'Avataan kutsu…', trio: trioNew(myId, right, null), secondary: ['Peru', cancelInvite] });
+  await checkAddress();
+  const token = hex(8);
+  let s;
+  try {
+    ({ s } = await openSignal(`i-${token}`, 5000));
+  } catch (e) {
+    log(`kohtaamispaikka ei vastaa (${e.message}): kutsu QR-koodeilla`);
+    return false;
+  }
+  if (ticket !== inviteSeq) { s.close(); return true; }
+  const i = { kind: 'join', link: null, left: myId, right, member: null, memberKey: null, connected: false, sig: s, token };
+  invite = i;
+  i.expire = setTimeout(() => {
+    if (invite !== i || i.link) return;
+    endInvite();
+    panel({ step: 'Kutsu vanheni. Tee uusi kutsu.', close: true });
+  }, INVITE_MS);
+  s.addEventListener('signal', (e) => {
+    if (invite === i) answerJoiner(i, e.detail.from, e.detail.data).catch((err) => log(`kutsu: ${err.message}`));
+  });
+  showJoinCode(i);
+  return true;
+}
+
+function showJoinCode(i) {
+  const founding = i.right === myId;
+  panel({
+    step: 'Kutsu · Näytä tämä koodi uudelle jäsenelle. Hän skannaa sen puhelimensa kameralla.',
+    note: founding ? 'Hänestä tulee renkaan toinen perustaja. Muuta ei tarvita.'
+      : `Hän liittyy väliin: sinä – ${nameOf(i.right)}. Sen jälkeen ${nameOf(i.right)} näyttää hänelle oman koodinsa.`,
+    trio: trioNew(myId, i.right, null),
+    qr: `${base}#${encodeJoin(ringId, myId, i.right, i.token)}`,
+    secondary: ['Peru', cancelInvite],
+  });
+}
+
+/** Ensimmäinen kutsuhuoneeseen tullut tarjous saa vastauksen; koodi on kertakäyttöinen. */
+async function answerJoiner(i, from, data) {
+  if (i.link || !ID.test(from) || data?.sdp?.type !== 'offer' || typeof data.sdp.sdp !== 'string') return;
+  const link = newLink(`qr-${++qrSeq}`);
+  link.via = 'invite';
+  i.link = link;
+  log(`kutsu: tarjous kohtaamispaikan kautta (${from})`);
+  panel({ step: 'Yhdistetään…', trio: trioNew(myId, i.right, null), secondary: ['Peru', cancelInvite] });
+  await link.pc.setRemoteDescription({ type: 'offer', sdp: filterSdp(data.sdp.sdp).sdp });
+  await link.pc.setLocalDescription(await link.pc.createAnswer());
+  i.sig.send(from, { sdp: await localSdp(link), boot });
+}
+
+/** Kutsu pois: kutsuhuone kiinni, keskeneräinen yhteys katki. */
+function endInvite() {
+  const i = invite;
+  if (!i) return;
+  invite = null;
+  clearTimeout(i.expire);
+  i.sig?.close();
+  if (i.link && !i.connected) drop(i.link, null);
 }
 
 function showInviteCode(token) {
@@ -515,8 +774,8 @@ function scanAnswer(token) {
 }
 
 function cancelInvite() {
-  if (invite && !invite.connected) drop(invite.link, null);
-  invite = null;
+  inviteSeq++;
+  endInvite();
   showMember();
 }
 
@@ -546,6 +805,9 @@ function inviteConnected() {
   }
   invite.member = n;
   invite.memberKey = invite.link.peerKey;
+  invite.sig?.close(); // kertakäyttöinen kutsuhuone
+  invite.sig = null;
+  clearTimeout(invite.expire);
   if (invite.right === myId) {
     panel({ step: `${nameOf(n)} on yhteydessä. Odotetaan hänen hyväksyntäänsä…`, trio: trioNew(myId, myId, n) });
     return;
@@ -622,12 +884,61 @@ async function onClaim(msg) {
 
 function startJoin(token, offer) {
   ringId = offer.ring;
-  joining = { token, offer, link: null, stage: 'profile' };
+  joining = { token, offer, link: null, stage: 'profile', sig: null };
+  const jedi = offer.type === 'join';
+  const steps = offer.left === offer.right ? 1 : jedi ? 2 : 3;
   panel({
-    step: 'Liittyminen 1/3 · Sinut on kutsuttu renkaaseen. Kirjoita nimesi ja valitse kuva.',
+    step: `Liittyminen 1/${steps} · Sinut on kutsuttu renkaaseen. Kirjoita nimesi ja valitse kuva.`,
     profile: true,
-    primary: ['Jatka', () => { if (readProfile()) makeAnswer(); }],
+    primary: ['Jatka', () => { if (readProfile()) (jedi ? joinViaJedi() : makeAnswer()); }],
   });
+}
+
+/** 2.j: tarjous kutsujalle kutsuhuoneen kautta, vastaus samaa reittiä. */
+async function joinViaJedi() {
+  const j = joining;
+  const { left, right, token } = j.offer;
+  panel({ step: 'Yhdistetään kutsujaan…', trio: trioNew(left, right, myId) });
+  if (!signalUrl) return pairFailed('kohtaamispaikka ei ole käytössä');
+  await checkAddress();
+  let s, peers;
+  try {
+    ({ s, peers } = await openSignal(`i-${token}`));
+  } catch (e) {
+    return pairFailed(`kohtaamispaikka ei vastaa: ${e.message}`);
+  }
+  if (joining !== j) { s.close(); return; }
+  if (!peers.includes(left)) {
+    s.close();
+    return pairFailed('kutsu on jo käytetty tai vanhentunut');
+  }
+  j.sig = s;
+  const link = newLink(`qr-${++qrSeq}`);
+  link.via = 'invite';
+  j.link = link;
+  j.stage = 'answer';
+  s.addEventListener('signal', async (e) => {
+    const d = e.detail.data;
+    if (e.detail.from !== left || d?.sdp?.type !== 'answer' || link.pc.signalingState !== 'have-local-offer') return;
+    try {
+      await link.pc.setRemoteDescription({ type: 'answer', sdp: filterSdp(String(d.sdp.sdp)).sdp });
+    } catch (err) {
+      log(`kutsu: ${err.message}`);
+    }
+  });
+  attach(link, link.pc.createDataChannel('direct', { ordered: true }));
+  const gathering = gather(link.pc);
+  await link.pc.setLocalDescription(await link.pc.createOffer());
+  const g = await gathering;
+  const sdp = filterSdp(link.pc.localDescription.sdp).sdp;
+  if (!/^a=candidate:/m.test(sdp)) {
+    s.close();
+    j.sig = null;
+    drop(link, null);
+    j.stage = 'profile';
+    return noAddress(g.mdns > 0, 'ei IPv6-osoitetta', joinViaJedi);
+  }
+  s.send(left, { sdp: { type: 'offer', sdp }, boot });
 }
 
 async function makeAnswer() {
@@ -657,6 +968,8 @@ async function claim(to, proof) {
 }
 
 async function joinConnected() {
+  joining.sig?.close();
+  joining.sig = null;
   const { left, right } = joining.offer;
   if (left === right) {
     joining.stage = 'wait';
@@ -666,7 +979,7 @@ async function joinConnected() {
   }
   joining.stage = 'vouch';
   panel({
-    step: `Liittyminen 3/3 · Skannaa koodi, jonka ${nameOf(right)} näyttää puhelimessaan.`,
+    step: `Liittyminen ${joining.offer.type === 'join' ? '2/2' : '3/3'} · Skannaa koodi, jonka ${nameOf(right)} näyttää puhelimessaan.`,
     note: `Liityt väliin: ${nameOf(left)} – ${nameOf(right)}.`,
     trio: trioNew(left, right, myId),
     cam: true,
@@ -750,12 +1063,12 @@ function handleCode(text) {
   }
   if (c.type === 'answer' && invite?.link.pc.signalingState === 'have-local-offer') useAnswer(c);
   else if (c.type === 'vouch' && joining?.stage === 'vouch') useVouch(c);
-  else if (c.type === 'offer' && !ringId) {
+  else if ((c.type === 'offer' || c.type === 'join') && !ringId) {
     const t = text.slice(text.indexOf('#') + 1);
     startJoin(decodeURIComponent(t), c);
   } else if (c.type === 'reconnect' && isMember() && c.ring === ringId && !rejoin) startRejoin(c);
   else {
-    note(c.type === 'offer' ? 'Tämä on kutsukoodi uudelle jäsenelle, ja tämä puhelin on jo renkaassa. Palaavana jäsenenä tarvitset yhdistämiskoodin.'
+    note(c.type === 'offer' || c.type === 'join' ? 'Tämä on kutsukoodi uudelle jäsenelle, ja tämä puhelin on jo renkaassa. Palaavana jäsenenä tarvitset yhdistämiskoodin.'
       : c.type === 'reconnect' && !isMember() ? 'Tämä on yhdistämiskoodi renkaan jäsenille. Uutena jäsenenä tarvitset kutsukoodin.'
         : c.type === 'reconnect' && c.ring !== ringId ? 'Tämä yhdistämiskoodi kuuluu toiseen renkaaseen.'
           : 'Tämä puhelin ei odota tätä koodia nyt.');
@@ -807,6 +1120,9 @@ function acquireLock(steal = false) {
 }
 
 function lockLost() {
+  stopped = true;
+  closeMeet();
+  endInvite();
   scanner.stop();
   for (const l of [...links.values()]) drop(l, null);
   panel({ step: 'Rengas avattiin toisessa välilehdessä, ja tämä välilehti pysäytettiin.', primary: ['Käytä tätä välilehteä', takeOver] });
@@ -1008,7 +1324,7 @@ function noAddress(mdns, why, retry) {
 
 function pairFailed(why) {
   const member = isMember();
-  if (!member) { joining = null; ringId = null; } // liittyjä aloittaa alusta uudella kutsukoodilla
+  if (!member) { joining?.sig?.close(); joining = null; ringId = null; } // liittyjä aloittaa alusta uudella kutsukoodilla
   panel({
     step: `Yhteys ei syntynyt (${why}).`,
     note: 'Molemmilla pitää olla IPv6 (mobiilidata). Koodin näyttäjä tekee uuden koodin.',
@@ -1075,17 +1391,22 @@ function render() {
   const n = ring.members.length;
   const here = neighbours().filter((x) => isMember(x)).length + 1;
   const joiners = neighbours().length + 1 - here;
-  $('status').className = open || n === 1 ? 'ok' : 'bad';
-  $('status').textContent = n === 1 && !open ? 'Rengas aloitettu. Kutsu toinen perustaja.'
-    : !open ? `Renkaassa ${n} · ei yhteyksiä. Pyydä paikalla olevaa jäsentä näyttämään yhdistämiskoodi (Yhdistä).`
-      : `Renkaassa ${n} · paikalla ${here} · suoria yhteyksiä ${open}${joiners > 0 ? ` · liittymässä ${joiners}` : ''}`;
+  const jedi = meetState === 'ok';
+  const meetText = { off: '', connecting: ' · jedi…', ok: ' · jedi ✓', down: ' · jedi ei vastaa' }[meetState];
+  $('status').className = open || n === 1 || jedi ? 'ok' : 'bad';
+  $('status').textContent = (n === 1 && !open ? 'Rengas aloitettu. Kutsu toinen perustaja.'
+    : !open && jedi ? `Renkaassa ${n} · muita ei ole nyt paikalla. Yhteys syntyy itsestään, kun joku avaa sivun.`
+      : !open ? `Renkaassa ${n} · ei yhteyksiä. Pyydä paikalla olevaa jäsentä näyttämään yhdistämiskoodi (Yhdistä).`
+        : `Renkaassa ${n} · paikalla ${here} · suoria yhteyksiä ${open}${joiners > 0 ? ` · liittymässä ${joiners}` : ''}`) + meetText;
   const right = isMember() ? successor(ring.members, myId) : null;
   $('invite').hidden = !isMember();
   $('invite').textContent = right === myId ? 'Kutsu toinen perustaja' : `Kutsu väliin: minä ja ${nameOf(right)}`;
-  $('reconnect').hidden = !isMember() || n < 2;
+  $('reconnect').hidden = !isMember() || n < 2 || (jedi && here >= n); // varalla: jedi ei vastaa tai joku puuttuu
   $('info-sum').textContent = `yhteydet · minä ${profile.icon} ${profile.name || myId}`;
   $('me-info').textContent = `Tunniste ${myId} · avain ${me.key.slice(0, 12)}…` +
-    (stored ? ' · tallennettu tähän selaimeen' : ' · ⚠️ selain ei salli tallennusta: jäsenyys katoaa, kun sivu suljetaan');
+    (stored ? ' · tallennettu tähän selaimeen' : ' · ⚠️ selain ei salli tallennusta: jäsenyys katoaa, kun sivu suljetaan') +
+    (signalUrl ? ` · kohtaamispaikka ${new URL(signalUrl).host} (näkee tunnisteet ja IPv6-osoitteet, ei tekstiä eikä rekisteriä)`
+      : ' · ei kohtaamispaikkaa (?nojedi): paluu yhdistämiskoodilla');
   $('forget').hidden = !isMember();
 }
 
@@ -1154,16 +1475,19 @@ async function restoreRing() {
   try { saved = await load('ring'); } catch { stored = false; }
   if (!saved?.ringId) return;
   ringId = saved.ringId;
+  meet = SECRET.test(saved.meet ?? '') ? saved.meet : hex(16); // vanha tallenne: uusi, pienempi voittaa
   restoring = true;
   await merge(Array.isArray(saved.events) ? saved.events : []);
   restoring = false;
   if (!isMember()) { // esim. vain osa tallentui: aloitetaan alusta
     ringId = null;
+    meet = null;
     events.clear();
     ring = build('00000000', []);
     return;
   }
   profileFromRing();
+  persistRing();
   log(`rengas ladattu: ${ring.members.length} jäsentä`);
 }
 
@@ -1201,9 +1525,11 @@ async function main() {
     location.reload();
   };
 
+  addEventListener('online', kickMeet);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) kickMeet(); });
   const member = isMember();
-  if (member) showMember();
-  if (first?.type === 'offer' && !member) startJoin(hash, first);
+  if (member) { showMember(); connectMeet(); }
+  if ((first?.type === 'offer' || first?.type === 'join') && !member) startJoin(hash, first);
   else if (first?.type === 'reconnect') { if (!member) startScreen(); handleCode(hash); }
   else if (first?.type === 'answer' || first?.type === 'vouch') {
     // Lukko oli vapaa: koodia odottanut välilehti on jo suljettu.
@@ -1216,8 +1542,8 @@ async function main() {
   } else if (!member) {
     startScreen();
     if (first?.error) note(`Koodi ei kelpaa: ${first.error}`);
-  } else if (first?.type === 'offer') {
-    panel({ step: 'Tämä puhelin on jo renkaassa.', note: 'Kutsukoodi on uudelle jäsenelle. Palaavana jäsenenä tarvitset yhdistämiskoodin (Yhdistä).', close: true });
+  } else if (first?.type === 'offer' || first?.type === 'join') {
+    panel({ step: 'Tämä puhelin on jo renkaassa.', note: 'Kutsukoodi on uudelle jäsenelle. Paluu tapahtuu itsestään (tai yhdistämiskoodilla).', close: true });
   }
 }
 
@@ -1232,6 +1558,8 @@ window.direct = {
   get step() { return $('step').textContent; },
   get note() { return $('pair-note').textContent; },
   get events() { return [...events.values()]; },
+  get meet() { return meetState; },
+  get present() { return [...present]; },
   /** Kuin kamera olisi lukenut koodin. */
   scan: (text) => handleCode(text),
   /** Kuin tapahtumat olisivat tulleet verkosta (väärennöstesti). */
