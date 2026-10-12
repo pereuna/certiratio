@@ -446,7 +446,7 @@ func (n *node) handle(l *link, typ string, msg map[string]json.RawMessage) {
 				n.sendHello() // uusi jäsen voi tulla naapurilistalle
 			}
 		}
-	case typ == "chars" || typ == "ev" || directed[typ]:
+	case typ == "ev" || directed[typ]:
 		n.route(l, typ, msg)
 	case typ == "enroll":
 		n.onEnroll(l, msg)

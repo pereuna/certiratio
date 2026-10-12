@@ -32,8 +32,6 @@ const until = async (t, expr, ms = 30000) => {
 };
 const profile = (t, name, icon) => t.ev(`(() => { document.getElementById('name').value = ${J(name)};
   document.querySelector('[data-icon="${icon}"]').click(); document.getElementById('primary').click(); })()`);
-const type = (t, text) => t.ev(`(() => { const e = document.getElementById('text'); e.value = ${J(text)}; e.dispatchEvent(new Event('input')); })()`);
-const textFrom = (t, id) => t.ev(`[...document.querySelectorAll('#stream span[data-author]')].filter((x) => x.dataset.author === ${J(id)}).map((x) => x.textContent).join('')`);
 let ok = true;
 const check = (what, fine, detail = '') => { console.log(`${what}: ${fine ? 'OK' : 'VIRHE'}${detail ? ` (${detail})` : ''}`); ok &&= fine; };
 
@@ -71,10 +69,10 @@ tortto = await open(ports[1], page, 'Törttö');
 await until(tortto, `direct.ring.join() === 'isi,Törttö'`);
 await until(tortto, `direct.open.length === 1 && direct.servers.length === 1`, 30000);
 check('Törttö palaa itsestään: palvelin esitteli isin, suora yhteys ilman koodeja', true, `${((Date.now() - t0) / 1000).toFixed(1)} s sivun avauksesta`);
-await type(tortto, 'miau palvelimen esittelemänä');
-await sleep(1200);
-const got = await textFrom(isi, torttoId);
-check('teksti perillä', got.endsWith('miau palvelimen esittelemänä'), got);
+const isiId = await isi.ev('direct.id');
+const sent = await tortto.ev(`direct.dm(${J(isiId)}, 'miau palvelimen esittelemänä')`);
+await until(isi, `(direct.dms[${J(torttoId)}] ?? []).some((m) => m.text === 'miau palvelimen esittelemänä')`, 10000);
+check('kahdenkeskinen viesti perillä suoraan (ei palvelimen kautta)', sent);
 
 // Vieras: oma selain ja oma rengas. Käytetty liittämislinkki ei käy, pelkkä kortti ei pidä yhteyttä.
 const vieras = await open(ports[2], page, 'vieras');

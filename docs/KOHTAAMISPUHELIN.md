@@ -101,7 +101,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
 
 ## Turva ja yksityisyys
 
-- **Palvelin näkee** jäsentunnisteet, välittämänsä SDP:t (jäsenten IPv6-osoitteet) ja rekisterin, koska se säilyttää rekisterin palaajia varten. Tekstiä se ei näe, kun jäsenten välinen yhteys on suora. Jos suora yhteys puuttuu, tekstivirta kiertää palvelimen kautta, kuten minkä tahansa solmun kautta nyt.
+- **Palvelin näkee** jäsentunnisteet, välittämänsä SDP:t (jäsenten IPv6-osoitteet) ja rekisterin, koska se säilyttää rekisterin palaajia varten. Viestejä se ei näe: kahdenkeskiset viestit (`dm`) kulkevat vain jäsenten välisellä suoralla yhteydellä, ja ilman sitä lähetys epäonnistuu. Yhteinen tekstivirta, joka kiersi solmujen kautta, poistettiin 2026-10-12.
 - **Palvelin ei voi lisätä jäseniä.** Liittyminen vaatii naapurien allekirjoitukset, ja yhteydet todennetaan rekisterin avaimilla.
 - **Väärä palvelin:** selain hyväksyy vain sormenjäljen, joka on rekisteriin allekirjoitetussa kortissa.
 - **Palvelimen julkinen pinta:** yksi UDP-portti. Vieras, joka ei tunne sormenjälkeä eikä ole rekisterissä, ei pääse hello/authin ohi. Palvelin rajaa yhteyksien määrän ja katkaisee todentamattomat 10 sekunnissa.
@@ -126,4 +126,4 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
 - **Piilotettu oma osoite (mDNS):** jos selain piilottaa oman host-osoitteensa (työpöytä-Chrome, iPhone/WebKit), yhteys kortilla ei syntynyt paikallisessa testissä. Android-Chrome ei piilota. Ratkaisuvaihtoehtoja: STUN, kuten renkaassa nyt (antaa selaimelle srflx-kandidaatin), tai palvelin myös vastaanottajaksi, joka hyväksyy vertaisheijastetut osoitteet. Testattava iPhonella.
 - **Safari ja iPhone:** WebRTC Direct -tyyppisen yhteyden (koottu ICE-lite-vastaus) toimivuus iOS:n WebKitissä on testattava. Chrome ja Firefox toimivat libp2p:n kokemuksen perusteella.
 - **Palvelinten määrä ja sijoittelu:** riittääkö yksi palvelin per kotitalous?
-- **Säilyttääkö palvelin tekstiä poissaolijoille?** Ei tässä vaiheessa. Tekstivirta on hetkellinen kuten nyt.
+- **Säilyttääkö palvelin viestejä poissaolijoille?** Ei tässä vaiheessa. Myöhemmin palvelin voisi välittää ja säilyttää päästä päähän salattuja kahdenkeskisiä viestejä, joita se ei pysty lukemaan.

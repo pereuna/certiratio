@@ -6,7 +6,7 @@
 // 2.j (kohtaamispaikka, paikallinen rtcsignal), joten vastausta ei skannata.
 // Pysyvyys: Liisan välilehti suljetaan ja avataan uudelleen (sama selainprofiili),
 // ja hän yhdistyy itsestään renkaan huoneen kautta. Sitten sama ?signal=off-tilassa:
-// paluu äidin yhdistämiskoodilla. Lisäksi toinen välilehti samassa profiilissa,
+// paluu äidin yhdistämiskoodilla. Viestit ovat kahdenkeskisiä: vain vastaanottaja saa ne. Lisäksi toinen välilehti samassa profiilissa,
 // väärennetyt tapahtumat ja viides selain Q (käytetty kutsu, vieras, oma rengas).
 // Profiilihakemistojen on oltava tyhjiä ajon alussa. URL on rtcsignalin jakama sivu.
 //   node --experimental-websocket drive-direct.mjs URL PORT_ISI PORT_TORTTO PORT_LIISA PORT_AITI [PORT_Q]
@@ -86,35 +86,47 @@ for (const t of all) {
 console.log(`kaikilla rengas ${want.join(' → ')} ↺ ja ${all.length - 1} suoraa yhteyttä`);
 await sleep(3500); // reittiluokat getStatsista
 
-const lines = Object.fromEntries(all.map((t) => [t.label, `${t.label} hei`]));
-const longest = Math.max(...Object.values(lines).map((l) => l.length));
-for (let i = 1; i <= longest; i++) {
-  await Promise.all(all.map((t) => t.ev(`(() => { const e = document.getElementById('text');
-    e.value = ${J(lines[t.label])}.slice(0, ${i}); e.dispatchEvent(new Event('input')); })()`)));
-  await sleep(40);
-}
-await sleep(1500);
-const ids = Object.fromEntries(await Promise.all(all.map(async (t) => [await t.ev('direct.id'), t.label])));
 for (const t of all) {
   const s = await t.ev(`({ status: document.getElementById('status').textContent,
     ring: document.getElementById('ringview').textContent,
     invite: document.getElementById('invite').textContent,
-    peers: [...document.querySelectorAll('#peers tr')].map((tr) => [...tr.children].map((td) => td.textContent).join(' | ')),
-    stream: [...document.querySelectorAll('#stream span[data-author]')].map((x) => [x.dataset.author, x.textContent]) })`);
+    peers: [...document.querySelectorAll('#peers tr')].map((tr) => [...tr.children].map((td) => td.textContent).join(' | ')) })`);
   console.log(`${t.label}: ${s.ring} · ${s.status} · [${s.invite}]`);
   for (const p of s.peers) console.log(`   ${p}`);
-  for (const o of all) {
-    if (o === t) continue;
-    const oid = Object.keys(ids).find((k) => ids[k] === o.label);
-    const got = s.stream.filter(([a]) => a === oid).map(([, x]) => x).join('');
-    if (got !== lines[o.label]) { ok = false; console.log(`   PUUTTUU ${o.label}: ${J(got)}`); }
-  }
 }
 
 const check = (what, fine, detail = '') => {
   console.log(`${what}: ${fine ? 'OK' : 'VIRHE'}${detail ? ` (${detail})` : ''}`);
   ok &&= fine;
 };
+
+// Kahdenkeskiset viestit: vain vastaanottaja saa viestin, muut eivät näe sitä.
+const id = {};
+for (const t of all) id[t.label] = await t.ev('direct.id');
+const got = (t, from, text) => until(t, `(direct.dms[${J(from)}] ?? []).some((m) => !m.out && m.text === ${J(text)})`, 10000).then(() => true, () => false);
+const silent = async (t) => Object.keys(await t.ev('direct.dms')).length === 0;
+{
+  const a = 'Myyn sinulle 5 kg perunoita.';
+  const b = 'Sopii. Hinta 10 yksikköä?';
+  check('isi → Törttö lähti suoraan', await nodes.isi.ev(`direct.dm(${J(id.Törttö)}, ${J(a)})`));
+  check('Törttö sai viestin', await got(nodes.Törttö, id.isi, a));
+  check('Törttö → isi (vastaus)', await nodes.Törttö.ev(`direct.dm(${J(id.isi)}, ${J(b)})`) && await got(nodes.isi, id.Törttö, b));
+  await sleep(1000);
+  check('Liisa ja äiti eivät saaneet kummankaan viestiä', await silent(nodes.Liisa) && await silent(nodes.äiti));
+  // Käyttöliittymän kautta: äiti valitsee Liisan renkaasta ja lähettää lomakkeella.
+  await nodes.äiti.ev(`[...document.querySelectorAll('#ringview button.member')].find((b) => b.textContent.includes('Liisa')).click()`);
+  const path = await nodes.äiti.ev(`document.getElementById('chat-path').textContent`);
+  await nodes.äiti.ev(`(() => { document.getElementById('dm-text').value = '  hei Liisa\u0020 '; document.getElementById('dm').requestSubmit(); })()`);
+  check('äiti → Liisa lomakkeella', await got(nodes.Liisa, id.äiti, 'hei Liisa') &&
+    (await nodes.äiti.ev(`document.getElementById('dm-text').value`)) === '' &&
+    (await nodes.äiti.ev(`document.querySelector('#msgs .msg.out')?.textContent`)) === 'hei Liisa', path);
+  const badge = await nodes.Liisa.ev(`document.getElementById('ringview').textContent`);
+  check('Liisalla lukematon äidiltä renkaassa', badge.includes('äiti (1)'), badge);
+  check('isi ja Törttö eivät saaneet äidin viestiä', (await nodes.isi.ev(`Object.keys(direct.dms).join()`)) === id.Törttö &&
+    (await nodes.Törttö.ev(`Object.keys(direct.dms).join()`)) === id.isi);
+  check('itselle, vieraalle ja tyhjää ei lähetetä', !(await nodes.isi.ev(`direct.dm(${J(id.isi)}, 'x')`)) &&
+    !(await nodes.isi.ev(`direct.dm('ffffffff', 'x')`)) && !(await nodes.isi.ev(`direct.dm(${J(id.Törttö)}, '  ')`)));
+}
 
 // Väärennökset: äidin liittymä muutetulla nimellä ja vieras tunniste samalla avaimella.
 {
@@ -125,8 +137,6 @@ const check = (what, fine, detail = '') => {
     (await nodes.Liisa.ev(`document.getElementById('log').textContent`)).includes('allekirjoitus ei kelpaa'));
 }
 
-const textFrom = (t, id) => t.ev(`[...document.querySelectorAll('#stream span[data-author]')].filter((x) => x.dataset.author === ${J(id)}).map((x) => x.textContent).join('')`);
-const type = (t, text) => t.ev(`(() => { const e = document.getElementById('text'); e.value = ${J(text)}; e.dispatchEvent(new Event('input')); })()`);
 
 // Pysyvyys: Liisa sulkee välilehden ja avaa sivun uudelleen. Yhteydet palaavat itsestään.
 {
@@ -140,10 +150,13 @@ const type = (t, text) => t.ev(`(() => { const e = document.getElementById('text
   await until(back, `direct.open.length === 3`, 60000);
   check('Liisa yhdistyy itsestään kohtaamispaikan kautta (ei koodeja)', true,
     `${((Date.now() - t0) / 1000).toFixed(1)} s · ${await back.ev(`document.getElementById('status').textContent`)}`);
-  await type(back, 'olen taas täällä');
-  await sleep(1000);
-  const got1 = await textFrom(nodes.Törttö, liisaId);
-  check('teksti perillä paluun jälkeen', got1.endsWith('olen taas täällä'), got1);
+  check('viesti perillä paluun jälkeen', await back.ev(`direct.dm(${J(id.Törttö)}, 'olen taas täällä')`) &&
+    await got(nodes.Törttö, liisaId, 'olen taas täällä'));
+  // Katkos: ilman suoraa yhteyttä viesti ei lähde, eikä rekisteri muutu.
+  await back.ev(`direct.cut(${J(id.Törttö)})`);
+  check('katkenneelle yhteydelle ei lähetetä, rengas ennallaan', !(await back.ev(`direct.dm(${J(id.Törttö)}, 'katkos')`)) &&
+    (await back.ev('direct.ring.join()')) === want.join());
+  await until(back, `direct.open.length === 3`, 60000); // yhteys palaa itsestään kohtaamispaikan kautta
   // Toinen välilehti samassa profiilissa ei aukea jäsenenä.
   const second = await open(ports[2], base, 'Liisa-2', `!!document.getElementById('step')?.textContent`);
   check('toinen välilehti samassa selaimessa', (await second.ev('direct.step')).includes('toisessa välilehdessä'));
@@ -169,10 +182,8 @@ const type = (t, text) => t.ev(`(() => { const e = document.getElementById('text
   await until(nodes.äiti, `direct.step.includes('taas mukana') || document.getElementById('pair').hidden`);
   nodes.Liisa = back2;
   all.splice(all.findIndex((t) => t.label === 'Liisa'), 1, back2);
-  await type(back2, 'palasin');
-  await sleep(1000);
-  const got = await textFrom(nodes.Törttö, liisaId);
-  check('?signal=off: Liisa yhdistetty äidin koodilla, suorat yhteydet kaikkiin ja teksti perillä', got.endsWith('palasin'), got);
+  check('?signal=off: Liisa yhdistetty äidin koodilla, suorat yhteydet kaikkiin ja viesti perillä',
+    await back2.ev(`direct.dm(${J(id.Törttö)}, 'palasin')`) && await got(nodes.Törttö, liisaId, 'palasin'));
 
   // Käytetty kutsu, vieras (Q:n selain, ei jäsen) ja toinen rengas eivät pääse sisään.
   if (ports[4]) {
