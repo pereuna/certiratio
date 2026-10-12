@@ -53,7 +53,7 @@ async function go() {
   result.state = 'connecting';
   const start = performance.now();
   try {
-    ({ pc, ch } = await connectCard(card));
+    ({ pc, ch } = await connectCard(card, 'echo'));
   } catch (e) {
     state('bad', `Virhe: ${e.message}`);
     result.state = 'error';
