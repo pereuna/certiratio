@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"maps"
 	"os"
 	"slices"
 	"testing"
@@ -13,6 +14,9 @@ type vectors struct {
 	Events   []json.RawMessage `json:"events"`
 	Forged   []json.RawMessage `json:"forged"`
 	Members  []string          `json:"members"`
+	Servers  []string          `json:"servers"`
+	Card     card              `json:"card"`
+	CardPay  string            `json:"cardPayload"`
 	Payloads []string          `json:"payloads"`
 	Auth     struct {
 		Key, Nonce, Signer, Verifier, Sig, Payload string
@@ -49,6 +53,18 @@ func TestCanonMatchesJSONStringify(t *testing.T) {
 		if got := string(payloadOf(e)); got != v.Payloads[i] {
 			t.Errorf("%s: %s != %s", e.ID, got, v.Payloads[i])
 		}
+	}
+	if got := string(cardPayload(v.Ring, &v.Card)); got != v.CardPay {
+		t.Errorf("kortti: %s != %s", got, v.CardPay)
+	}
+	srvKey := ""
+	for _, e := range parseAll(t, v.Events) {
+		if e.Kind == "server" {
+			srvKey = e.Key
+		}
+	}
+	if !verify(srvKey, cardPayload(v.Ring, &v.Card), v.Card.Sig) {
+		t.Error("selaimen tekemän kortin allekirjoitus ei kelpaa")
 	}
 	if got := string(authPayload(v.Auth.Nonce, v.Auth.Signer, v.Auth.Verifier)); got != v.Auth.Payload {
 		t.Errorf("auth: %s != %s", got, v.Auth.Payload)
@@ -102,6 +118,9 @@ func TestBuildSameRingAsBrowser(t *testing.T) {
 	slices.Reverse(rev)
 	if !slices.Equal(build(v.Ring, rev).members, v.Members) {
 		t.Fatal("järjestys vaikutti")
+	}
+	if got := slices.Sorted(maps.Keys(r.servers)); !slices.Equal(got, v.Servers) {
+		t.Fatalf("palvelimet %v != %v", got, v.Servers)
 	}
 	if len(build("deadbeef", evs).members) != 0 {
 		t.Fatal("vieras rengas")

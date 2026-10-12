@@ -28,11 +28,11 @@
 // Vain IPv6.
 
 import { CLASSES, classifyPair, selectedPair } from './classify.js';
-import { authPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js';
+import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js';
 import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js';
 import { ICONS, adjacent, build, cleanName, eventId, preferred, successor, validEvent } from './ring.js';
 import { createScanner } from './scanner.js';
-import { cardAnswer, decodeCard } from './servercard.js';
+import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js';
 import { Signaling } from './signaling.js';
 import { clear as clearStore, load, save } from './store.js';
 import { candidateAddr, filterSdp } from './stream.js';
@@ -101,6 +101,17 @@ let rejoin = null; // palaava jäsen: { code, link }
 let retryLast = null; // "Yritä uudelleen"
 let inviteSeq = 0; // peruttu kutsu ei avaudu myöhässä
 
+// Rengaspalvelimet (poc1/ringserver)
+const cards = new Map(); // palvelin -> tuorein kortti { server, seq, port, fp, addrs, sig }
+const serverTry = new Map(); // palvelin -> viimeisin yhteysyritys (ms)
+const SERVER_RETRY_MS = 15000;
+const CARD_FP = /^[A-Za-z0-9_-]{43}$/;
+
+/** Kortti tai muu koodi (pairing.js). */
+function decodeCode(text) {
+  return isCard(text) ? { type: 'card', ...decodeCard(text) } : decodeAny(text);
+}
+
 // Kohtaamispaikka (renkaan huone)
 let meet = null; // jäsenten yhteinen salaisuus (32 heksaa); ei tapahtumissa
 let meetSig = null; // Signaling renkaan huoneeseen
@@ -158,6 +169,7 @@ function drop(link, why) {
   }
   // Renkaan huoneessa oleva jäsen: uusi yritys (esim. hän latasi sivun uudelleen).
   if (link.id && present.has(link.id)) setTimeout(() => consider(link.id), 1000);
+  if (link.server || link.expect) setTimeout(autoServers, 3000); // palvelin katkesi: uusi yritys kortilla
   sendHello();
   render();
 }
@@ -238,6 +250,10 @@ async function handle(link, msg) {
   } else if (msg.type === 'meet') {
     // Rekisterin jälkeen: tuore jäsen tietää jo olevansa jäsen.
     mergeChain = mergeChain.then(() => onMeet(link, msg.secret));
+  } else if (msg.type === 'card') {
+    mergeChain = mergeChain.then(() => onCard(link, msg.card)); // rekisterin jälkeen: palvelimen avain tiedossa
+  } else if (msg.type === 'enrolled') {
+    await onEnrolled(link, msg);
   } else if (msg.type === 'chars' || msg.type === 'ev' || DIRECTED.has(msg.type)) {
     route(msg, link);
   }
@@ -249,6 +265,7 @@ async function onHello(link, msg) {
   if (msg.ring && ringId && msg.ring !== ringId) {
     log(`${msg.id}: kuuluu toiseen renkaaseen, ei yhdistetä`);
     if (invite?.link === link || joining?.link === link || rejoin?.link === link) pairFailed('koodi kuuluu toiseen renkaaseen');
+    else if (link.enroll) pairFailed('palvelin kuuluu jo toiseen renkaaseen');
     drop(link, null);
     return;
   }
@@ -257,7 +274,12 @@ async function onHello(link, msg) {
     drop(link, null);
     return;
   }
-  const registered = ring.info.get(msg.id)?.key;
+  if (link.expect && msg.id !== link.expect) {
+    log(`${msg.id}: kortti kuului toiselle palvelimelle, katkaistaan`);
+    drop(link, null);
+    return;
+  }
+  const registered = ring.info.get(msg.id)?.key ?? ring.servers.get(msg.id)?.key;
   if ((registered && registered !== msg.key) || (link.peerKey && link.peerKey !== msg.key)) {
     log(`${nameOf(msg.id)}: väärä avain, katkaistaan`);
     drop(link, null);
@@ -316,6 +338,8 @@ async function onAuth(link, msg) {
     }, 5000);
   }
   shareMeet();
+  shareCards(link);
+  if (link.server && link.enroll) sendEnroll(link);
   for (const p of link.peers) consider(p);
   sendHello();
   render();
@@ -529,6 +553,7 @@ function closeMeet() {
 
 /** Takaisin näkyviin tai verkkoon: yritetään heti. */
 function kickMeet() {
+  autoServers();
   if (meetSig || meetBusy || !isMember()) return;
   meetDelay = 2000;
   connectMeet();
@@ -560,20 +585,97 @@ function onMeet(link, secret) {
 
 // --- Rengaspalvelin (poc1/ringserver) ---------------------------------------
 
-/** Yhteys rengaspalvelimeen kortilla (s1.…): ei signalointia, palvelin esittelee paikalla olevat. */
-async function connectServer(text) {
-  const card = decodeCard(text);
+/**
+ * Yhteys rengaspalvelimeen kortilla: ei signalointia, palvelin esittelee paikalla
+ * olevat. card: { fp (AA:BB:…), port, addrs }; expect: palvelimen tunniste
+ * rekisteristä; enroll: liittämistunnus (palvelin renkaaseen).
+ */
+async function connectServer(card, { expect = null, enroll = null } = {}) {
   await checkAddress();
   const link = newLink(`srv-${++qrSeq}`);
   link.via = 'server';
+  link.expect = expect;
+  link.enroll = enroll;
   attach(link, link.pc.createDataChannel('direct', { ordered: true }));
   await link.pc.setLocalDescription(await link.pc.createOffer());
   const sdp = link.pc.localDescription.sdp;
   const ufrag = /^a=ice-ufrag:(\S+)/m.exec(sdp)?.[1];
   const mid = /^a=mid:(\S+)/m.exec(sdp)?.[1] ?? '0';
   await link.pc.setRemoteDescription({ type: 'answer', sdp: cardAnswer(card, ufrag, mid) });
-  log(`rengaspalvelin: yhdistetään ${card.addrs.join(', ')} portti ${card.port}`);
+  log(`${expect ? nameOf(expect) : 'rengaspalvelin'}: yhdistetään ${card.addrs.join(', ')} portti ${card.port}`);
   render();
+  return link;
+}
+
+const serverLink = (id) => [...links.values()].find((l) => l.server && l.id === id && l.ch?.readyState === 'open');
+
+/** Yhteys renkaan palvelimiin, joihin ei ole yhteyttä (sivu auki, näkyviin, verkko palasi, kortti vaihtui). */
+function autoServers() {
+  if (!isMember() || stopped) return;
+  for (const [id, c] of cards) {
+    if (!ring.servers.has(id) || serverLink(id)) continue;
+    if ([...links.values()].some((l) => l.expect === id)) continue; // yritys käynnissä
+    if (Date.now() - (serverTry.get(id) ?? 0) < SERVER_RETRY_MS) continue;
+    serverTry.set(id, Date.now());
+    connectServer({ fp: fpHex(c.fp), port: c.port, addrs: c.addrs }, { expect: id }).catch((e) => log(`${nameOf(id)}: ${e.message}`));
+  }
+}
+
+/** Palvelimen kortti: tarkistetaan sen avaimella, tuoreempi talteen ja eteenpäin. */
+async function onCard(via, c) {
+  if (!c || typeof c !== 'object' || !ID.test(c.server ?? '') || !(Number.isSafeInteger(c.seq) && c.seq > 0)) return;
+  if (!(Number.isInteger(c.port) && c.port > 0 && c.port < 65536) || !CARD_FP.test(c.fp ?? '')) return;
+  if (!Array.isArray(c.addrs) || !c.addrs.length || c.addrs.length > 8 || !c.addrs.every((a) => typeof a === 'string' && pairable(a))) return;
+  const srv = ring.servers.get(c.server);
+  if (!srv || (cards.get(c.server)?.seq ?? 0) >= c.seq) return;
+  const card = { server: c.server, seq: c.seq, port: c.port, fp: c.fp, addrs: c.addrs, sig: String(c.sig ?? '') };
+  if (!(await verify(srv.key, cardPayload(ringId, card), card.sig))) return log(`${nameOf(c.server)}: kortin allekirjoitus ei kelpaa`);
+  const moved = cards.has(c.server);
+  cards.set(c.server, card);
+  log(`${nameOf(c.server)}: kortti ${moved ? 'päivittyi' : 'saatu'} (${card.addrs.join(', ')})`);
+  if (isMember()) persistRing();
+  for (const l of links.values()) if (l !== via && l.verified && (isMember(l.id) || l.server)) send(l, { type: 'card', card });
+  serverTry.delete(c.server);
+  autoServers();
+  render();
+}
+
+function shareCards(link) {
+  if (!link.verified || !(isMember(link.id) || link.server)) return;
+  for (const card of cards.values()) send(link, { type: 'card', card });
+}
+
+// --- Palvelimen liittäminen renkaaseen ---------------------------------------
+
+/** Liittämislinkki (kortti ja tunnus): yhteys palvelimeen, joka allekirjoittaa server-tapahtumansa. */
+async function enrollServer(card) {
+  if (!isMember()) return note('Palvelimen voi liittää vain renkaan jäsen.');
+  panel({ step: 'Liitetään rengaspalvelinta…', note: card.addrs.join(', '), secondary: ['Peru', showMember] });
+  const link = await connectServer(card, { enroll: card.token });
+  setTimeout(() => {
+    if (link.enroll && links.get(link.key) === link) { drop(link, null); pairFailed('palvelin ei vastannut'); }
+  }, CONNECT_TIMEOUT_MS);
+}
+
+function sendEnroll(link) {
+  send(link, { type: 'enroll', token: link.enroll, ring: ringId, operator: myId, events: [...events.values()] });
+}
+
+async function onEnrolled(link, msg) {
+  if (!link.enroll || !link.server) return;
+  link.enroll = null;
+  if (msg.ok !== true) {
+    panel({ step: `Palvelinta ei liitetty: ${String(msg.why ?? 'tuntematon syy').slice(0, 100)}.`, close: true });
+    return;
+  }
+  const name = cleanName(msg.name);
+  if (msg.server !== link.id || msg.key !== link.peerKey || !name) return pairFailed('palvelimen vastaus ei täsmää');
+  const ev = { kind: 'server', ring: ringId, member: link.id, key: link.peerKey, operator: myId, name };
+  const p = payloadOf(ev);
+  if (!(await verify(ev.key, p, msg.sig))) return pairFailed('palvelimen allekirjoitus ei kelpaa');
+  ev.sigs = { member: msg.sig, operator: await sign(me.priv, p) };
+  await publish(ev);
+  done(`✅ Rengaspalvelin ${name} liitetty renkaaseen. Jäsenet yhdistävät siihen itsestään.`, null);
 }
 
 // --- Rengas ---------------------------------------------------------------
@@ -582,7 +684,7 @@ function isMember(id = myId) { return !!id && ring.members.includes(id); }
 
 function nameOf(id) {
   if (!id) return null;
-  return ring.info.get(id)?.name ?? peerInfo.get(id)?.name ?? id;
+  return ring.info.get(id)?.name ?? ring.servers.get(id)?.name ?? peerInfo.get(id)?.name ?? id;
 }
 
 function iconOf(id) {
@@ -656,7 +758,7 @@ async function mergeNow(list) {
 }
 
 function persistRing() {
-  save('ring', { ringId, events: [...events.values()], meet }).catch(() => { stored = false; });
+  save('ring', { ringId, events: [...events.values()], meet, cards: [...cards.values()] }).catch(() => { stored = false; });
 }
 
 async function found(name, icon) {
@@ -1075,12 +1177,15 @@ function reconnectMenu() {
 function handleCode(text) {
   let c;
   try {
-    c = decodeAny(text);
+    c = decodeCode(text);
   } catch (e) {
     note(`Koodi ei kelpaa: ${e.message}`);
     return false;
   }
-  if (c.type === 'answer' && invite?.link.pc.signalingState === 'have-local-offer') useAnswer(c);
+  if (c.type === 'card' && isMember()) {
+    if (c.token) enrollServer(c);
+    else connectServer(c).catch((e) => log(`rengaspalvelin: ${e.message}`));
+  } else if (c.type === 'answer' && invite?.link.pc.signalingState === 'have-local-offer') useAnswer(c);
   else if (c.type === 'vouch' && joining?.stage === 'vouch') useVouch(c);
   else if ((c.type === 'offer' || c.type === 'join') && !ringId) {
     const t = text.slice(text.indexOf('#') + 1);
@@ -1090,7 +1195,8 @@ function handleCode(text) {
     note(c.type === 'offer' || c.type === 'join' ? 'Tämä on kutsukoodi uudelle jäsenelle, ja tämä puhelin on jo renkaassa. Palaavana jäsenenä tarvitset yhdistämiskoodin.'
       : c.type === 'reconnect' && !isMember() ? 'Tämä on yhdistämiskoodi renkaan jäsenille. Uutena jäsenenä tarvitset kutsukoodin.'
         : c.type === 'reconnect' && c.ring !== ringId ? 'Tämä yhdistämiskoodi kuuluu toiseen renkaaseen.'
-          : 'Tämä puhelin ei odota tätä koodia nyt.');
+          : c.type === 'card' ? 'Tämä on rengaspalvelimen koodi. Sen voi käyttää vain renkaan jäsen.'
+            : 'Tämä puhelin ei odota tätä koodia nyt.');
     return false;
   }
   return true;
@@ -1099,7 +1205,8 @@ function handleCode(text) {
 function expects(c) {
   return (c.type === 'answer' && invite?.link.pc.signalingState === 'have-local-offer') ||
     (c.type === 'vouch' && joining?.stage === 'vouch') ||
-    (c.type === 'reconnect' && isMember() && c.ring === ringId && !rejoin);
+    (c.type === 'reconnect' && isMember() && c.ring === ringId && !rejoin) ||
+    (c.type === 'card' && isMember());
 }
 
 /** Toinen välilehti pitää renkaan: koodi sille. */
@@ -1410,8 +1517,10 @@ function render() {
   const n = ring.members.length;
   const here = neighbours().filter((x) => isMember(x)).length + 1;
   const joiners = neighbours().length + 1 - here;
-  const met = meetState === 'ok';
-  const meetText = { off: '', connecting: ' · kohtaamispaikka…', ok: ' · kohtaamispaikka ✓', down: ' · kohtaamispaikka ei vastaa' }[meetState];
+  const upServers = [...ring.servers.keys()].filter((id) => serverLink(id));
+  const met = meetState === 'ok' || upServers.length > 0;
+  const meetText = { off: '', connecting: ' · kohtaamispaikka…', ok: ' · kohtaamispaikka ✓', down: ' · kohtaamispaikka ei vastaa' }[meetState] +
+    (!ring.servers.size ? '' : upServers.length ? ` · palvelin ✓${ring.servers.size > 1 ? ` ${upServers.length}/${ring.servers.size}` : ''}` : ' · palvelin ei vastaa');
   $('status').className = open || n === 1 || met ? 'ok' : 'bad';
   $('status').textContent = (n === 1 && !open ? 'Rengas aloitettu. Kutsu toinen perustaja.'
     : !open && met ? `Renkaassa ${n} · muita ei ole nyt paikalla. Yhteys syntyy itsestään, kun joku avaa sivun.`
@@ -1424,8 +1533,9 @@ function render() {
   $('info-sum').textContent = `yhteydet · minä ${profile.icon} ${profile.name || myId}`;
   $('me-info').textContent = `Tunniste ${myId} · avain ${me.key.slice(0, 12)}…` +
     (stored ? ' · tallennettu tähän selaimeen' : ' · ⚠️ selain ei salli tallennusta: jäsenyys katoaa, kun sivu suljetaan') +
-    (signalUrl ? ` · kohtaamispaikka ${new URL(signalUrl).host} (näkee tunnisteet ja IPv6-osoitteet, ei tekstiä eikä rekisteriä)`
-      : ' · ei kohtaamispaikkaa: paluu yhdistämiskoodilla');
+    (signalUrl ? ` · kohtaamispaikka ${new URL(signalUrl).host} (näkee tunnisteet ja IPv6-osoitteet, ei tekstiä eikä rekisteriä)` : '') +
+    (ring.servers.size ? ` · rengaspalvelimet: ${[...ring.servers].map(([id, sv]) => `${sv.name} ${serverLink(id) ? '✓' : cards.has(id) ? '(ei yhteyttä)' : '(ei korttia)'}`).join(', ')}`
+      : signalUrl ? '' : ' · ei palvelinta: paluu yhdistämiskoodilla');
   $('forget').hidden = !isMember();
 }
 
@@ -1506,8 +1616,9 @@ async function restoreRing() {
     return;
   }
   profileFromRing();
+  for (const c of Array.isArray(saved.cards) ? saved.cards : []) await onCard(null, c);
   persistRing();
-  log(`rengas ladattu: ${ring.members.length} jäsentä`);
+  log(`rengas ladattu: ${ring.members.length} jäsentä${ring.servers.size ? `, ${ring.servers.size} palvelinta` : ''}`);
 }
 
 async function main() {
@@ -1515,7 +1626,7 @@ async function main() {
   history.replaceState(null, '', base + location.search);
   setupProfile();
   let first = null;
-  try { first = hash ? decodeAny(hash) : null; } catch (e) { first = { error: e.message }; }
+  try { first = hash ? decodeCode(hash) : null; } catch (e) { first = { error: e.message }; }
 
   if (!(await acquireLock())) {
     if (first && !first.error) relay(hash);
@@ -1528,7 +1639,7 @@ async function main() {
     bc.onmessage = (ev) => {
       if (typeof ev.data?.code !== 'string') return;
       let c;
-      try { c = decodeAny(ev.data.code); } catch { return; }
+      try { c = decodeCode(ev.data.code); } catch { return; }
       if (expects(c)) {
         bc.postMessage({ ack: true });
         handleCode(ev.data.code);
@@ -1547,7 +1658,11 @@ async function main() {
   addEventListener('online', kickMeet);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) kickMeet(); });
   const member = isMember();
-  if (member) { showMember(); connectMeet(); }
+  if (member) { showMember(); connectMeet(); autoServers(); setInterval(autoServers, 30000); }
+  if (first?.type === 'card') {
+    if (!member) startScreen();
+    handleCode(hash);
+  }
   if ((first?.type === 'offer' || first?.type === 'join') && !member) startJoin(hash, first);
   else if (first?.type === 'reconnect') { if (!member) startScreen(); handleCode(hash); }
   else if (first?.type === 'answer' || first?.type === 'vouch') {
@@ -1583,9 +1698,11 @@ window.direct = {
   scan: (text) => handleCode(text),
   /** Kuin tapahtumat olisivat tulleet verkosta (väärennöstesti). */
   merge: (list) => merge(list),
-  /** Yhteys rengaspalvelimeen kortilla (testit; käyttöliittymä vaiheessa 2). */
-  server: (card) => connectServer(card),
+  /** Kuin kamera olisi lukenut palvelimen kortin tai liittämislinkin. */
+  server: (text) => handleCode(text),
   get servers() { return [...links.values()].filter((l) => l.server && l.verified).map((l) => l.id); },
+  get registeredServers() { return [...ring.servers.keys()]; },
+  get cards() { return [...cards.values()]; },
   /** Katkaisee suoran yhteyden naapuriin (testaa kiertoreittiä). */
   cut(id) { const l = links.get(id); if (l) drop(l, null); },
 };

@@ -59,7 +59,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
   - jäsenten viimeksi nähdyt osoitteet. Näitä ei tarvita yhdistämiseen, koska esittely kulkee palvelimen kautta, mutta niistä on apua vianetsinnässä.
 - **Selain sivun avautuessa:** yhteys kaikkiin tallennettujen korttien palvelimiin, kaikkiin niiden osoitteisiin rinnakkain. Ensimmäinen todennettu yhteys riittää, ja esittely hoitaa loput.
 
-**Vanhentunut osoite** on mallin heikko kohta. Jos *kaikkien* palvelinten osoitteet vaihtuivat palaajan poissa ollessa, hän ei löydä niitä. Mobiiliverkon /64 vaihtuu, kun datayhteys katkeaa, eli ei kovin usein, mutta varmasti joskus. Lieventävät keinot:
+**Vanhentunut osoite** on mallin heikko kohta. Kun puhelimen osoite vaihtuu, myös sen yhteydet katkeavat, joten uusi kortti ei tavoita ketään. Ratkaisu on, että palvelimet yhdistävät myös toisiinsa asiakkaina. Osoitteensa vaihtanut palvelin yhdistää toiseen palvelimeen, joka levittää uuden kortin jäsenille. Tätä ei ole vielä toteutettu. Jos *kaikkien* palvelinten osoitteet vaihtuivat palaajan poissa ollessa, hän ei löydä niitä. Mobiiliverkon /64 vaihtuu, kun datayhteys katkeaa, eli ei kovin usein, mutta varmasti joskus. Lieventävät keinot:
 - useita palvelimia eri liittymissä
 - palvelin pitää myös vanhat osoitteensa korttissa niin kauan kuin ne ovat voimassa
 - vara on yhdistämiskoodi (2.r), kuten nyt
@@ -113,7 +113,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
    - Go-palvelin (pion, ICE-lite, kiinteä portti), johon Chromium yhdistää pelkällä kortilla (ULA-verkkonimiavaruus)
    - useita asiakkaita samaan porttiin
    - väärä sormenjälki hylätään
-3. ✅ (2026-10-12: hello/auth, rekisteri ja välitys, testivektorit ja `drive-ringnode.mjs`; kortit ja osoitteen vaihtuminen vielä tekemättä) **Protokolla Go:ssa:** hello/auth, rekisteri, välitys ja kortit. Yhteiset testivektorit Node- ja Go-testeissä. `drive-direct.mjs`:
+3. ✅ (2026-10-12: hello/auth, rekisteri, välitys, liittäminen, kortit ja osoitteen vaihtuminen, testivektorit ja `drive-ringnode.mjs`. Palvelinten väliset yhteydet ja kutsu palvelimen kautta ovat vielä tekemättä) **Protokolla Go:ssa:** hello/auth, rekisteri, välitys ja kortit. Yhteiset testivektorit Node- ja Go-testeissä. `drive-direct.mjs`:
    - palvelin renkaassa
    - Liisa suljetaan ja avataan, ja hän palaa ilman koodeja
    - palvelimen osoite vaihdetaan, ja kortti leviää

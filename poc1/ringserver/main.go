@@ -11,7 +11,11 @@
 // sovellustasolla (node.go: hello/auth rekisterin avaimilla). Palvelin
 // säilyttää rekisterin ja esittelee paikalla olevat jäsenet toisilleen.
 //
-//	ringserver [-port 40123] [-dir tila] [-addr osoite,…] [-page URL]
+// Käynnistyksessä palvelin tulostaa liittämislinkin ja QR-koodin, kunnes jokin
+// renkaan jäsen on liittänyt sen renkaaseensa (node.go). Osoitteet tarkistetaan
+// puolen minuutin välein, ja muutos jaetaan uutena korttina.
+//
+//	ringserver [-port 40123] [-dir tila] [-name nimi] [-addr osoite,…] [-page URL]
 package main
 
 import (
@@ -38,6 +42,7 @@ import (
 	"github.com/pion/ice/v4"
 	"github.com/pion/stun/v3"
 	"github.com/pion/webrtc/v4"
+	"rsc.io/qr"
 )
 
 const (
@@ -188,17 +193,29 @@ func (s *server) newConn(ufrag string, from net.Addr) (*webrtc.PeerConnection, e
 			return
 		}
 		var l *link
-		var mu sync.Mutex // OnMessage voi tulla ennen kuin OnOpen on palannut
+		var early [][]byte // selain lähettää hellon heti: se voi tulla ennen OnOpenia
+		var mu sync.Mutex
 		dc.OnOpen(func() {
 			mu.Lock()
-			defer mu.Unlock()
 			l = s.node.attach(dc, who)
+			pending := early
+			early = nil
+			mu.Unlock()
+			for _, b := range pending {
+				s.node.onMessage(l, b)
+			}
 		})
 		dc.OnMessage(func(m webrtc.DataChannelMessage) {
+			if !m.IsString {
+				return
+			}
 			mu.Lock()
 			cur := l
+			if cur == nil && len(early) < maxQueue {
+				early = append(early, m.Data)
+			}
 			mu.Unlock()
-			if cur != nil && m.IsString {
+			if cur != nil {
 				s.node.onMessage(cur, m.Data)
 			}
 		})
@@ -316,7 +333,8 @@ func main() {
 	port := flag.Int("port", 40123, "UDP-portti")
 	dir := flag.String("dir", "ringserver-tila", "pysyvän tilan hakemisto (DTLS-varmenne)")
 	extra := flag.String("addr", "", "kortin lisäosoitteet pilkuin eroteltuna")
-	page := flag.String("page", "https://pereuna.github.io/certiratio/palvelin.html", "testisivu kortin linkkiin")
+	page := flag.String("page", "https://pereuna.github.io/certiratio/direct.html", "renkaan sivu liittämislinkkiin")
+	name := flag.String("name", "rengaspalvelin", "palvelimen nimi renkaassa")
 	flag.Parse()
 	log.SetFlags(log.Ltime)
 
@@ -339,15 +357,62 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := &server{conns: map[string]*webrtc.PeerConnection{}, ended: map[string]time.Time{}, cert: cert, node: newNode(me, *dir)}
-	s.mux = ice.NewUDPMuxDefault(ice.UDPMuxParams{UDPConn: &sniffConn{PacketConn: conn, onUfrag: s.onUfrag}})
-
+	if !cleanNameOK(*name) {
+		log.Fatal("kelvoton nimi")
+	}
 	addrs := addresses(*extra)
 	if len(addrs) == 0 {
 		log.Print("varoitus: ei IPv6-osoitetta kortille (anna -addr)")
 	}
-	card := fmt.Sprintf("s1.%s.%d.%s", base64.RawURLEncoding.EncodeToString(fp), *port, strings.Join(addrs, ","))
-	log.Printf("kuunnellaan UDP [::]:%d, palvelimen tunniste %s", *port, me.id)
-	fmt.Printf("kortti: %s\n%s#%s\n", card, *page, card)
-	select {}
+	fp64 := base64.RawURLEncoding.EncodeToString(fp)
+	n := newNode(me, *dir, *name, *port, fp64, addrs)
+	s := &server{conns: map[string]*webrtc.PeerConnection{}, ended: map[string]time.Time{}, cert: cert, node: n}
+	s.mux = ice.NewUDPMuxDefault(ice.UDPMuxParams{UDPConn: &sniffConn{PacketConn: conn, onUfrag: s.onUfrag}})
+
+	card := fmt.Sprintf("s1.%s.%d.%s", fp64, *port, strings.Join(addrs, ","))
+	log.Printf("kuunnellaan UDP [::]:%d, palvelimen tunniste %s, nimi %q", *port, me.id, *name)
+	fmt.Printf("kortti: %s\n", card)
+	n.mu.Lock()
+	token := n.token
+	n.mu.Unlock()
+	if token != "" {
+		link := fmt.Sprintf("%s#%s.%s", *page, card, token)
+		fmt.Printf("\nLiitä palvelin renkaaseen: avaa tämä linkki renkaan jäsenen puhelimessa tai skannaa koodi sivun kameralla.\n%s\n", link)
+		printQR(link)
+	} else {
+		log.Printf("renkaassa %s, %d jäsentä", n.ring, len(n.state.members))
+	}
+	for range time.Tick(30 * time.Second) {
+		if a := addresses(*extra); len(a) > 0 {
+			n.setAddrs(a)
+		}
+	}
+}
+
+// printQR: QR-koodi päätteeseen puolikorkeilla lohkomerkeillä (Termux).
+func printQR(text string) {
+	code, err := qr.Encode(text, qr.M)
+	if err != nil {
+		return
+	}
+	n := code.Size
+	dark := func(x, y int) bool { return x >= 0 && y >= 0 && x < n && y < n && code.Black(x, y) }
+	var b strings.Builder
+	for y := -2; y < n+2; y += 2 {
+		for x := -2; x < n+2; x++ {
+			top, bottom := dark(x, y), dark(x, y+1)
+			switch { // tumma tausta, vaalea koodi: toimii tummassa päätteessä
+			case top && bottom:
+				b.WriteString(" ")
+			case top:
+				b.WriteString("▄")
+			case bottom:
+				b.WriteString("▀")
+			default:
+				b.WriteString("█")
+			}
+		}
+		b.WriteString("\n")
+	}
+	fmt.Print(b.String())
 }

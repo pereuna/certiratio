@@ -85,3 +85,19 @@ test('apufunktiot ja syötteen tarkistus', () => {
   assert.equal(validEvent({ ...liisaIn, key: 'lyhyt' }), false);
   assert.equal(validEvent(null), false);
 });
+
+test('rengaspalvelin: operaattori jäsen, palvelin ei jäsen eikä vaikuta järjestykseen', () => {
+  const SRV = 'ffff0000';
+  const server = { kind: 'server', id: `${SRV}:s`, ring: R, member: SRV, key: KEY, operator: TORTTO, name: 'Nokia', sigs: { member: SIG, operator: SIG } };
+  assert.equal(validEvent(server), true);
+  assert.equal(validEvent({ ...server, sigs: { member: SIG } }), false);
+  assert.equal(validEvent({ ...server, id: `${SRV}:a` }), false);
+  const r = build(R, [found, torttoIn, liisaIn, server]);
+  assert.deepEqual(names(r), ['isi', 'Liisa', 'Törttö']);
+  assert.deepEqual(r.servers.get(SRV), { name: 'Nokia', key: KEY, operator: TORTTO, event: `${SRV}:s` });
+  assert.equal(r.info.has(SRV), false);
+  // Operaattori ei vielä jäsen: odottaa. Jäsen ei voi olla palvelin.
+  assert.deepEqual(build(R, [found, server]).pending, [`${SRV}:s`]);
+  const bad = { ...server, id: `${LIISA}:s`, member: LIISA };
+  assert.deepEqual(build(R, [found, torttoIn, liisaIn, bad]).rejected.map((x) => x.why), ['jäsen ei voi olla palvelin']);
+});

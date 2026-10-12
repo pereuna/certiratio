@@ -11,6 +11,8 @@ import (
 	"regexp"
 	"slices"
 	"sort"
+	"strconv"
+	"strings"
 )
 
 const maxName = 24
@@ -24,19 +26,20 @@ var (
 )
 
 type event struct {
-	Kind   string            `json:"kind"`
-	ID     string            `json:"id"`
-	Ring   string            `json:"ring"`
-	Member string            `json:"member"`
-	Key    string            `json:"key"`
-	Salt   string            `json:"salt"`
-	Name   string            `json:"name"`
-	Icon   string            `json:"icon"`
-	Left   string            `json:"left"`
-	Right  string            `json:"right"`
-	Proof  *string           `json:"proof"`
-	Sigs   map[string]string `json:"sigs"`
-	raw    json.RawMessage
+	Kind     string            `json:"kind"`
+	ID       string            `json:"id"`
+	Ring     string            `json:"ring"`
+	Member   string            `json:"member"`
+	Key      string            `json:"key"`
+	Salt     string            `json:"salt"`
+	Name     string            `json:"name"`
+	Icon     string            `json:"icon"`
+	Left     string            `json:"left"`
+	Operator string            `json:"operator"`
+	Right    string            `json:"right"`
+	Proof    *string           `json:"proof"`
+	Sigs     map[string]string `json:"sigs"`
+	raw      json.RawMessage
 }
 
 func parseEvent(raw json.RawMessage) (*event, bool) {
@@ -49,8 +52,11 @@ func parseEvent(raw json.RawMessage) (*event, bool) {
 }
 
 func eventID(kind, member string) string {
-	if kind == "found" {
+	switch kind {
+	case "found":
 		return member + ":f"
+	case "server":
+		return member + ":s"
 	}
 	return member + ":a"
 }
@@ -61,7 +67,13 @@ func validEvent(e *event) bool {
 	if !hex8Re.MatchString(e.Ring) || !hex8Re.MatchString(e.Member) || e.ID != eventID(e.Kind, e.Member) || !keyRe.MatchString(e.Key) {
 		return false
 	}
-	if !slices.Contains(icons, e.Icon) || !cleanNameOK(e.Name) {
+	if !cleanNameOK(e.Name) {
+		return false
+	}
+	if e.Kind == "server" {
+		return hex8Re.MatchString(e.Operator) && e.sig("member") && e.sig("operator")
+	}
+	if !slices.Contains(icons, e.Icon) {
 		return false
 	}
 	if e.Kind == "found" {
@@ -72,8 +84,11 @@ func validEvent(e *event) bool {
 }
 
 func payloadOf(e *event) []byte {
-	if e.Kind == "found" {
+	switch e.Kind {
+	case "found":
 		return canon("found", e.Ring, e.Member, e.Key, e.Salt, e.Name, e.Icon)
+	case "server":
+		return canon("server", e.Ring, e.Member, e.Key, e.Operator, e.Name)
 	}
 	return canon("admit", e.Ring, e.Left, e.Right, e.Member, e.Key, e.Name, e.Icon, *e.Proof)
 }
@@ -89,6 +104,16 @@ func verifyEvent(e *event, keyOf func(string) string) int {
 	}
 	if e.Kind == "found" {
 		if ringIdOf(e.Key, e.Salt) == e.Ring {
+			return 1
+		}
+		return 0
+	}
+	if e.Kind == "server" {
+		k := keyOf(e.Operator)
+		if k == "" {
+			return -1
+		}
+		if verify(k, p, e.Sigs["operator"]) {
 			return 1
 		}
 		return 0
@@ -122,6 +147,7 @@ func preferred(a, b *event) *event {
 type ringState struct {
 	members []string
 	info    map[string]*event // jäsen -> hyväksytty tapahtuma
+	servers map[string]*event // rengaspalvelin -> server-tapahtuma (operaattori on jäsen)
 }
 
 func (r *ringState) isMember(id string) bool { _, ok := r.info[id]; return ok }
@@ -147,10 +173,12 @@ func build(ring string, evs []*event) *ringState {
 		all = append(all, e)
 	}
 	sort.Slice(all, func(i, j int) bool { return all[i].ID < all[j].ID })
-	out := &ringState{info: map[string]*event{}}
-	var todo []*event
+	out := &ringState{info: map[string]*event{}, servers: map[string]*event{}}
+	var todo, servers []*event
 	for _, e := range all {
-		if e.Kind == "found" {
+		if e.Kind == "server" {
+			servers = append(servers, e)
+		} else if e.Kind == "found" {
 			if len(out.members) == 0 {
 				out.members = append(out.members, e.Member)
 				out.info[e.Member] = e
@@ -183,5 +211,24 @@ func build(ring string, evs []*event) *ringState {
 			break // alusta uudelleen: järjestys pysyy samana kaikilla
 		}
 	}
+	for _, e := range servers {
+		if !out.isMember(e.Member) && out.isMember(e.Operator) {
+			out.servers[e.Member] = e
+		}
+	}
 	return out
+}
+
+// card: rengaspalvelimen osoitteet ja sormenjälki, palvelimen allekirjoittama.
+type card struct {
+	Server string   `json:"server"`
+	Seq    int64    `json:"seq"`
+	Port   int      `json:"port"`
+	FP     string   `json:"fp"` // sha-256, base64url
+	Addrs  []string `json:"addrs"`
+	Sig    string   `json:"sig"`
+}
+
+func cardPayload(ring string, c *card) []byte {
+	return canon("card", ring, c.Server, strconv.FormatInt(c.Seq, 10), strconv.Itoa(c.Port), c.FP, strings.Join(c.Addrs, ","))
 }

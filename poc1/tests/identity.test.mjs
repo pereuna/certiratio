@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { authPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from '../web/src/identity.js';
+import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from '../web/src/identity.js';
 import { build, eventId, validEvent } from '../web/src/ring.js';
 
 /** Allekirjoitettu tapahtuma: signers = { member, left, right } identiteetteinä. */
@@ -58,3 +58,22 @@ test('allekirjoittajan avainta ei vielä tunneta: odottaa (null)', async () => {
   const r = build(ring, [foundEv, torttoEv, liisaEv]);
   assert.deepEqual(r.members, [isi.id, liisa.id, tortto.id]);
 });
+
+test('palvelintapahtuma: palvelimen ja operaattorin allekirjoitus; kortti palvelimen avaimella', async () => {
+  const srv = await createIdentity();
+  const ev = await signed({ kind: 'server', ring, member: srv.id, key: srv.key, operator: tortto.id, name: 'Nokia' },
+    { member: srv, operator: tortto });
+  const k = keyOf2(foundEv, torttoEv);
+  assert.equal(validEvent(ev), true);
+  assert.equal(await verifyEvent(ev, k), true);
+  assert.equal(await verifyEvent({ ...ev, operator: isi.id }, k), false);
+  assert.equal(await verifyEvent(ev, keyOf2(foundEv)), null); // operaattorin avain puuttuu
+  const forged = await signed({ kind: 'server', ring, member: srv.id, key: srv.key, operator: tortto.id, name: 'Nokia' },
+    { member: srv, operator: liisa }); // väärä operaattori allekirjoitti
+  assert.equal(await verifyEvent(forged, k), false);
+  const card = { server: srv.id, seq: 3, port: 40123, fp: 'A'.repeat(43), addrs: ['2001:db8::1'] };
+  const sig = await sign(srv.priv, cardPayload(ring, card));
+  assert.equal(await verify(srv.key, cardPayload(ring, card), sig), true);
+  assert.equal(await verify(srv.key, cardPayload(ring, { ...card, addrs: ['2001:db8::2'] }), sig), false);
+});
+const keyOf2 = (...evs) => (id) => evs.find((e) => e.member === id)?.key ?? null;

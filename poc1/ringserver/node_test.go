@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/json"
 	"slices"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -88,6 +89,9 @@ func signedEvent(t *testing.T, e *event, signers map[string]*identity) json.RawM
 	m := map[string]any{"kind": e.Kind, "id": e.ID, "ring": e.Ring, "member": e.Member, "key": e.Key, "name": e.Name, "icon": e.Icon, "sigs": e.Sigs}
 	if e.Kind == "found" {
 		m["salt"] = e.Salt
+	} else if e.Kind == "server" {
+		m["operator"] = e.Operator
+		delete(m, "icon")
 	} else {
 		m["left"], m["right"], m["proof"] = e.Left, e.Right, *e.Proof
 	}
@@ -141,30 +145,67 @@ func TestNodeIntroducesMembersAndRoutes(t *testing.T) {
 		map[string]*identity{"member": tortto, "left": isi})
 
 	dir := t.TempDir()
-	n := newNode(ident(t), dir)
-	_, fi := login(t, n, isi, ring, []json.RawMessage{found, admit})
-	if !slices.Equal(n.state.members, []string{isi.id, tortto.id}) {
-		t.Fatalf("rengas %v", n.state.members)
+	n := newNode(ident(t), dir, "testipalvelin", 40123, strings.Repeat("A", 43), []string{"fd00::1"})
+	token := n.token
+	if len(token) != 16 || n.enrolled() {
+		t.Fatal("liittämätön palvelin ilman tunnusta")
+	}
+	li, fi := login(t, n, isi, ring, nil)
+	// isi liittää palvelimen: väärä tunnus ei käy, oikea käy.
+	n.onMessage(li, msg(t, map[string]any{"type": "enroll", "token": "0000000000000000", "ring": ring, "operator": isi.id, "events": []json.RawMessage{found, admit}}))
+	if fi.last("enrolled")["ok"] != false || n.ring != "" {
+		t.Fatal("väärä tunnus kelpasi")
+	}
+	n.onMessage(li, msg(t, map[string]any{"type": "enroll", "token": token, "ring": ring, "operator": isi.id, "events": []json.RawMessage{found, admit}}))
+	en := fi.last("enrolled")
+	if en["ok"] != true || !slices.Equal(n.state.members, []string{isi.id, tortto.id}) {
+		t.Fatalf("liittäminen: %v, rengas %v", en, n.state.members)
+	}
+	srvEv := &event{Kind: "server", Ring: ring, Member: n.me.id, Key: n.me.key, Operator: isi.id, Name: "testipalvelin"}
+	srvEv.ID = eventID("server", n.me.id)
+	opSig, _ := isi.sign(payloadOf(srvEv))
+	srvEv.Sigs = map[string]string{"member": en["sig"].(string), "operator": opSig}
+	raw, _ := json.Marshal(map[string]any{"kind": "server", "id": srvEv.ID, "ring": ring, "member": n.me.id, "key": n.me.key, "operator": isi.id, "name": "testipalvelin", "sigs": srvEv.Sigs})
+	n.onMessage(li, msg(t, map[string]any{"type": "ev", "ev": json.RawMessage(raw), "mid": isi.id + ":b:0", "from": isi.id, "ttl": 8}))
+	if !n.enrolled() || n.token != "" {
+		t.Fatal("palvelin ei liittynyt")
+	}
+	c := fi.last("card")
+	if c == nil {
+		t.Fatal("palvelin ei lähettänyt korttia")
+	}
+	cb, _ := json.Marshal(c["card"])
+	var got card
+	json.Unmarshal(cb, &got)
+	if !verify(n.me.key, cardPayload(ring, &got), got.Sig) || got.Addrs[0] != "fd00::1" {
+		t.Fatalf("kortti ei kelpaa: %+v", got)
+	}
+	n.onMessage(li, msg(t, map[string]any{"type": "enroll", "token": token, "ring": ring, "operator": isi.id}))
+	if fi.last("enrolled")["ok"] != false {
+		t.Fatal("käytetty tunnus kelpasi")
+	}
+	// Osoite vaihtuu: uusi kortti, suurempi seq.
+	n.setAddrs([]string{"fd00::2"})
+	cb, _ = json.Marshal(fi.last("card")["card"])
+	var moved card
+	json.Unmarshal(cb, &moved)
+	if moved.Seq <= got.Seq || moved.Addrs[0] != "fd00::2" || !verify(n.me.key, cardPayload(ring, &moved), moved.Sig) {
+		t.Fatalf("osoitteen vaihto: %+v", moved)
 	}
 	if got := peers(fi); !slices.Equal(got, []string{isi.id}) {
 		t.Fatalf("isin naapurilista %v", got)
 	}
 	_, ft := login(t, n, tortto, ring, nil)
+	if ft.last("card") == nil {
+		t.Fatal("Törttö ei saanut korttia")
+	}
 	if got := peers(fi); !slices.Contains(got, tortto.id) {
 		t.Fatalf("isi ei kuullut Törtöstä: %v", got)
 	}
-	if ft.last("events") == nil || len(ft.last("events")["list"].([]any)) != 2 {
+	if ft.last("events") == nil || len(ft.last("events")["list"].([]any)) != 3 {
 		t.Fatal("Törttö ei saanut rekisteriä")
 	}
 	// isi tarjoaa Törtölle palvelimen kautta.
-	li := func() *link {
-		for l := range n.links {
-			if l.id == isi.id {
-				return l
-			}
-		}
-		return nil
-	}()
 	n.onMessage(li, msg(t, map[string]any{"type": "sig", "to": tortto.id, "from": isi.id, "mid": isi.id + ":b:1", "ttl": 8, "data": map[string]any{"sdp": "x"}}))
 	sig := ft.last("sig")
 	if sig == nil || sig["from"] != isi.id || sig["ttl"].(float64) != 7 {
@@ -191,8 +232,8 @@ func TestNodeIntroducesMembersAndRoutes(t *testing.T) {
 		t.Fatal("väärä avain hyväksyttiin")
 	}
 	// Rekisteri säilyy uudelleenkäynnistyksen yli.
-	n2 := newNode(n.me, dir)
-	if !slices.Equal(n2.state.members, n.state.members) || n2.ring != ring {
+	n2 := newNode(n.me, dir, "testipalvelin", 40123, strings.Repeat("A", 43), []string{"fd00::1"})
+	if !slices.Equal(n2.state.members, n.state.members) || n2.ring != ring || !n2.enrolled() || n2.cards[n.me.id].Seq < moved.Seq {
 		t.Fatalf("tallennettu rekisteri %v", n2.state.members)
 	}
 }

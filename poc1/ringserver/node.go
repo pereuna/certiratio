@@ -7,14 +7,24 @@ package main
 // (sig), ja palvelin välittää ne. Palvelin ei ole jäsen: hello.server = true.
 // Rekisterin ulkopuolinen vastapuoli katkaistaan, kun rekisteri on ehtinyt
 // tulla (memberGrace).
+//
+// Liittäminen renkaaseen: palvelin tulostaa liittämislinkin (kortti ja
+// kertakäyttöinen tunnus). Jäsen avaa sen, ja sivu lähettää enroll-sanoman
+// (tunnus, rengas, rekisteri). Palvelin allekirjoittaa server-tapahtuman, ja
+// jäsen allekirjoittaa sen operaattorina ja julkaisee. Siitä lähtien palvelin
+// kuuluu siihen renkaaseen. Kortti (osoitteet, portti, sormenjälki) on
+// palvelimen allekirjoittama; seq kasvaa, kun osoitteet muuttuvat, ja kortit
+// leviävät jäsenille (card).
 
 import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"log"
+	"net"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"sync"
 	"time"
@@ -60,6 +70,13 @@ type link struct {
 type node struct {
 	mu         sync.Mutex
 	me         *identity
+	name       string // palvelimen nimi rekisterissä
+	token      string // liittämistunnus, kunnes palvelin on renkaassa
+	port       int
+	fp         string // DTLS-sormenjälki sha-256, base64url
+	addrs      []string
+	cards      map[string]*card // palvelin -> tuorein kortti (myös oma)
+	loading    bool
 	boot       string
 	dir        string
 	ring       string
@@ -72,18 +89,33 @@ type node struct {
 	lastHello  string
 }
 
-func newNode(me *identity, dir string) *node {
-	n := &node{me: me, boot: randHex(4), dir: dir, events: map[string]*event{}, unverified: map[string]*event{},
-		links: map[*link]bool{}, seen: map[string]bool{}, state: &ringState{info: map[string]*event{}}}
+func newNode(me *identity, dir, name string, port int, fp string, addrs []string) *node {
+	n := &node{me: me, boot: randHex(4), dir: dir, name: name, port: port, fp: fp, addrs: addrs, cards: map[string]*card{},
+		events: map[string]*event{}, unverified: map[string]*event{},
+		links: map[*link]bool{}, seen: map[string]bool{}, state: &ringState{info: map[string]*event{}, servers: map[string]*event{}}}
 	n.load()
+	if !n.enrolled() {
+		path := filepath.Join(dir, "enroll-token")
+		if b, err := os.ReadFile(path); err == nil && len(b) == 16 {
+			n.token = string(b)
+		} else {
+			n.token = randHex(8)
+			os.WriteFile(path, []byte(n.token), 0o600)
+		}
+	} else {
+		n.makeCard()
+	}
 	return n
 }
+
+func (n *node) enrolled() bool { return n.state.servers[n.me.id] != nil }
 
 // --- Pysyvä rekisteri ------------------------------------------------------
 
 type saved struct {
 	Ring   string            `json:"ring"`
 	Events []json.RawMessage `json:"events"`
+	Cards  []*card           `json:"cards"`
 }
 
 func (n *node) load() {
@@ -96,7 +128,16 @@ func (n *node) load() {
 		return
 	}
 	n.ring = s.Ring
+	n.loading = true
 	n.merge(s.Events)
+	n.loading = false
+	for _, c := range s.Cards {
+		if c.Server != n.me.id {
+			n.acceptCard(c)
+		} else {
+			n.cards[c.Server] = c // oma: seq jatkuu tästä
+		}
+	}
 	log.Printf("rekisteri ladattu: rengas %s, %d jäsentä", n.ring, len(n.state.members))
 }
 
@@ -104,6 +145,9 @@ func (n *node) save() {
 	s := saved{Ring: n.ring}
 	for _, e := range n.events {
 		s.Events = append(s.Events, e.raw)
+	}
+	for _, c := range n.cards {
+		s.Cards = append(s.Cards, c)
 	}
 	b, _ := json.Marshal(s)
 	tmp := filepath.Join(n.dir, "ring.json.tmp")
@@ -163,10 +207,17 @@ func (n *node) merge(list []json.RawMessage) bool {
 	for _, e := range n.events {
 		all = append(all, e)
 	}
-	before := len(n.state.members)
+	before, wasEnrolled := len(n.state.members), n.enrolled()
 	n.state = build(n.ring, all)
 	if len(n.state.members) != before {
-		log.Printf("rekisteri: %d jäsentä", len(n.state.members))
+		log.Printf("rekisteri: %d jäsentä, %d palvelinta", len(n.state.members), len(n.state.servers))
+	}
+	if !wasEnrolled && n.enrolled() && !n.loading {
+		log.Printf("liitetty renkaaseen %s (operaattori %s)", n.ring, n.state.servers[n.me.id].Operator)
+		n.token = ""
+		os.Remove(filepath.Join(n.dir, "enroll-token"))
+		n.makeCard()
+		n.broadcastCard(n.cards[n.me.id], nil)
 	}
 	n.save()
 	return true
@@ -209,7 +260,7 @@ func (n *node) helloMsg(l *link) map[string]any {
 	if n.ring != "" {
 		ring = n.ring
 	}
-	return map[string]any{"type": "hello", "id": n.me.id, "boot": n.boot, "ring": ring, "name": "rengaspalvelin",
+	return map[string]any{"type": "hello", "id": n.me.id, "boot": n.boot, "ring": ring, "name": n.name,
 		"icon": "🐕", "key": n.me.key, "nonce": l.nonce, "peers": n.neighbours(), "server": true}
 }
 
@@ -329,11 +380,6 @@ func (n *node) onHello(l *link, msg map[string]json.RawMessage) {
 		return
 	}
 	if l.peerKey == "" {
-		if n.ring == "" && ring != "" && hex8Re.MatchString(ring) {
-			// Prototyyppi: ensimmäinen todennettu jäsen kertoo renkaan (vaihe 2: operaattorin server-tapahtuma).
-			n.ring = ring
-			log.Printf("rengas %s (ensimmäiseltä yhteydeltä)", ring)
-		}
 		l.id = id
 		l.peerKey = key
 		sig, err := n.me.sign(authPayload(nonce, n.me.id, id))
@@ -369,10 +415,13 @@ func (n *node) onAuth(l *link, msg map[string]json.RawMessage) {
 	time.AfterFunc(memberGrace, func() {
 		n.mu.Lock()
 		defer n.mu.Unlock()
-		if n.links[l] && !n.state.isMember(l.id) {
+		if n.links[l] && !n.state.isMember(l.id) && n.state.servers[l.id] == nil {
 			n.dropLocked(l, "ei renkaan jäsen")
 		}
 	})
+	for _, c := range n.cards {
+		n.send(l, map[string]any{"type": "card", "card": c})
+	}
 	n.sendHello()
 }
 
@@ -399,6 +448,128 @@ func (n *node) handle(l *link, typ string, msg map[string]json.RawMessage) {
 		}
 	case typ == "chars" || typ == "ev" || directed[typ]:
 		n.route(l, typ, msg)
+	case typ == "enroll":
+		n.onEnroll(l, msg)
+	case typ == "card":
+		var c card
+		if json.Unmarshal(msg["card"], &c) == nil && n.acceptCard(&c) {
+			n.broadcastCard(&c, l)
+			n.save()
+		}
+	}
+}
+
+// onEnroll: jäsen liittää palvelimen renkaaseensa liittämistunnuksella.
+func (n *node) onEnroll(l *link, msg map[string]json.RawMessage) {
+	ring, operator := str(msg, "ring"), str(msg, "operator")
+	reply := func(ok bool, why string, extra map[string]any) {
+		m := map[string]any{"type": "enrolled", "ok": ok, "why": why}
+		for k, v := range extra {
+			m[k] = v
+		}
+		n.send(l, m)
+	}
+	if n.token == "" || str(msg, "token") != n.token {
+		reply(false, "väärä tai käytetty liittämistunnus", nil)
+		return
+	}
+	if !hex8Re.MatchString(ring) || operator != l.id || (n.ring != "" && n.ring != ring) {
+		reply(false, "virheellinen pyyntö", nil)
+		return
+	}
+	var list []json.RawMessage
+	json.Unmarshal(msg["events"], &list)
+	if len(list) > maxEvents {
+		list = list[:maxEvents]
+	}
+	fresh := n.ring == ""
+	n.ring = ring
+	n.merge(list)
+	if !n.state.isMember(operator) {
+		if fresh {
+			n.ring, n.events, n.state = "", map[string]*event{}, &ringState{info: map[string]*event{}, servers: map[string]*event{}}
+		}
+		reply(false, "pyytäjä ei ole renkaan jäsen", nil)
+		return
+	}
+	n.save()
+	empty := ""
+	e := &event{Kind: "server", Ring: ring, Member: n.me.id, Key: n.me.key, Operator: operator, Name: n.name, Proof: &empty}
+	sig, err := n.me.sign(payloadOf(e))
+	if err != nil {
+		reply(false, err.Error(), nil)
+		return
+	}
+	log.Printf("liittämispyyntö renkaaseen %s, operaattori %s", ring, operator)
+	n.sendHello()
+	reply(true, "", map[string]any{"sig": sig, "name": n.name, "key": n.me.key, "server": n.me.id})
+}
+
+// makeCard: oma kortti nykyisillä osoitteilla, uusi seq. Kutsujalla lukko (tai käynnistys).
+func (n *node) makeCard() {
+	if n.ring == "" || len(n.addrs) == 0 {
+		return
+	}
+	c := &card{Server: n.me.id, Seq: time.Now().UnixMilli(), Port: n.port, FP: n.fp, Addrs: slices.Clone(n.addrs)}
+	if old := n.cards[n.me.id]; old != nil && c.Seq <= old.Seq {
+		c.Seq = old.Seq + 1
+	}
+	sig, err := n.me.sign(cardPayload(n.ring, c))
+	if err != nil {
+		return
+	}
+	c.Sig = sig
+	n.cards[n.me.id] = c
+	log.Printf("kortti %d: %v portti %d", c.Seq, c.Addrs, c.Port)
+}
+
+var fpRe = regexp.MustCompile(`^[A-Za-z0-9_-]{43}$`)
+
+// acceptCard: renkaan palvelimen kortti, jos se on tuoreempi kuin tallessa oleva.
+func (n *node) acceptCard(c *card) bool {
+	srv := n.state.servers[c.Server]
+	if srv == nil || c.Seq <= 0 || c.Port <= 0 || c.Port > 65535 || !fpRe.MatchString(c.FP) || len(c.Addrs) == 0 || len(c.Addrs) > 8 {
+		return false
+	}
+	for _, a := range c.Addrs {
+		if ip := net.ParseIP(a); ip == nil || !usable(ip) {
+			return false
+		}
+	}
+	if old := n.cards[c.Server]; old != nil && old.Seq >= c.Seq {
+		return false
+	}
+	if !verify(srv.Key, cardPayload(n.ring, c), c.Sig) {
+		return false
+	}
+	n.cards[c.Server] = c
+	return true
+}
+
+func (n *node) broadcastCard(c *card, except *link) {
+	if c == nil {
+		return
+	}
+	for o := range n.links {
+		if o != except && o.verified {
+			n.send(o, map[string]any{"type": "card", "card": c})
+		}
+	}
+}
+
+// setAddrs: osoitteet muuttuivat (puhelimen verkko vaihtui): uusi kortti kaikille.
+func (n *node) setAddrs(addrs []string) {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	if slices.Equal(addrs, n.addrs) || len(addrs) == 0 {
+		return
+	}
+	log.Printf("osoitteet muuttuivat: %v → %v", n.addrs, addrs)
+	n.addrs = addrs
+	if n.enrolled() {
+		n.makeCard()
+		n.broadcastCard(n.cards[n.me.id], nil)
+		n.save()
 	}
 }
 

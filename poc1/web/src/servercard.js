@@ -2,7 +2,8 @@
 // signalointia. Palvelin (poc1/ringserver) on ICE-lite kiinteässä UDP-portissa,
 // ja selain kokoaa sen vastauksen kortista:
 //
-//   s1.SORMENJÄLKI.PORTTI.OSOITE,OSOITE…     (sormenjälki sha-256, base64url)
+//   s1.SORMENJÄLKI.PORTTI.OSOITE,OSOITE…            (sormenjälki sha-256, base64url)
+//   s1.SORMENJÄLKI.PORTTI.OSOITE,OSOITE….TUNNUS     liittämislinkki: palvelin renkaaseen
 //
 // ICE-tunnus on selaimen oma tunnus U ja salasana pwdOf(U), samoin kuin
 // palvelimella. Selain on DTLS-asiakas ja tarkistaa palvelimen sormenjäljen
@@ -11,24 +12,33 @@
 import { pairable } from './pairing.js';
 
 const B64URL = /^[A-Za-z0-9_-]{43}$/;
+const TOKEN = /^[0-9a-f]{16}$/;
+
+/** Sormenjälki base64url → SDP:n muoto (AA:BB:…). */
+export function fpHex(fp64) {
+  const bin = atob(fp64.replace(/-/g, '+').replace(/_/g, '/'));
+  return [...bin].map((c) => c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0')).join(':');
+}
+
+export const isCard = (text) => /(^|#)s1\./.test(String(text).trim());
 
 /** Palvelimen ICE-salasana selaimen tunnuksesta (sama kuin ringserver/main.go). */
 export function pwdOf(ufrag) {
   return `certiratio-${ufrag}`.padEnd(24, '-');
 }
 
-export function decodeCard(token) {
-  let s = String(token).trim();
+export function decodeCard(text) {
+  let s = String(text).trim();
   if (s.includes('#')) s = decodeURIComponent(s.slice(s.indexOf('#') + 1));
   const f = s.split('.');
-  if (f.length !== 4 || f[0] !== 's1' || !B64URL.test(f[1])) throw new Error('tuntematon kortti');
+  if (!(f.length === 4 || f.length === 5) || f[0] !== 's1' || !B64URL.test(f[1])) throw new Error('tuntematon kortti');
+  const token = f[4] ?? null;
+  if (token !== null && !TOKEN.test(token)) throw new Error('virheellinen liittämistunnus');
   const port = Number(f[2]);
   if (!(Number.isInteger(port) && port > 0 && port < 65536)) throw new Error('virheellinen portti');
   const addrs = f[3].split(',').filter(Boolean);
   if (!addrs.length || !addrs.every(pairable)) throw new Error('kortissa ei ole kelvollista IPv6-osoitetta');
-  const bin = atob(f[1].replace(/-/g, '+').replace(/_/g, '/'));
-  const fp = [...bin].map((c) => c.charCodeAt(0).toString(16).toUpperCase().padStart(2, '0')).join(':');
-  return { fp, port, addrs };
+  return { fp: fpHex(f[1]), fp64: f[1], port, addrs, token };
 }
 
 /** Palvelimen vastaus kortista: `ufrag` ja `mid` selaimen omasta tarjouksesta. */
