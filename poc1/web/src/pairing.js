@@ -9,15 +9,19 @@
 //   2.r.RENGAS.NÄYTTÄJÄ.UFRAG.PWD.FP.MID.ADDR_PORT,…      yhdistämiskoodi palaavalle jäsenelle
 //   2.a.RENGAS.UFRAG.PWD.FP.MID.ADDR_PORT,…               vastaus (kutsuun tai yhdistämiseen)
 //   2.c.RENGAS.JÄSEN.HAASTE                               toisen naapurin vahvistus
+//   2.j.RENGAS.VASEN.OIKEA.TUNNUS                         kutsu kohtaamispaikan (jedi) kautta
 //
 // RENGAS on renkaan tunniste (8 heksaa), VASEN/OIKEA/JÄSEN jäsenten tunnisteita.
 // ICE-merkit ovat [A-Za-z0-9+/], joten erottimet . , _ ovat turvallisia.
+// 2.j-kutsussa ei ole SDP:tä: TUNNUS (16 heksaa) on kertakäyttöisen
+// kutsuhuoneen nimi, ja tarjous ja vastaus kulkevat jedin kautta.
 
 import { candidateAddr, v6Scope } from './stream.js';
 
 const ICE_CHARS = /^[A-Za-z0-9+/]+$/;
 const HEX8 = /^[0-9a-f]{8}$/;
 const NONCE = /^[0-9a-f]{12}$/;
+const TOKEN = /^[0-9a-f]{16}$/;
 
 function b64url(bytes) {
   let s = '';
@@ -135,9 +139,23 @@ export function decodeVouch(token) {
   return { type: 'vouch', ring: f[2], member: f[3], nonce: f[4] };
 }
 
-/** Mikä tahansa koodi (kamera, linkki) → { type: 'offer'|'answer'|'vouch', … }. */
+/** Kutsu kohtaamispaikan kautta: väli VASEN → OIKEA ja kutsuhuoneen tunnus. */
+export function encodeJoin(ring, left, right, token) {
+  if (!HEX8.test(ring) || !HEX8.test(left) || !HEX8.test(right) || !TOKEN.test(token)) throw new Error('virheellinen kutsu');
+  return ['2', 'j', ring, left, right, token].join('.');
+}
+
+export function decodeJoin(token) {
+  const f = String(token).trim().split('.');
+  if (f.length !== 6 || f[0] !== '2' || f[1] !== 'j' || !HEX8.test(f[2]) || !HEX8.test(f[3]) || !HEX8.test(f[4]) || !TOKEN.test(f[5])) {
+    throw new Error('tuntematon koodi');
+  }
+  return { type: 'join', ring: f[2], left: f[3], right: f[4], token: f[5] };
+}
+
+/** Mikä tahansa koodi (kamera, linkki) → { type: 'offer'|'join'|'reconnect'|'answer'|'vouch', … }. */
 export function decodeAny(token) {
   let s = String(token).trim();
   if (s.includes('#')) s = decodeURIComponent(s.slice(s.indexOf('#') + 1));
-  return s.startsWith('2.c.') ? decodeVouch(s) : decodePairing(s);
+  return s.startsWith('2.c.') ? decodeVouch(s) : s.startsWith('2.j.') ? decodeJoin(s) : decodePairing(s);
 }

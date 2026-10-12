@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
-import { decodeAny, decodePairing, decodeVouch, encodePairing, encodeVouch, pairable } from '../web/src/pairing.js';
+import { decodeAny, decodeJoin, decodePairing, decodeVouch, encodeJoin, encodePairing, encodeVouch, pairable } from '../web/src/pairing.js';
 
 // Selaimessa tavallinen <script> (globaali qrcode); poc1 on ESM-paketti, joten ladataan vm:llä.
 const qrcode = runInNewContext(`${readFileSync(new URL('../web/src/vendor/qrcode.js', import.meta.url), 'utf8')};qrcode`, {});
@@ -96,4 +96,17 @@ test('vahvistuskoodi: 2.c.RENGAS.JÄSEN.HAASTE, myös linkkinä', () => {
   assert.equal(decodeAny(encodePairing('answer', OFFER, [], { ring: RING })).type, 'answer');
   assert.throws(() => decodeVouch('2.c.0badc0de.22222222.short'));
   assert.throws(() => encodeVouch(RING, 'isi', '0123456789ab'));
+});
+
+test('kutsu kohtaamispaikan kautta: 2.j.RENGAS.VASEN.OIKEA.TUNNUS, pieni QR', () => {
+  const t = encodeJoin(RING, '11111111', '22222222', '0123456789abcdef');
+  assert.equal(t, '2.j.0badc0de.11111111.22222222.0123456789abcdef');
+  assert.deepEqual(decodeJoin(t), { type: 'join', ring: RING, left: '11111111', right: '22222222', token: '0123456789abcdef' });
+  assert.equal(decodeAny(`https://pereuna.github.io/certiratio/direct.html#${t}`).token, '0123456789abcdef');
+  assert.throws(() => decodeJoin('2.j.0badc0de.11111111.22222222.lyhyt'));
+  assert.throws(() => encodeJoin(RING, '11111111', 'isi', '0123456789abcdef'));
+  const qr = qrcode(0, 'M');
+  qr.addData(`https://pereuna.github.io/certiratio/direct.html#${t}`, 'Byte');
+  qr.make();
+  assert.ok(qr.getModuleCount() <= 41, `${qr.getModuleCount()} moduulia`); // versio ≤ 6 (SDP-koodi ≤ 11)
 });
