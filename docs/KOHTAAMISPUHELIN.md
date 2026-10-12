@@ -30,7 +30,9 @@ Palvelin toimii kuten libp2p:n *WebRTC Direct*: se on **ICE-lite**-vertainen kii
 
 **Palvelinkortti** on siis vain `{ id, osoitteet, portti, sormenjälki }`. ICE-tunnuksia ei tarvita, koska ne johdetaan selaimen omasta tunnuksesta. SDP:n peukalointia selaimessa ei tarvita, koska selain muuttaa vain vastapuolen kuvausta.
 
-**Ennakkoehto, joka testataan ensin:** pääseekö puhelimeen mobiiliverkossa *pyytämätön* UDP-paketti toisesta liittymästä? Ssh todisti TCP:n, mutta ICE-lite-palvelin ei lähetä ensimmäisenä. Testi tehdään kahdella USB-puhelimella (`nc -u -l` toisessa, lähetys toisesta). Jos operaattori suodattaa, palvelin ei voi olla pelkästään ICE-lite, vaan tarvitaan reiän avaus molemmista päistä. Se puolestaan vaatii signalointia.
+**Ennakkoehto täyttyi 2026-10-12:** pyytämätön UDP pääsi perille ja vastaus palasi. Lähettäjä oli OnePlus mobiilidatalla (Termux, `nc -u`, `2001:999:3003:704::/64`), vastaanottaja G50 mobiilidatalla (`2001:999:408:763a::/64`, kuuntelija `udpecho` portissa 40123). Pyytämätön TCP portissa 40124 pääsi myös perille. Molemmat liittymät olivat samalla operaattorilla, joten eri operaattoreiden välinen testi on vielä tekemättä.
+
+**Alkuperäinen ennakkoehto:** pääseekö puhelimeen mobiiliverkossa *pyytämätön* UDP-paketti toisesta liittymästä? Ssh todisti TCP:n, mutta ICE-lite-palvelin ei lähetä ensimmäisenä. Testi tehdään kahdella USB-puhelimella (`nc -u -l` toisessa, lähetys toisesta). Jos operaattori suodattaa, palvelin ei voi olla pelkästään ICE-lite, vaan tarvitaan reiän avaus molemmista päistä. Se puolestaan vaatii signalointia.
 
 ## Palvelinrekisteri renkaassa
 
@@ -100,7 +102,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
 
 ## Vaiheet ja testaus
 
-1. **Ennakkoehto** (kaksi puhelinta USB:ssä, mobiilidata): pyytämätön UDP toisesta liittymästä perille, molempiin suuntiin, myös eri operaattoreiden välillä, jos mahdollista.
+1. **Ennakkoehto:** pyytämätön UDP toisesta liittymästä perille. ✅ Samalla operaattorilla toimii, eri operaattoreiden välillä testaamatta.
 2. **Prototyyppi koneella:**
    - Go-palvelin (pion, ICE-lite, kiinteä portti), johon Chromium yhdistää pelkällä kortilla (ULA-verkkonimiavaruus)
    - useita asiakkaita samaan porttiin
@@ -114,7 +116,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
 
 ## Avoimet kysymykset
 
-- **UDP-ennakkoehto** (kohta 1) ratkaisee, toimiiko ICE-lite sellaisenaan.
+- **UDP eri operaattoreiden välillä:** saman operaattorin sisällä pyytämätön UDP kulkee (testattu). Eri operaattorilta testaamatta.
 - **Safari ja iPhone:** WebRTC Direct -tyyppisen yhteyden (koottu ICE-lite-vastaus) toimivuus iOS:n WebKitissä on testattava. Chrome ja Firefox toimivat libp2p:n kokemuksen perusteella.
 - **Palvelinten määrä ja sijoittelu:** riittääkö yksi palvelin per kotitalous?
 - **Säilyttääkö palvelin tekstiä poissaolijoille?** Ei tässä vaiheessa. Tekstivirta on hetkellinen kuten nyt.
