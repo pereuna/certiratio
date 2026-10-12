@@ -32,6 +32,7 @@ import { authPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, v
 import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js';
 import { ICONS, adjacent, build, cleanName, eventId, preferred, successor, validEvent } from './ring.js';
 import { createScanner } from './scanner.js';
+import { cardAnswer, decodeCard } from './servercard.js';
 import { Signaling } from './signaling.js';
 import { clear as clearStore, load, save } from './store.js';
 import { candidateAddr, filterSdp } from './stream.js';
@@ -200,9 +201,9 @@ function send(link, msg) {
   if (link.ch?.readyState === 'open') link.ch.send(JSON.stringify({ ...msg, protocol: PROTOCOL }));
 }
 
-/** Todennetut, avoimet naapurit. */
+/** Todennetut, avoimet naapurit (ei rengaspalvelimia: ne eivät ole jäseniä). */
 function neighbours() {
-  return [...links.values()].filter((l) => l.verified && l.ch?.readyState === 'open').map((l) => l.id).sort();
+  return [...links.values()].filter((l) => l.verified && !l.server && l.ch?.readyState === 'open').map((l) => l.id).sort();
 }
 
 function helloMsg(link) {
@@ -274,6 +275,7 @@ async function onHello(link, msg) {
     return;
   }
   link.peerBoot = msg.boot;
+  link.server = msg.server === true; // rengaspalvelin (poc1/ringserver): esittelee, ei jäsen
   link.peers = Array.isArray(msg.peers) ? msg.peers.slice(0, 64) : [];
   const name = cleanName(msg.name);
   if (name && ICONS.includes(msg.icon)) peerInfo.set(msg.id, { name, icon: msg.icon });
@@ -554,6 +556,24 @@ function onMeet(link, secret) {
   meetDelay = 2000;
   connectMeet();
   shareMeet();
+}
+
+// --- Rengaspalvelin (poc1/ringserver) ---------------------------------------
+
+/** Yhteys rengaspalvelimeen kortilla (s1.…): ei signalointia, palvelin esittelee paikalla olevat. */
+async function connectServer(text) {
+  const card = decodeCard(text);
+  await checkAddress();
+  const link = newLink(`srv-${++qrSeq}`);
+  link.via = 'server';
+  attach(link, link.pc.createDataChannel('direct', { ordered: true }));
+  await link.pc.setLocalDescription(await link.pc.createOffer());
+  const sdp = link.pc.localDescription.sdp;
+  const ufrag = /^a=ice-ufrag:(\S+)/m.exec(sdp)?.[1];
+  const mid = /^a=mid:(\S+)/m.exec(sdp)?.[1] ?? '0';
+  await link.pc.setRemoteDescription({ type: 'answer', sdp: cardAnswer(card, ufrag, mid) });
+  log(`rengaspalvelin: yhdistetään ${card.addrs.join(', ')} portti ${card.port}`);
+  render();
 }
 
 // --- Rengas ---------------------------------------------------------------
@@ -1373,9 +1393,9 @@ function render() {
   tbody.replaceChildren();
   let open = 0;
   for (const l of links.values()) {
-    if (l.verified && l.ch?.readyState === 'open') open++;
+    if (l.verified && !l.server && l.ch?.readyState === 'open') open++;
     const tr = document.createElement('tr');
-    const who = l.id ? `${iconOf(l.id)} ${nameOf(l.id)}${isMember(l.id) ? '' : ' (liittymässä)'}` : 'uusi';
+    const who = l.id ? `${iconOf(l.id)} ${nameOf(l.id)}${l.server ? ' (palvelin)' : isMember(l.id) ? '' : ' (liittymässä)'}` : 'uusi';
     const state = l.ch?.readyState === 'open' ? (l.verified ? 'auki ✓' : 'todennetaan') : l.pc.connectionState;
     [who, state, `${CLASSES[l.cls]}${l.detail ? ` (${l.detail})` : ''}`]
       .forEach((text, i) => {
@@ -1563,6 +1583,9 @@ window.direct = {
   scan: (text) => handleCode(text),
   /** Kuin tapahtumat olisivat tulleet verkosta (väärennöstesti). */
   merge: (list) => merge(list),
+  /** Yhteys rengaspalvelimeen kortilla (testit; käyttöliittymä vaiheessa 2). */
+  server: (card) => connectServer(card),
+  get servers() { return [...links.values()].filter((l) => l.server && l.verified).map((l) => l.id); },
   /** Katkaisee suoran yhteyden naapuriin (testaa kiertoreittiä). */
   cut(id) { const l = links.get(id); if (l) drop(l, null); },
 };

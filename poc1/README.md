@@ -115,12 +115,24 @@ Paikallisesti: `python3 ../../Plan2001/monolith/tools/rtcsignal --port 8090 --we
 
 ## Rengaspalvelimen prototyyppi (`ringserver/`, `web/palvelin.html`)
 
-Puhelimessa ajettava WebRTC-vertainen, johon selain ottaa yhteyden pelkällä kortilla `s1.SORMENJÄLKI.PORTTI.OSOITTEET` ilman signalointia, DNS:ää tai varmentajaa ([suunnitelma](../docs/KOHTAAMISPUHELIN.md)). Palvelin on ICE-lite yhdessä UDP-portissa (pion), ja sillä on pysyvä DTLS-varmenne (`-dir`). Selain (`src/servercard.js`) kokoaa palvelimen vastauksen kortista ja tarkistaa sormenjäljen. Prototyypin DataChannel vain kaiuttaa viestit.
+Puhelimessa ajettava WebRTC-vertainen, johon selain ottaa yhteyden pelkällä kortilla `s1.SORMENJÄLKI.PORTTI.OSOITTEET` ilman signalointia, DNS:ää tai varmentajaa ([suunnitelma](../docs/KOHTAAMISPUHELIN.md)). Palvelin on ICE-lite yhdessä UDP-portissa (pion), ja sillä on pysyvä DTLS-varmenne ja oma P-256-avain (`-dir`). Selain (`src/servercard.js`) kokoaa palvelimen vastauksen kortista ja tarkistaa sormenjäljen.
+
+Palvelin on renkaan solmu (`ringserver/node.go`, protokolla `certiratio-direct/5`):
+- todentaa jokaisen yhteyden (hello/auth) ja tarkistaa avaimen rekisteristä
+- tarkistaa ja säilyttää rekisterin (`ring.json`)
+- katkaisee vieraan renkaan ja rekisterin ulkopuolisen avaimen (5 s armonaika rekisterin saapumiselle)
+- kertoo naapurilistassaan paikalla olevat jäsenet ja välittää heidän tarjouksensa (`sig`), tekstin ja tapahtumat
+
+Jäsenet muodostavat sen jälkeen suorat yhteydet toisiinsa. Palvelin ei ole jäsen (`hello.server`), eikä se näy jäsenten naapurilistoissa. Prototyypissä renkaan tunniste otetaan ensimmäiseltä todennetulta yhteydeltä. Vaiheessa 2 sen tilalle tulee operaattorin allekirjoittama palvelintapahtuma. `palvelin.html` käyttää kanavaa `echo`, joka vain kaiuttaa viestit.
+
+Go-puoli tekee allekirjoitettavan sisällön kuten `JSON.stringify` (`crypto.go`, ei `encoding/json`) ja rakentaa renkaan kuten `ring.js`. Yhteiset testivektorit tehdään selaimen koodilla: `node tools/make-vectors.mjs > tests/vectors/ring.json`, ja niitä käyttävät `cd ringserver && go test -race ./...`.
 
 ```bash
 cd ringserver && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ringserver-arm64 .   # puhelimeen (adb push / Termux)
 ./ringserver -port 40123 -dir ringserver-tila     # tulostaa kortin ja testisivun linkin
 ```
 
-Testi: `tools/drive-ringserver.mjs PAGE_URL KORTTI DEVTOOLS_PORT` (kolme asiakasta samaan porttiin, väärä sormenjälki hylätään; Chromium `--disable-features=WebRtcHideLocalIpsWithMdns`). Testattu 2026-10-12 G50 palvelimena ja OnePlusin Chrome asiakkaana, molemmat mobiilidatalla: yhteys 1,6 s.
+Rengastesti: `tools/drive-ringnode.mjs BASE_URL KORTTI PORT_ISI PORT_TORTTO PORT_VIERAS`. Siinä isi ja Törttö perustavat renkaan QR-koodeilla ja yhdistävät palvelimeen. Törtön välilehti suljetaan ja avataan, ja hän yhdistää vain palvelimeen: palvelin esittelee hänet isille, ja suora yhteys palaa 0,6 sekunnissa ilman koodeja. Teksti menee perille, ja vieras katkaistaan. Testattu 2026-10-12 (ULA-verkkonimiavaruus).
+
+Yhteystesti: `tools/drive-ringserver.mjs PAGE_URL KORTTI DEVTOOLS_PORT` (kolme asiakasta samaan porttiin, väärä sormenjälki hylätään; Chromium `--disable-features=WebRtcHideLocalIpsWithMdns`). Testattu 2026-10-12 G50 palvelimena ja OnePlusin Chrome asiakkaana, molemmat mobiilidatalla: yhteys 1,6 s.
 

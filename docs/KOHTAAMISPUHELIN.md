@@ -113,7 +113,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
    - Go-palvelin (pion, ICE-lite, kiinteä portti), johon Chromium yhdistää pelkällä kortilla (ULA-verkkonimiavaruus)
    - useita asiakkaita samaan porttiin
    - väärä sormenjälki hylätään
-3. **Protokolla Go:ssa:** hello/auth, rekisteri, välitys ja kortit. Yhteiset testivektorit Node- ja Go-testeissä. `drive-direct.mjs`:
+3. ✅ (2026-10-12: hello/auth, rekisteri ja välitys, testivektorit ja `drive-ringnode.mjs`; kortit ja osoitteen vaihtuminen vielä tekemättä) **Protokolla Go:ssa:** hello/auth, rekisteri, välitys ja kortit. Yhteiset testivektorit Node- ja Go-testeissä. `drive-direct.mjs`:
    - palvelin renkaassa
    - Liisa suljetaan ja avataan, ja hän palaa ilman koodeja
    - palvelimen osoite vaihdetaan, ja kortti leviää

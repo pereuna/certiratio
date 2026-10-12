@@ -7,8 +7,9 @@
 // oma tunnus U ja salasana pwdOf(U). Kun palvelin näkee STUN-tarkistuksen
 // tuntemattomalla tunnuksella, se luo tälle asiakkaalle uuden yhteyden samaan
 // porttiin. Selain tarkistaa palvelimen sormenjäljen kortista; palvelin
-// hyväksyy minkä tahansa asiakasvarmenteen (jäsenet todennetaan myöhemmin
-// sovellustasolla, hello/auth). Prototyypissä DataChannel vain kaiuttaa.
+// hyväksyy minkä tahansa asiakasvarmenteen, ja jäsenet todennetaan
+// sovellustasolla (node.go: hello/auth rekisterin avaimilla). Palvelin
+// säilyttää rekisterin ja esittelee paikalla olevat jäsenet toisilleen.
 //
 //	ringserver [-port 40123] [-dir tila] [-addr osoite,…] [-page URL]
 package main
@@ -106,6 +107,7 @@ type server struct {
 	ended map[string]time.Time
 	mux   ice.UDPMux
 	cert  webrtc.Certificate
+	node  *node
 }
 
 func (s *server) onUfrag(ufrag string, from net.Addr) {
@@ -175,13 +177,37 @@ func (s *server) newConn(ufrag string, from net.Addr) (*webrtc.PeerConnection, e
 		}
 	})
 	pc.OnDataChannel(func(dc *webrtc.DataChannel) {
-		dc.OnOpen(func() { log.Printf("%s: kanava %q auki", who, dc.Label()) })
+		if dc.Label() == "echo" { // palvelin.html: yhteystesti ilman rengasta
+			dc.OnMessage(func(m webrtc.DataChannelMessage) {
+				if !m.IsString || len(m.Data) > 4096 {
+					return
+				}
+				reply, _ := json.Marshal(map[string]any{"type": "pong", "text": string(m.Data), "from": who, "time": time.Now().UnixMilli()})
+				dc.SendText(string(reply))
+			})
+			return
+		}
+		var l *link
+		var mu sync.Mutex // OnMessage voi tulla ennen kuin OnOpen on palannut
+		dc.OnOpen(func() {
+			mu.Lock()
+			defer mu.Unlock()
+			l = s.node.attach(dc, who)
+		})
 		dc.OnMessage(func(m webrtc.DataChannelMessage) {
-			if !m.IsString || len(m.Data) > 4096 {
-				return
+			mu.Lock()
+			cur := l
+			mu.Unlock()
+			if cur != nil && m.IsString {
+				s.node.onMessage(cur, m.Data)
 			}
-			reply, _ := json.Marshal(map[string]any{"type": "pong", "text": string(m.Data), "from": who, "time": time.Now().UnixMilli()})
-			dc.SendText(string(reply))
+		})
+		dc.OnClose(func() {
+			mu.Lock()
+			defer mu.Unlock()
+			if l != nil {
+				s.node.detach(l)
+			}
 		})
 	})
 	if err := pc.SetRemoteDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeOffer, SDP: fakeOffer(ufrag)}); err != nil {
@@ -294,6 +320,13 @@ func main() {
 	flag.Parse()
 	log.SetFlags(log.Ltime)
 
+	if err := os.MkdirAll(*dir, 0o700); err != nil {
+		log.Fatal(err)
+	}
+	me, err := loadIdentity(filepath.Join(*dir, "key.pem"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	cert, err := loadCert(*dir)
 	if err != nil {
 		log.Fatal(err)
@@ -306,7 +339,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := &server{conns: map[string]*webrtc.PeerConnection{}, ended: map[string]time.Time{}, cert: cert}
+	s := &server{conns: map[string]*webrtc.PeerConnection{}, ended: map[string]time.Time{}, cert: cert, node: newNode(me, *dir)}
 	s.mux = ice.NewUDPMuxDefault(ice.UDPMuxParams{UDPConn: &sniffConn{PacketConn: conn, onUfrag: s.onUfrag}})
 
 	addrs := addresses(*extra)
@@ -314,7 +347,7 @@ func main() {
 		log.Print("varoitus: ei IPv6-osoitetta kortille (anna -addr)")
 	}
 	card := fmt.Sprintf("s1.%s.%d.%s", base64.RawURLEncoding.EncodeToString(fp), *port, strings.Join(addrs, ","))
-	log.Printf("kuunnellaan UDP [::]:%d", *port)
+	log.Printf("kuunnellaan UDP [::]:%d, palvelimen tunniste %s", *port, me.id)
 	fmt.Printf("kortti: %s\n%s#%s\n", card, *page, card)
 	select {}
 }

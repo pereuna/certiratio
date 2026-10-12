@@ -1,0 +1,124 @@
+{
+ "ring": "8dfd6e7d",
+ "events": [
+  {
+   "kind": "found",
+   "ring": "8dfd6e7d",
+   "member": "6814db23",
+   "key": "BECv9fpB-6I7FQlc6-3Km5FXbnPHeV-qLULJI7Na69g1oFU4l4IuuGtVNC0KNFG_gdNlxitTJdQDpTH-emmoyS4",
+   "salt": "0a1b2c3d",
+   "name": "isi <&> \"x\" \\",
+   "icon": "👨",
+   "id": "6814db23:f",
+   "sigs": {
+    "member": "UwNFqciFTElqTq7rmeWaYl8zqmyJvB85SfWzq04jydoee-SZh4WERAv7uvk4T1iiWqIk0zL6_H4m6j2I3foUsQ"
+   }
+  },
+  {
+   "kind": "admit",
+   "ring": "8dfd6e7d",
+   "left": "6814db23",
+   "right": "6814db23",
+   "member": "b44544f4",
+   "key": "BHF5h4pogxAd4bSZy0k6w5R7nRzB7QRIsAxAuko1xPf4tl43WzMJuUK8VWJUMUgnARZzgUNNseBaIqwKTeYHiOQ",
+   "name": "Törttö 🐈",
+   "icon": "🐈",
+   "proof": "",
+   "id": "b44544f4:a",
+   "sigs": {
+    "member": "K97T-8SIiL4MycNAPyXgN5_E7N_U9FD7pg31CaE_ofBEEQM5zb2y-xf3jkV_XJ6KzBWiYwzdiDUslcFPxJIkHw",
+    "left": "tZfc6umMxlAJETHnn1axbFNmQlDue4zzDnBIbWj1MyjJny8j_AT6Nx9PS0qbb_P-iJ_0ZgOjE6dGBvlvdNUSlQ"
+   }
+  },
+  {
+   "kind": "admit",
+   "ring": "8dfd6e7d",
+   "left": "6814db23",
+   "right": "b44544f4",
+   "member": "73bb539c",
+   "key": "BBCJqJ20W_kktPhZwPqVHTvvmyssFbdJAVG1vTtA49utLF6L0BjJLk9yEEnHN4mUH-zELnSXd_lUw4wCbPd1x5w",
+   "name": "Liisa L.",
+   "icon": "👧",
+   "proof": "0123456789ab",
+   "id": "73bb539c:a",
+   "sigs": {
+    "member": "iigYdtRehtWj754L8Wr8ZY7hajxXi__T70JEdW-zz94Q9hbSFOcxtUjgp-7r3LqsT7qJ10-KlIk8pNGX1-nDVA",
+    "left": "7Tp4pnFkl4z8Uud2hUsP6XitCNOgRm9Rbw8bvGgtoeI4HhYxE6_ql-KzOBS0Qa844_3bgpcSy5Pva2dg2tB8nQ",
+    "right": "qf8MAuR-QsPuaxsFjBEUrVNh_fADfklzhXgj3ZNECPhz4z3z1RUBoHnbJCN6w4DoXip8CXG05xxAMFiX_6cUsQ"
+   }
+  },
+  {
+   "kind": "admit",
+   "ring": "8dfd6e7d",
+   "left": "6814db23",
+   "right": "73bb539c",
+   "member": "3be8a083",
+   "key": "BKWl2GFPCrVxsZAMu1qqo4chg34U7cUmay0nP7uM9jD3h2nVgYmWpysSeZT8bu9xYKjGqNgkdNIEikzGbkHoWac",
+   "name": "äiti",
+   "icon": "👩",
+   "proof": "ba9876543210",
+   "id": "3be8a083:a",
+   "sigs": {
+    "member": "axWAn__dB2W26-Z3424-Czh9U9bSyTPkVK5KXiZIlgZzgT9EpHkGTqkVwv55g5uNzKfT601oLiMG2NnttsSmnQ",
+    "left": "ENhv3nXvAGhFoi5iaMWmf3qKZxBsovXnGkqdLJHwWPlZChiCrYnyDgBEPpcG5vhgxW3-60w0YtounoDL01U1dQ",
+    "right": "R84i3Pkke1LPdNtEAlbDU8w8VIroqq_BKzSkcs6cFE9ZcEI7iVM1qs-s2BBk5LTE27TmFXOz06l9q7jlx4fa7g"
+   }
+  }
+ ],
+ "forged": [
+  {
+   "kind": "admit",
+   "ring": "8dfd6e7d",
+   "left": "6814db23",
+   "right": "b44544f4",
+   "member": "73bb539c",
+   "key": "BBCJqJ20W_kktPhZwPqVHTvvmyssFbdJAVG1vTtA49utLF6L0BjJLk9yEEnHN4mUH-zELnSXd_lUw4wCbPd1x5w",
+   "name": "huijari",
+   "icon": "👧",
+   "proof": "0123456789ab",
+   "id": "73bb539c:a",
+   "sigs": {
+    "member": "iigYdtRehtWj754L8Wr8ZY7hajxXi__T70JEdW-zz94Q9hbSFOcxtUjgp-7r3LqsT7qJ10-KlIk8pNGX1-nDVA",
+    "left": "7Tp4pnFkl4z8Uud2hUsP6XitCNOgRm9Rbw8bvGgtoeI4HhYxE6_ql-KzOBS0Qa844_3bgpcSy5Pva2dg2tB8nQ",
+    "right": "qf8MAuR-QsPuaxsFjBEUrVNh_fADfklzhXgj3ZNECPhz4z3z1RUBoHnbJCN6w4DoXip8CXG05xxAMFiX_6cUsQ"
+   }
+  },
+  {
+   "kind": "admit",
+   "ring": "8dfd6e7d",
+   "left": "6814db23",
+   "right": "73bb539c",
+   "member": "3be8a083",
+   "key": "BKWl2GFPCrVxsZAMu1qqo4chg34U7cUmay0nP7uM9jD3h2nVgYmWpysSeZT8bu9xYKjGqNgkdNIEikzGbkHoWac",
+   "name": "äiti",
+   "icon": "👩",
+   "proof": "ba9876543210",
+   "id": "3be8a083:a",
+   "sigs": {
+    "member": "axWAn__dB2W26-Z3424-Czh9U9bSyTPkVK5KXiZIlgZzgT9EpHkGTqkVwv55g5uNzKfT601oLiMG2NnttsSmnQ",
+    "left": "ENhv3nXvAGhFoi5iaMWmf3qKZxBsovXnGkqdLJHwWPlZChiCrYnyDgBEPpcG5vhgxW3-60w0YtounoDL01U1dQ",
+    "right": "ENhv3nXvAGhFoi5iaMWmf3qKZxBsovXnGkqdLJHwWPlZChiCrYnyDgBEPpcG5vhgxW3-60w0YtounoDL01U1dQ"
+   }
+  }
+ ],
+ "members": [
+  "6814db23",
+  "3be8a083",
+  "73bb539c",
+  "b44544f4"
+ ],
+ "payloads": [
+  "[\"found\",\"8dfd6e7d\",\"6814db23\",\"BECv9fpB-6I7FQlc6-3Km5FXbnPHeV-qLULJI7Na69g1oFU4l4IuuGtVNC0KNFG_gdNlxitTJdQDpTH-emmoyS4\",\"0a1b2c3d\",\"isi <&> \\\"x\\\" \\\\\",\"👨\"]",
+  "[\"admit\",\"8dfd6e7d\",\"6814db23\",\"6814db23\",\"b44544f4\",\"BHF5h4pogxAd4bSZy0k6w5R7nRzB7QRIsAxAuko1xPf4tl43WzMJuUK8VWJUMUgnARZzgUNNseBaIqwKTeYHiOQ\",\"Törttö 🐈\",\"🐈\",\"\"]",
+  "[\"admit\",\"8dfd6e7d\",\"6814db23\",\"b44544f4\",\"73bb539c\",\"BBCJqJ20W_kktPhZwPqVHTvvmyssFbdJAVG1vTtA49utLF6L0BjJLk9yEEnHN4mUH-zELnSXd_lUw4wCbPd1x5w\",\"Liisa L.\",\"👧\",\"0123456789ab\"]",
+  "[\"admit\",\"8dfd6e7d\",\"6814db23\",\"73bb539c\",\"3be8a083\",\"BKWl2GFPCrVxsZAMu1qqo4chg34U7cUmay0nP7uM9jD3h2nVgYmWpysSeZT8bu9xYKjGqNgkdNIEikzGbkHoWac\",\"äiti\",\"👩\",\"ba9876543210\"]"
+ ],
+ "auth": {
+  "key": "BHF5h4pogxAd4bSZy0k6w5R7nRzB7QRIsAxAuko1xPf4tl43WzMJuUK8VWJUMUgnARZzgUNNseBaIqwKTeYHiOQ",
+  "nonce": "f00dfeedc0ffee12",
+  "signer": "b44544f4",
+  "verifier": "6814db23",
+  "sig": "9_ixSEyqCD9dZ-zsBhFQ4zGTsi4zcZIdAjF3FVLlOtCdSbpDgnvoKXn2oXAMUDD-kOboShPCzgQSlQha4-1sqA",
+  "payload": "[\"auth\",\"f00dfeedc0ffee12\",\"b44544f4\",\"6814db23\"]"
+ }
+}
