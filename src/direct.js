@@ -3,9 +3,9 @@
 // Rengas alkaa yhdestä puhelimesta. Toinen jäsen liittyy perustajan kutsulla.
 // Siitä eteenpäin uusi jäsen liittyy kahden vierekkäisen jäsenen väliin A → B:
 //   1. A näyttää kutsukoodin (2.j…), uusi jäsen N skannaa sen. Tarjous ja
-//      vastaus kulkevat kertakäyttöisen kutsuhuoneen kautta (jedi): suora
-//      IPv6-yhteys A–N syntyy, ja verkko esittelee N:n muille. Jos jedi ei
-//      vastaa, A näyttää SDP-koodin (2.o…) ja skannaa N:n vastauksen (2.a…).
+//      vastaus kulkevat kertakäyttöisen kutsuhuoneen kautta (kohtaamispaikka):
+//      suora IPv6-yhteys A–N syntyy, ja verkko esittelee N:n muille. Ilman
+//      kohtaamispaikkaa A näyttää SDP-koodin (2.o…) ja skannaa N:n vastauksen (2.a…).
 //   2. B näyttää vahvistuskoodin (2.c…), N skannaa sen, allekirjoittaa
 //      liittymisensä ja lähettää sen B:lle. B allekirjoittaa ja ilmoittaa A:lle,
 //      A allekirjoittaa ja julkaisee liittymisen (admit).
@@ -13,11 +13,12 @@
 // liittyjää yhtä aikaa.
 //
 // Pysyvyys: avainpari (identity.js) ja rekisteri tallentuvat selaimeen
-// (store.js), ja sivu aukeaa jäsenenä. Jäsenet tapaavat toisensa renkaan
-// huoneessa jedin rtcsignalissa (huoneen nimi johdetaan jäsenten yhteisestä
-// salaisuudesta), joten palaava jäsen yhdistyy itsestään. Jedi välittää vain
+// (store.js), ja sivu aukeaa jäsenenä. Jos kohtaamispaikka on annettu
+// (?signal=wss://…, rtcsignal-yhteensopiva WebSocket-palvelin), jäsenet
+// tapaavat toisensa renkaan huoneessa (nimi johdetaan jäsenten yhteisestä
+// salaisuudesta), ja palaava jäsen yhdistyy itsestään. Palvelin välittää vain
 // tarjoukset ja vastaukset; jokainen yhteys todennetaan rekisterin avaimilla.
-// Ilman jediä (?nojedi tai ei vastaa) paluu käy yhdistämiskoodilla (2.r…).
+// Oletuksena kohtaamispaikkaa ei ole: paluu käy yhdistämiskoodilla (2.r…).
 //
 // Verkkokerros: jokainen yhteys todennetaan (hello: avain ja haaste, auth:
 // allekirjoitus). Jäsenet kertovat naapurinsa, ja kaikki muodostavat suorat
@@ -54,7 +55,6 @@ const DIRECTED = new Set(['sig', 'sponsor', 'claim', 'vouched']);
 const INVITE_MS = 10 * 60000; // kutsuhuone suljetaan, jos kukaan ei tule
 const SIGNAL_MS = 8000;
 const SECRET = /^[0-9a-f]{32}$/;
-const JEDI = 'jedi.ydns.eu:8443';
 
 const $ = (id) => document.getElementById(id);
 const base = location.origin + location.pathname;
@@ -63,10 +63,9 @@ const hex = (n) => [...crypto.getRandomValues(new Uint8Array(n))].map((b) => b.t
 const boot = hex(4); // tämä sivun lataus: vanhentuneen yhteyden tunnistamiseen
 const params = new URLSearchParams(location.search);
 let useStun = params.has('stun');
-// Kohtaamispaikka: jediltä tai paikallisesta rtcsignalista ladattuna sama palvelin, muuten jedi.
-const signalUrl = params.has('nojedi') ? null : params.get('signal') ??
-  (location.host === JEDI || ['localhost', '127.0.0.1'].includes(location.hostname)
-    ? `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/` : `wss://${JEDI}/`);
+// Kohtaamispaikka: ?signal=URL, paikallisesta palvelimesta ladattuna sama palvelin; ?signal=off ei mitään.
+const signalUrl = params.get('signal') === 'off' ? null : params.get('signal') ||
+  (['localhost', '127.0.0.1'].includes(location.hostname) ? `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/` : null);
 
 let me = null; // { priv, pub, key, id }
 let myId = null;
@@ -101,7 +100,7 @@ let rejoin = null; // palaava jäsen: { code, link }
 let retryLast = null; // "Yritä uudelleen"
 let inviteSeq = 0; // peruttu kutsu ei avaudu myöhässä
 
-// Kohtaamispaikka (renkaan huone jedissä)
+// Kohtaamispaikka (renkaan huone)
 let meet = null; // jäsenten yhteinen salaisuus (32 heksaa); ei tapahtumissa
 let meetSig = null; // Signaling renkaan huoneeseen
 let meetBusy = false;
@@ -375,16 +374,16 @@ async function localSdp(link) {
   return { type: link.pc.localDescription.type, sdp: filterSdp(link.pc.localDescription.sdp).sdp };
 }
 
-/** Tarjous jäsenelle: jedin kautta, jos hän on renkaan huoneessa, muuten verkon kautta. */
+/** Tarjous jäsenelle: kohtaamispaikan kautta, jos hän on renkaan huoneessa, muuten verkon kautta. */
 async function connectTo(p) {
-  const jedi = !!meetSig && present.has(p);
+  const viaMeet = !!meetSig && present.has(p);
   const link = newLink(p, p);
-  link.via = jedi ? 'meet' : 'mesh';
+  link.via = viaMeet ? 'meet' : 'mesh';
   attach(link, link.pc.createDataChannel('direct', { ordered: true }));
-  log(`${nameOf(p)}: ${jedi ? 'kohtaamispaikan' : 'esittely verkon'} kautta, muodostetaan yhteys`);
+  log(`${nameOf(p)}: ${viaMeet ? 'kohtaamispaikan' : 'esittely verkon'} kautta, muodostetaan yhteys`);
   await link.pc.setLocalDescription(await link.pc.createOffer());
   const data = { sdp: await localSdp(link), boot };
-  if (jedi) meetSig?.send(p, data);
+  if (viaMeet) meetSig?.send(p, data);
   else originate({ type: 'sig', to: p, data });
   render();
 }
@@ -392,7 +391,7 @@ async function connectTo(p) {
 /** Tarjous tai vastaus; `reply` vie vastauksen samaa reittiä takaisin. */
 async function onSig(from, data, hops, reply = (d) => originate({ type: 'sig', to: from, data: d })) {
   if (typeof data?.sdp?.sdp !== 'string' || !ID.test(from) || from === myId) return;
-  const via = hops === 'jedi' ? 'kohtaamispaikan kautta' : `esittely verkon kautta, välittäjiä ${hops}`;
+  const via = hops === 'meet' ? 'kohtaamispaikan kautta' : `esittely verkon kautta, välittäjiä ${hops}`;
   const desc = { type: data.sdp.type, sdp: filterSdp(data.sdp.sdp).sdp };
   try {
     if (desc.type === 'offer') {
@@ -402,7 +401,7 @@ async function onSig(from, data, hops, reply = (d) => originate({ type: 'sig', t
       if (old) drop(old, null);
       failed.delete(from);
       const link = newLink(from, from);
-      link.via = hops === 'jedi' ? 'meet' : 'mesh';
+      link.via = hops === 'meet' ? 'meet' : 'mesh';
       log(`${nameOf(from)}: ${via}; vastataan`);
       await link.pc.setRemoteDescription(desc);
       await link.pc.setLocalDescription(await link.pc.createAnswer());
@@ -411,7 +410,7 @@ async function onSig(from, data, hops, reply = (d) => originate({ type: 'sig', t
     } else if (desc.type === 'answer') {
       const link = links.get(from);
       if (link?.pc.signalingState === 'have-local-offer') {
-        log(`${nameOf(from)}: vastaus ${hops === 'jedi' ? 'kohtaamispaikan kautta' : `verkon kautta, välittäjiä ${hops}`}`);
+        log(`${nameOf(from)}: vastaus ${hops === 'meet' ? 'kohtaamispaikan kautta' : `verkon kautta, välittäjiä ${hops}`}`);
         await link.pc.setRemoteDescription(desc);
       }
     }
@@ -420,7 +419,7 @@ async function onSig(from, data, hops, reply = (d) => originate({ type: 'sig', t
   }
 }
 
-// --- Kohtaamispaikka (jedi) -----------------------------------------------
+// --- Kohtaamispaikka -------------------------------------------------------
 
 function withTimeout(promise, ms) {
   return Promise.race([promise, new Promise((_, bad) => setTimeout(() => bad(new Error('ei vastausta')), ms))]);
@@ -480,7 +479,7 @@ async function connectMeet() {
     });
     s.addEventListener('peer-left', (e) => { if (meetSig === s) { present.delete(e.detail.name); render(); } });
     s.addEventListener('signal', (e) => {
-      if (meetSig === s) onSig(e.detail.from, e.detail.data, 'jedi', (d) => s.send(e.detail.from, d));
+      if (meetSig === s) onSig(e.detail.from, e.detail.data, 'meet', (d) => s.send(e.detail.from, d));
     });
     s.addEventListener('close', () => meetDown(s));
     let w;
@@ -657,7 +656,7 @@ async function startInvite(kind = 'join') {
   endInvite();
   const ticket = ++inviteSeq;
   retryLast = () => startInvite(kind);
-  if (kind === 'join' && signalUrl && (await startJediInvite(ticket))) return;
+  if (kind === 'join' && signalUrl && (await startMeetInvite(ticket))) return;
   if (ticket !== inviteSeq) return;
   const right = kind === 'join' ? successor(ring.members, myId) : null;
   const link = newLink(`qr-${++qrSeq}`);
@@ -675,7 +674,7 @@ async function startInvite(kind = 'join') {
 }
 
 /** Kutsu kertakäyttöisen kutsuhuoneen kautta: tulokas skannaa yhden koodin. */
-async function startJediInvite(ticket) {
+async function startMeetInvite(ticket) {
   const right = successor(ring.members, myId);
   panel({ step: 'Avataan kutsu…', trio: trioNew(myId, right, null), secondary: ['Peru', cancelInvite] });
   await checkAddress();
@@ -885,17 +884,17 @@ async function onClaim(msg) {
 function startJoin(token, offer) {
   ringId = offer.ring;
   joining = { token, offer, link: null, stage: 'profile', sig: null };
-  const jedi = offer.type === 'join';
-  const steps = offer.left === offer.right ? 1 : jedi ? 2 : 3;
+  const viaMeet = offer.type === 'join';
+  const steps = offer.left === offer.right ? 1 : viaMeet ? 2 : 3;
   panel({
     step: `Liittyminen 1/${steps} · Sinut on kutsuttu renkaaseen. Kirjoita nimesi ja valitse kuva.`,
     profile: true,
-    primary: ['Jatka', () => { if (readProfile()) (jedi ? joinViaJedi() : makeAnswer()); }],
+    primary: ['Jatka', () => { if (readProfile()) (viaMeet ? joinViaMeet() : makeAnswer()); }],
   });
 }
 
 /** 2.j: tarjous kutsujalle kutsuhuoneen kautta, vastaus samaa reittiä. */
-async function joinViaJedi() {
+async function joinViaMeet() {
   const j = joining;
   const { left, right, token } = j.offer;
   panel({ step: 'Yhdistetään kutsujaan…', trio: trioNew(left, right, myId) });
@@ -936,7 +935,7 @@ async function joinViaJedi() {
     j.sig = null;
     drop(link, null);
     j.stage = 'profile';
-    return noAddress(g.mdns > 0, 'ei IPv6-osoitetta', joinViaJedi);
+    return noAddress(g.mdns > 0, 'ei IPv6-osoitetta', joinViaMeet);
   }
   s.send(left, { sdp: { type: 'offer', sdp }, boot });
 }
@@ -1391,22 +1390,22 @@ function render() {
   const n = ring.members.length;
   const here = neighbours().filter((x) => isMember(x)).length + 1;
   const joiners = neighbours().length + 1 - here;
-  const jedi = meetState === 'ok';
-  const meetText = { off: '', connecting: ' · jedi…', ok: ' · jedi ✓', down: ' · jedi ei vastaa' }[meetState];
-  $('status').className = open || n === 1 || jedi ? 'ok' : 'bad';
+  const met = meetState === 'ok';
+  const meetText = { off: '', connecting: ' · kohtaamispaikka…', ok: ' · kohtaamispaikka ✓', down: ' · kohtaamispaikka ei vastaa' }[meetState];
+  $('status').className = open || n === 1 || met ? 'ok' : 'bad';
   $('status').textContent = (n === 1 && !open ? 'Rengas aloitettu. Kutsu toinen perustaja.'
-    : !open && jedi ? `Renkaassa ${n} · muita ei ole nyt paikalla. Yhteys syntyy itsestään, kun joku avaa sivun.`
+    : !open && met ? `Renkaassa ${n} · muita ei ole nyt paikalla. Yhteys syntyy itsestään, kun joku avaa sivun.`
       : !open ? `Renkaassa ${n} · ei yhteyksiä. Pyydä paikalla olevaa jäsentä näyttämään yhdistämiskoodi (Yhdistä).`
         : `Renkaassa ${n} · paikalla ${here} · suoria yhteyksiä ${open}${joiners > 0 ? ` · liittymässä ${joiners}` : ''}`) + meetText;
   const right = isMember() ? successor(ring.members, myId) : null;
   $('invite').hidden = !isMember();
   $('invite').textContent = right === myId ? 'Kutsu toinen perustaja' : `Kutsu väliin: minä ja ${nameOf(right)}`;
-  $('reconnect').hidden = !isMember() || n < 2 || (jedi && here >= n); // varalla: jedi ei vastaa tai joku puuttuu
+  $('reconnect').hidden = !isMember() || n < 2 || (met && here >= n); // varalla: kohtaamispaikka ei vastaa tai joku puuttuu
   $('info-sum').textContent = `yhteydet · minä ${profile.icon} ${profile.name || myId}`;
   $('me-info').textContent = `Tunniste ${myId} · avain ${me.key.slice(0, 12)}…` +
     (stored ? ' · tallennettu tähän selaimeen' : ' · ⚠️ selain ei salli tallennusta: jäsenyys katoaa, kun sivu suljetaan') +
     (signalUrl ? ` · kohtaamispaikka ${new URL(signalUrl).host} (näkee tunnisteet ja IPv6-osoitteet, ei tekstiä eikä rekisteriä)`
-      : ' · ei kohtaamispaikkaa (?nojedi): paluu yhdistämiskoodilla');
+      : ' · ei kohtaamispaikkaa: paluu yhdistämiskoodilla');
   $('forget').hidden = !isMember();
 }
 

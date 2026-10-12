@@ -1,4 +1,4 @@
-// Yhteinen tekstivirta (launchpad.html, direct.html): yksi kursori virran
+// Yhteinen tekstivirta (direct.html): yksi kursori virran
 // lopussa, johon kaikkien merkit lisätään saapumisjärjestyksessä, joten samaan
 // aikaan kirjoitettu sekoittuu ("huuda toisen päälle"). Nimiä ei näytetä:
 // kirjoittajan erottaa vain hänen arvotusta sävystään.

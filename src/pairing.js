@@ -9,12 +9,12 @@
 //   2.r.RENGAS.NÄYTTÄJÄ.UFRAG.PWD.FP.MID.ADDR_PORT,…      yhdistämiskoodi palaavalle jäsenelle
 //   2.a.RENGAS.UFRAG.PWD.FP.MID.ADDR_PORT,…               vastaus (kutsuun tai yhdistämiseen)
 //   2.c.RENGAS.JÄSEN.HAASTE                               toisen naapurin vahvistus
-//   2.j.RENGAS.VASEN.OIKEA.TUNNUS                         kutsu kohtaamispaikan (jedi) kautta
+//   2.j.RENGAS.VASEN.OIKEA.TUNNUS                         kutsu kohtaamispaikan kautta
 //
 // RENGAS on renkaan tunniste (8 heksaa), VASEN/OIKEA/JÄSEN jäsenten tunnisteita.
 // ICE-merkit ovat [A-Za-z0-9+/], joten erottimet . , _ ovat turvallisia.
 // 2.j-kutsussa ei ole SDP:tä: TUNNUS (16 heksaa) on kertakäyttöisen
-// kutsuhuoneen nimi, ja tarjous ja vastaus kulkevat jedin kautta.
+// kutsuhuoneen nimi, ja tarjous ja vastaus kulkevat kohtaamispaikan kautta.
 
 import { candidateAddr, v6Scope } from './stream.js';
 
