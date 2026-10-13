@@ -1780,11 +1780,10 @@ function renderRing() {
     s.textContent = `${iconOf(m)} ${nameOf(m)}${unread ? ` (${unread})` : ''}${outbox ? ' ⏳' : ''}`;
     return s;
   };
-  const arrow = (t) => Object.assign(document.createElement('span'), { className: 'arrow', textContent: t });
   const lap = (copy) => {
     const l = Object.assign(document.createElement('span'), { className: 'lap' });
     if (copy) l.setAttribute('aria-hidden', 'true');
-    for (const m of order) l.append(item(m, copy), arrow('→'));
+    for (const m of order) l.append(item(m, copy));
     return l;
   };
   // Sijainti keskimmäisen kierroksen alusta: säilyy piirrosten yli.
@@ -1796,7 +1795,7 @@ function renderRing() {
   }
   const one = lap(false);
   box.className = 'fits';
-  box.replaceChildren(one, arrow('↺'));
+  box.replaceChildren(one);
   if (box.scrollWidth <= box.clientWidth) return;
   box.className = 'laps';
   box.replaceChildren(lap(true), one, lap(true));
