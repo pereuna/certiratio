@@ -122,6 +122,7 @@ let meetDelay = 2000;
 let meetTimer = null;
 const present = new Set(); // renkaan huoneessa nyt olevat tunnisteet
 let stopped = false; // toinen välilehti otti renkaan
+let installOk = false; // kotivalikkovinkki: aloitusnäkymä tai jäsenen näkymä, ei kesken liittymisen
 
 // --- Yhteydet -------------------------------------------------------------
 
@@ -1414,6 +1415,12 @@ function panel(o) {
   const p = $('pair');
   p.hidden = false;
   p.classList.toggle('overlay', isMember() || links.size > 0);
+  // Vaiheen aikana ruudulla on vain vaihe: rengas, napit, yhteydet ja viestit piiloon (showMember palauttaa).
+  for (const id of ['ringview', 'bar', 'info', 'chat']) $(id).hidden = true;
+  installOk = false;
+  $('install').hidden = true;
+  // Jäsenellä on aina tie takaisin, vaikka vaihe jäisi odottamaan.
+  if (isMember() && !o.primary && !o.secondary && !o.close) o = { ...o, close: true };
   $('step').textContent = o.step ?? '';
   $('pair-note').textContent = o.note ?? '';
   $('check').hidden = true;
@@ -1458,6 +1465,7 @@ function showMember() {
   $('info').hidden = false;
   $('chat').hidden = false;
   render();
+  installOk = true;
   renderInstall();
 }
 
@@ -1706,7 +1714,7 @@ function renderInstall() {
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   let dismissed = false;
   try { dismissed = localStorage.getItem('direct-install-dismissed') === '1'; } catch {}
-  box.hidden = standalone || dismissed;
+  box.hidden = standalone || dismissed || !installOk;
   if (box.hidden) return;
   const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
   $('install-text').textContent = ios
@@ -1736,6 +1744,7 @@ function startScreen() {
     primary: ['Aloita uusi rengas', () => { if (readProfile()) found(profile.name, profile.icon); }],
     secondary: ['Skannaa kutsukoodi', scanOffer],
   });
+  installOk = true;
   renderInstall();
 }
 
