@@ -1,5 +1,7 @@
 # Jedi itsenäiseksi rengassolmuksi: siirto- ja palautusohje
 
+> **Arkistoitu 2026-10-13.** Jedin rengassolmu ja kaikki sen tiedostot poistettiin, ja Nokia pysäytettiin. Älä asenna niitä uudelleen. Katso [POC1_RENGAS_ARKISTO.md](POC1_RENGAS_ARKISTO.md).
+
 13.10.2026. Toimeksianto: siirretään Törtön puhelimen (Nokia G50) rengaspalvelimen tehtävät palvelimelle `jedi.ydns.eu`.
 
 - Jedi liittyy renkaaseen itsenäisenä rengassolmuna, omalla identiteetillään.

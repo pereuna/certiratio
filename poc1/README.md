@@ -1,5 +1,7 @@
 # PoC 1 — selain-P2P, vaihe 1: IPv6/WebRTC-verkkotesti
 
+> **Arkistoitu 2026-10-13.** Rengas ei ole Certiration velkavaluutan perusta. GitHub Pages -julkaisu ja Jedin rengassolmu on poistettu, joten alla mainitut osoitteet eivät enää toimi. Koodi säilytetään, ja tulokset, rajoitteet ja uudelleenkäytettävät osat on koottu tiedostoon [POC1_RENGAS_ARKISTO.md](../docs/POC1_RENGAS_ARKISTO.md).
+
 Toteuttaa [määrittelyn](../docs/POC1-BROWSER-P2P.md) kohdat 3.2 (signaling), 3.3 (IPv6-mittaus) sekä testit T5 ja T6. Kirjanpitotapahtumia (ISSUE, TRANSFER, SETTLE), identiteettiavaimia tai IndexedDB:tä tämä vaihe ei vielä sisällä. Niitä koskevat [tarkastusmuistion](../docs/POC1-BROWSER-P2P-REVIEW.md) täsmennykset on ratkaistava ennen toteutusta.
 
 Vaatii Node.js 20:n tai uudemman. Ei npm-riippuvuuksia.
