@@ -28,16 +28,16 @@
 // vastaanottajan välisellä todennetulla suoralla yhteydellä. Eri renkaiden puhelimet eivät yhdisty (hello.ring).
 // Vain IPv6.
 
-import { CLASSES, classifyPair, selectedPair } from './classify.js?v=68dc813';
-import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js?v=68dc813';
-import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js?v=68dc813';
-import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js?v=68dc813';
-import { ICONS, MODEL, NODE_ICON, adjacent, build, cleanName, eventId, preferred, successor, validEvent, validLegacy } from './ring.js?v=68dc813';
-import { createScanner } from './scanner.js?v=68dc813';
-import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js?v=68dc813';
-import { Signaling } from './signaling.js?v=68dc813';
-import { clear as clearStore, load, save } from './store.js?v=68dc813';
-import { candidateAddr, filterSdp } from './stream.js?v=68dc813';
+import { CLASSES, classifyPair, selectedPair } from './classify.js?v=5eca5ce';
+import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js?v=5eca5ce';
+import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js?v=5eca5ce';
+import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js?v=5eca5ce';
+import { ICONS, MODEL, NODE_ICON, adjacent, build, cleanName, eventId, preferred, successor, validEvent, validLegacy } from './ring.js?v=5eca5ce';
+import { createScanner } from './scanner.js?v=5eca5ce';
+import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js?v=5eca5ce';
+import { Signaling } from './signaling.js?v=5eca5ce';
+import { clear as clearStore, load, save } from './store.js?v=5eca5ce';
+import { candidateAddr, filterSdp } from './stream.js?v=5eca5ce';
 
 const PROTOCOL = 'certiratio-direct/5';
 const MAX_MESSAGE_BYTES = 64 * 1024;
@@ -1548,6 +1548,7 @@ $('dm').onsubmit = (ev) => {
     : r ? '' : `Lähtevässä on jo ${MAX_OUTBOX} viestiä jäsenelle ${nameOf(chatWith)}. Kirjoitus jäi kenttään.`;
 };
 document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+addEventListener('resize', () => { if (!$('ringview').hidden) renderRing(); });
 const scanner = createScanner($('cam'), (text) => {
   if (handleCode(text)) scanner.stop();
 });
@@ -1740,22 +1741,27 @@ async function updateStats(link) {
   render();
 }
 
+/**
+ * Rengas yhdellä rivillä, minä keskellä. Jos kierros ei mahdu ruudulle, se
+ * näytetään kolmesti ja vieritys siirtyy huomaamatta keskimmäiseen kierrokseen:
+ * rivin voi vierittää kumpaan suuntaan tahansa loputtomasti.
+ */
 function renderRing() {
   const box = $('ringview');
   const now = Date.now();
   const here = new Set([myId, ...neighbours()]);
-  const parts = [];
-  ring.order.forEach((m, i) => {
-    if (i) parts.push(Object.assign(document.createElement('span'), { className: 'arrow', textContent: '→' }));
+  const n = ring.order.length;
+  const mine = Math.max(0, ring.order.indexOf(myId));
+  const order = ring.order.map((_, i) => ring.order[(mine - Math.floor(n / 2) + i + n) % n]); // minä keskellä
+  const item = (m, copy) => {
     const sv = ring.servers.get(m);
     if (sv) { // rengassolmu: ei viestejä, näytetään huoltajat
       const up = !!serverLink(m);
-      parts.push(Object.assign(document.createElement('span'), {
+      return Object.assign(document.createElement('span'), {
         className: `member node ${up ? 'here' : 'away'}`,
         textContent: `${NODE_ICON} ${sv.name}`,
         title: `rengassolmu · huoltajat ${nameOf(sv.guardians[0])} ja ${nameOf(sv.guardians[1])} · ${up ? 'yhteys' : 'ei yhteyttä'}`,
-      }));
-      return;
+      });
     }
     const s = document.createElement(m === myId ? 'span' : 'button');
     s.className = 'member';
@@ -1763,6 +1769,7 @@ function renderRing() {
     else {
       s.type = 'button';
       s.onclick = () => selectPeer(m);
+      if (copy) s.tabIndex = -1;
       if (m === chatWith) s.classList.add('chosen');
     }
     s.classList.add(here.has(m) ? 'here' : 'away');
@@ -1771,10 +1778,40 @@ function renderRing() {
     const unread = m === myId ? 0 : (dms.get(m) ?? []).filter((x) => !x.out && !x.seen).length;
     const outbox = m === myId ? 0 : (dms.get(m) ?? []).filter((x) => x.out && x.state === 'pending').length;
     s.textContent = `${iconOf(m)} ${nameOf(m)}${unread ? ` (${unread})` : ''}${outbox ? ' ⏳' : ''}`;
-    parts.push(s);
-  });
-  if (ring.order.length > 1) parts.push(Object.assign(document.createElement('span'), { className: 'arrow', textContent: '↺' }));
-  box.replaceChildren(...parts);
+    return s;
+  };
+  const arrow = (t) => Object.assign(document.createElement('span'), { className: 'arrow', textContent: t });
+  const lap = (copy) => {
+    const l = Object.assign(document.createElement('span'), { className: 'lap' });
+    if (copy) l.setAttribute('aria-hidden', 'true');
+    for (const m of order) l.append(item(m, copy), arrow('→'));
+    return l;
+  };
+  // Sijainti keskimmäisen kierroksen alusta: säilyy piirrosten yli.
+  const prev = box.classList.contains('laps') ? box.scrollLeft - box.children[1].offsetLeft : null;
+  if (n < 2) {
+    box.className = 'fits';
+    box.replaceChildren(...order.map((m) => item(m, false)));
+    return;
+  }
+  const one = lap(false);
+  box.className = 'fits';
+  box.replaceChildren(one, arrow('↺'));
+  if (box.scrollWidth <= box.clientWidth) return;
+  box.className = 'laps';
+  box.replaceChildren(lap(true), one, lap(true));
+  const w = box.children[1].offsetLeft - box.children[0].offsetLeft;
+  if (prev !== null) box.scrollLeft = box.children[1].offsetLeft + prev;
+  else {
+    const me = one.querySelector('.me');
+    box.scrollLeft = me ? me.offsetLeft + me.offsetWidth / 2 - box.clientWidth / 2 : box.children[1].offsetLeft;
+  }
+  box.onscroll = () => {
+    if (!box.classList.contains('laps')) return;
+    const mid = box.children[1].offsetLeft;
+    if (box.scrollLeft < mid - w / 2) box.scrollLeft += w;
+    else if (box.scrollLeft > mid + w / 2) box.scrollLeft -= w;
+  };
 }
 
 const DM_STATE = { pending: ' ⏳ lähtevässä', sent: ' ✓', delivered: ' ✓✓' };

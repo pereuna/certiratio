@@ -72,7 +72,11 @@
   #icons button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
   #cam { display: block; width: min(86vw, 360px); aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #000; margin: 12px 0; }
   .primary { font-weight: 600; }
-  #ringview { padding: 6px 16px; border-bottom: 1px solid var(--line); font-size: 0.95rem; line-height: 1.8; }
+  #ringview { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.95rem; line-height: 1.8;
+    position: relative; white-space: nowrap; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+  #ringview::-webkit-scrollbar { display: none; }
+  #ringview .lap { display: inline-block; padding: 0 2px; }
+  #ringview.fits { text-align: center; padding: 6px 16px; }
   #ringview .member { white-space: nowrap; padding: 1px 6px; border-radius: 10px; }
   #ringview button.member { font: inherit; color: inherit; background: none; border: 1px solid var(--line); cursor: pointer; }
   #ringview button.member.chosen { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
@@ -138,6 +142,6 @@
 </section>
 
 <script src="src/vendor/qrcode.js"></script>
-<script type="module" src="src/direct.js?v=68dc813"></script>
+<script type="module" src="src/direct.js?v=5eca5ce"></script>
 </body>
 </html>

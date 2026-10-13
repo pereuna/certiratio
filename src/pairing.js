@@ -16,7 +16,7 @@
 // 2.j-kutsussa ei ole SDP:tä: TUNNUS (16 heksaa) on kertakäyttöisen
 // kutsuhuoneen nimi, ja tarjous ja vastaus kulkevat kohtaamispaikan kautta.
 
-import { candidateAddr, v6Scope } from './stream.js?v=68dc813';
+import { candidateAddr, v6Scope } from './stream.js?v=5eca5ce';
 
 const ICE_CHARS = /^[A-Za-z0-9+/]+$/;
 const HEX8 = /^[0-9a-f]{8}$/;
