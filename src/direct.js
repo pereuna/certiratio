@@ -30,7 +30,7 @@
 
 import { CLASSES, classifyPair, selectedPair } from './classify.js';
 import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js';
-import { acceptDm, cleanDm } from './dm.js';
+import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js';
 import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js';
 import { ICONS, adjacent, build, cleanName, eventId, preferred, successor, validEvent } from './ring.js';
 import { createScanner } from './scanner.js';
@@ -156,6 +156,7 @@ function drop(link, why) {
   link.pc.close();
   if (link.id && why && !link.verified) failed.set(link.id, Date.now()); // katkennut toimiva yhteys saa palata
   log(`${nameOf(link.id) ?? 'uusi'}: ${why ?? 'suljettu'}`);
+  if (link.id) requeueDm(link.id);
   if (invite?.link === link && !invite.connected) {
     const i = invite;
     invite = null;
@@ -257,6 +258,8 @@ async function handle(link, msg) {
     await onEnrolled(link, msg);
   } else if (msg.type === 'dm') {
     onDm(link, msg);
+  } else if (msg.type === 'dm-ack') {
+    onDmAck(link, msg);
   } else if (msg.type === 'ev' || DIRECTED.has(msg.type)) {
     route(msg, link);
   }
@@ -342,6 +345,7 @@ async function onAuth(link, msg) {
   }
   shareMeet();
   shareCards(link);
+  flushDm(link.id);
   if (link.server && link.enroll) sendEnroll(link);
   for (const p of link.peers) consider(p);
   sendHello();
@@ -395,8 +399,13 @@ async function onDirected(msg, hops) {
 
 // --- Kahdenkeskiset viestit (dm.js) ---------------------------------------
 
-const dms = new Map(); // jäsen -> [{ out, text, at, seen }]; vain muistissa
+// Lähtevä viesti: state 'pending' (odottaa yhteyttä) → 'sent' (lähetetty, ei kuitattu)
+// → 'delivered' (vastaanottaja kuittasi). Katkos palauttaa kuittaamattoman lähtevään.
+const dms = new Map(); // jäsen -> [{ id, out, text, at, seen, state? }]; tallennetaan selaimeen
+const MAX_KEPT = 500; // viestiä keskustelua kohden
+const MAX_OUTBOX = 100; // kuittaamatonta viestiä jäsentä kohden
 let chatWith = null; // valittu jäsen
+let dmsSaving = false;
 
 /** Todennettu, avoin suora yhteys jäseneen (ei palvelin). */
 function directTo(id) {
@@ -404,28 +413,88 @@ function directTo(id) {
   return l?.verified && !l.server && l.ch?.readyState === 'open' ? l : null;
 }
 
-/** Lähettää vain suoraa yhteyttä pitkin; ilman sitä false. */
+/**
+ * Viesti jäsenelle: lähtee heti suoraa yhteyttä pitkin, muuten jää lähtevään.
+ * Palauttaa 'sent', 'queued' tai false (kelvoton tai lähtevä täynnä).
+ */
 function sendDM(to, text) {
   const t = cleanDm(text);
-  const link = t && to !== myId && isMember(to) && directTo(to);
-  if (!link) return false;
-  send(link, { type: 'dm', from: myId, to, text: t });
-  addDm(to, { out: true, text: t });
+  if (!t || to === myId || !isMember(to)) return false;
+  if ((dms.get(to) ?? []).filter((m) => m.out && m.state !== 'delivered').length >= MAX_OUTBOX) return false;
+  const m = { id: hex(8), out: true, text: t, state: 'pending' };
+  addDm(to, m);
+  flushDm(to);
+  persistDms();
   render();
-  return true;
+  return m.state === 'sent' ? 'sent' : 'queued';
+}
+
+/** Lähtevät jäsenelle, jos suora yhteys on auki. */
+function flushDm(to) {
+  const link = directTo(to);
+  if (!link || !isMember(to)) return;
+  let any = false;
+  for (const m of dms.get(to) ?? []) {
+    if (!m.out || m.state !== 'pending') continue;
+    send(link, { type: 'dm', from: myId, to, id: m.id, text: m.text });
+    m.state = 'sent';
+    any = true;
+  }
+  if (any) persistDms();
 }
 
 function onDm(link, msg) {
   if (link.server || !acceptDm(msg, { me: myId, peer: link.id, member: isMember(link.id) })) return;
-  addDm(link.id, { out: false, text: msg.text });
+  send(link, { type: 'dm-ack', id: msg.id });
+  if ((dms.get(link.id) ?? []).some((m) => !m.out && m.id === msg.id)) return; // uudelleenlähetys
+  addDm(link.id, { id: msg.id, out: false, text: msg.text });
+  persistDms();
   render();
+}
+
+function onDmAck(link, msg) {
+  if (link.server || !DM_ID.test(msg.id ?? '')) return;
+  const m = (dms.get(link.id) ?? []).find((x) => x.out && x.id === msg.id);
+  if (!m || m.state === 'delivered') return;
+  m.state = 'delivered';
+  persistDms();
+  render();
+}
+
+/** Katkos: lähetetyt mutta kuittaamattomat takaisin lähtevään. */
+function requeueDm(id) {
+  for (const m of dms.get(id) ?? []) if (m.out && m.state === 'sent') m.state = 'pending';
 }
 
 function addDm(id, m) {
   const list = dms.get(id) ?? [];
-  list.push({ ...m, at: Date.now(), seen: m.out });
-  if (list.length > 500) list.shift();
+  m.at = Date.now();
+  m.seen = m.out;
+  list.push(m);
+  const old = list.length > MAX_KEPT ? list.findIndex((x) => !x.out || x.state === 'delivered') : -1;
+  if (old >= 0) list.splice(old, 1); // lähtevässä odottavaa ei pudoteta
   dms.set(id, list);
+}
+
+/** Tallennus heti saman tehtävän lopussa: piilossa olevan sivun ajastimia hidastetaan jopa minuuttiin. */
+function persistDms() {
+  if (dmsSaving) return;
+  dmsSaving = true;
+  queueMicrotask(() => {
+    dmsSaving = false;
+    if (ringId) save('dms', { ringId, list: [...dms] }).catch(() => { stored = false; });
+  });
+}
+
+async function restoreDmsFromStore() {
+  let saved = null;
+  try { saved = await load('dms'); } catch { return; }
+  if (saved?.ringId !== ringId || !Array.isArray(saved.list)) return;
+  for (const [id, list] of saved.list) {
+    if (typeof id !== 'string' || !ID.test(id) || id === myId || !isMember(id)) continue;
+    const ok = restoreDms(list, MAX_KEPT);
+    if (ok.length) dms.set(id, ok);
+  }
 }
 
 function selectPeer(id) {
@@ -805,6 +874,7 @@ async function mergeNow(list) {
     shareMeet();
     // Liittyjä ei ollut jäsen, kun yhteys todennettiin: kortit hänelle vasta nyt.
     for (const l of links.values()) if (!l.cardsSent) shareCards(l);
+    for (const id of dms.keys()) flushDm(id);
     connectMeet();
     startServers();
   }
@@ -1327,12 +1397,10 @@ $('dm').onsubmit = (ev) => {
   ev.preventDefault();
   const text = $('dm-text').value;
   if (!cleanDm(text)) return;
-  if (sendDM(chatWith, text)) {
-    $('dm-text').value = '';
-    $('dm-note').textContent = '';
-  } else {
-    $('dm-note').textContent = `Viesti ei lähtenyt: ei suoraa yhteyttä jäseneen ${nameOf(chatWith)}. Kirjoitus jäi kenttään.`;
-  }
+  const r = sendDM(chatWith, text);
+  if (r) $('dm-text').value = '';
+  $('dm-note').textContent = r === 'queued' ? `${nameOf(chatWith)} ei ole nyt paikalla: viesti lähtee, kun suora yhteys syntyy (tämä sivu auki).`
+    : r ? '' : `Lähtevässä on jo ${MAX_OUTBOX} viestiä jäsenelle ${nameOf(chatWith)}. Kirjoitus jäi kenttään.`;
 };
 document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
 const scanner = createScanner($('cam'), (text) => {
@@ -1553,12 +1621,15 @@ function renderRing() {
     if (now - (fresh.get(m) ?? 0) < FRESH_MS) s.classList.add('fresh');
     s.title = here.has(m) ? 'paikalla' : 'ei yhteyttä';
     const unread = m === myId ? 0 : (dms.get(m) ?? []).filter((x) => !x.out && !x.seen).length;
-    s.textContent = `${iconOf(m)} ${nameOf(m)}${unread ? ` (${unread})` : ''}`;
+    const outbox = m === myId ? 0 : (dms.get(m) ?? []).filter((x) => x.out && x.state === 'pending').length;
+    s.textContent = `${iconOf(m)} ${nameOf(m)}${unread ? ` (${unread})` : ''}${outbox ? ' ⏳' : ''}`;
     parts.push(s);
   });
   if (ring.members.length > 1) parts.push(Object.assign(document.createElement('span'), { className: 'arrow', textContent: '↺' }));
   box.replaceChildren(...parts);
 }
+
+const DM_STATE = { pending: ' ⏳ lähtevässä', sent: ' ✓', delivered: ' ✓✓' };
 
 function renderChat() {
   if (chatWith && !isMember(chatWith)) chatWith = null;
@@ -1567,21 +1638,26 @@ function renderChat() {
   if (!chatWith) return;
   const link = directTo(chatWith);
   $('chat-who').textContent = `${iconOf(chatWith)} ${nameOf(chatWith)}`;
-  $('chat-path').textContent = `Jäsentunniste ${chatWith} · ${!link ? 'ei suoraa yhteyttä: viesti ei lähde nyt'
+  $('chat-path').textContent = `Jäsentunniste ${chatWith} · ${!link ? 'ei nyt paikalla: viestit jäävät lähtevään ja lähtevät, kun hän tulee paikalle'
     : link.cls === 'ipv6-direct' ? 'suora IPv6-yhteys' : 'suora yhteys'}`;
   $('chat-path').className = link ? 'ok' : 'bad';
-  $('dm-send').disabled = !link;
   const list = dms.get(chatWith) ?? [];
   if (!document.hidden) for (const m of list) m.seen = true;
   const box = $('msgs');
-  if (box.dataset.with === chatWith && box.childElementCount === list.length && box.lastElementChild?.dataset.at === String(list.at(-1)?.at)) return;
-  box.dataset.with = chatWith;
+  const key = `${chatWith}:${list.length}:${list.at(-1)?.id}:${list.map((m) => m.state ?? '').join()}`;
+  if (box.dataset.key === key) return;
+  box.dataset.key = key;
   box.replaceChildren(...list.map((m) => {
     const d = document.createElement('div');
     d.className = m.out ? 'msg out' : 'msg in';
-    d.dataset.at = m.at;
-    d.title = new Date(m.at).toLocaleTimeString();
+    d.title = new Date(m.at).toLocaleString();
     d.textContent = m.text;
+    if (m.out) {
+      const st = document.createElement('span');
+      st.className = `state ${m.state}`;
+      st.textContent = DM_STATE[m.state];
+      d.append(st);
+    }
     return d;
   }));
   box.scrollTop = box.scrollHeight;
@@ -1711,6 +1787,7 @@ async function restoreRing() {
   }
   profileFromRing();
   for (const c of Array.isArray(saved.cards) ? saved.cards : []) await onCard(null, c);
+  await restoreDmsFromStore();
   persistRing();
   log(`rengas ladattu: ${ring.members.length} jäsentä${ring.servers.size ? `, ${ring.servers.size} palvelinta` : ''}`);
 }
@@ -1797,10 +1874,10 @@ window.direct = {
   get servers() { return [...links.values()].filter((l) => l.server && l.verified).map((l) => l.id); },
   get registeredServers() { return [...ring.servers.keys()]; },
   get cards() { return [...cards.values()]; },
-  /** Kahdenkeskinen viesti: true, jos lähti suoralla yhteydellä. */
+  /** Kahdenkeskinen viesti: 'sent' (suoralla yhteydellä), 'queued' (lähtevään) tai false. */
   dm: (to, text) => sendDM(to, text),
-  /** Keskustelut: { jäsen: [{ out, text, at }] }. */
-  get dms() { return Object.fromEntries([...dms].map(([id, list]) => [id, list.map(({ out, text, at }) => ({ out, text, at }))])); },
+  /** Keskustelut: { jäsen: [{ id, out, text, at, state }] }. */
+  get dms() { return Object.fromEntries([...dms].map(([id, list]) => [id, list.map(({ id: mid, out, text, at, state }) => ({ id: mid, out, text, at, state }))])); },
   select: (id) => selectPeer(id),
   /** Katkaisee suoran yhteyden naapuriin (testaa kiertoreittiä). */
   cut(id) { const l = links.get(id); if (l) drop(l, null); },

@@ -46,6 +46,8 @@
          border: 1px solid var(--line); align-self: flex-start; }
   .msg.out { align-self: flex-end; background: color-mix(in srgb, var(--accent) 16%, transparent);
              border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+  .msg .state { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+  .msg .state.delivered { color: var(--v6); }
   form#dm { display: flex; gap: 8px; padding-top: 6px; }
   form#dm input { flex: 1; min-width: 0; font: inherit; padding: 6px 8px; }
   #dm-note { margin: 4px 0 0; }
@@ -141,7 +143,8 @@
 
 <section id="chat" hidden>
   <p id="chat-empty" class="muted">Valitse renkaasta jäsen, jolle kirjoitat. Viesti kulkee vain teidän kahden puhelimen välillä
-    suoralla yhteydellä: muut jäsenet ja rengaspalvelin eivät näe sitä.</p>
+    suoralla yhteydellä: muut jäsenet ja rengaspalvelin eivät näe sitä. Jos hän ei ole paikalla, viesti jää
+    lähtevään ja lähtee, kun suora yhteys syntyy.</p>
   <div id="chat-head" hidden><div id="chat-who"></div><div id="chat-path"></div></div>
   <div id="msgs"></div>
   <form id="dm" hidden>
