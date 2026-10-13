@@ -253,6 +253,7 @@ Uuden toteutuksen on tuotettava jokaisesta tapauksesta sama yhteenveto molemmill
 | wasm32 (Go `js/wasm`, Node) | ✅ ringcheck |
 | wasm32 WASI (Go `wasip1/wasm`, Noden WASI) | ✅ ringcheck (`tools/run-wasip1.mjs`) |
 | Chromium (selain-JS) | ✅ npm test, ajotestit |
+| OpenBSD arm64 (Go, jedi) | ⚠️ palvelin ja ringcheck kääntyvät; ajo jedissä tehdään käyttöönotossa |
 | Plan 9 amd64 (Go `GOOS=plan9`) | ⚠️ ringcheck kääntyy, ajoa Plan2001:ssä ei ole kokeiltu |
 | Plan2001 / C | ❌ porttaus puuttuu: tarvitaan P-256 ECDSA, SHA-256 ja JSON-jäsennin; vektorit ovat valmiina |
 | Android/Termux | ❌ ei kokeiltu: puhelimessa ei ole Termuxia. Sama arm64-binääri toimii adb:n kautta. |

@@ -141,7 +141,7 @@ Vanhat mallin 1 `server`-tapahtumat (yksi operaattori) kelpaavat siirtymäkauden
 
 Go-puolen rekisteriydin on verkoton paketti `ringserver/ringcore`: se tekee allekirjoitettavan sisällön kuten `JSON.stringify` (ei `encoding/json`) ja rakentaa renkaan kuten `ring.js`. Yhteiset testivektorit tehdään selaimen koodilla: `node tools/make-vectors.mjs > tests/vectors/ring.json` ja `node tools/make-conformance.mjs > tests/vectors/conformance.json`; niitä käyttävät `npm test` ja `cd ringserver && go test -race ./...`. Muilla alustoilla: `go run ./cmd/ringcheck ../tests/vectors/conformance.json` (myös `GOOS=js GOARCH=wasm`, Node: `$(go env GOROOT)/lib/wasm/wasm_exec_node.js`; `GOOS=wasip1`: `tools/run-wasip1.mjs`; arm64 puhelimessa adb:llä). Alustojen tila: [PROTOKOLLA.md](../docs/PROTOKOLLA.md#8-testivektorit-ja-toteutukset).
 
-Jedin palvelutiedostot (systemd, varmuuskopio): `ringserver/deploy/`.
+Jedin palvelutiedostot (OpenBSD rc.d, Linux systemd, varmuuskopio): `ringserver/deploy/`.
 
 ```bash
 cd ringserver && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ringserver-arm64 .   # puhelimeen (adb push / Termux)

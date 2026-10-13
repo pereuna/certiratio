@@ -1,0 +1,21 @@
+#!/bin/ksh
+#
+# Certiratio-rengassolmu OpenBSD:lle (docs/JEDI_SIIRTO.md). Asennus (root/doas):
+#   install -m 755 ringserver-openbsd-arm64 /usr/local/bin/certiratio-ringserver
+#   install -m 555 certiratio_ring.rc /etc/rc.d/certiratio_ring
+#   useradd -s /sbin/nologin -d /var/certiratio-ring -L daemon _certring
+#   install -d -o _certring -g _certring -m 700 /var/certiratio-ring
+#   rcctl enable certiratio_ring && rcctl start certiratio_ring
+# Loki ja liittämislinkki: /var/log/daemon (syslog, daemon.info).
+
+daemon="/usr/local/bin/certiratio-ringserver"
+daemon_flags="-port 40123 -name Jedi -dir /var/certiratio-ring"
+daemon_user="_certring"
+daemon_logger="daemon.info"
+
+. /etc/rc.d/rc.subr
+
+rc_bg=YES
+rc_reload=NO
+
+rc_cmd $1
