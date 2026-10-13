@@ -32,7 +32,7 @@ import { CLASSES, classifyPair, selectedPair } from './classify.js';
 import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js';
 import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js';
 import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js';
-import { ICONS, adjacent, build, cleanName, eventId, preferred, successor, validEvent } from './ring.js';
+import { ICONS, MODEL, NODE_ICON, adjacent, build, cleanName, eventId, preferred, successor, validEvent, validLegacy } from './ring.js';
 import { createScanner } from './scanner.js';
 import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js';
 import { Signaling } from './signaling.js';
@@ -53,7 +53,7 @@ const FRESH_MS = 8000; // uusi jäsen korostetaan renkaassa näin kauan
 const ID = /^[0-9a-f]{8}$/;
 const STUN = 'stun:stun.l.google.com:19302';
 const LOCK = 'certiratio-direct';
-const DIRECTED = new Set(['sig', 'sponsor', 'claim', 'vouched']);
+const DIRECTED = new Set(['sig', 'sponsor', 'claim', 'vouched', 'cosign', 'cosigned']);
 const INVITE_MS = 10 * 60000; // kutsuhuone suljetaan, jos kukaan ei tule
 const SIGNAL_MS = 8000;
 const SECRET = /^[0-9a-f]{32}$/;
@@ -223,7 +223,7 @@ function neighbours() {
 
 function helloMsg(link) {
   return { type: 'hello', id: myId, boot, ring: ringId, name: profile.name, icon: profile.icon, key: me.key,
-    nonce: link.nonce, peers: neighbours() };
+    nonce: link.nonce, peers: neighbours(), model: MODEL };
 }
 
 /** Naapurilista kaikille, kun se muuttuu: näin jäsenet oppivat toisensa. */
@@ -305,6 +305,11 @@ async function onHello(link, msg) {
   }
   link.peerBoot = msg.boot;
   link.server = msg.server === true; // rengaspalvelin (poc1/ringserver): esittelee, ei jäsen
+  const model = Number.isInteger(msg.model) ? msg.model : 1;
+  if (model !== MODEL && !link.modelWarned) {
+    link.modelWarned = true;
+    log(`${nameOf(msg.id)}: rekisterimalli ${model}, tällä sivulla ${MODEL}${model < MODEL ? ': hänen sivunsa tai palvelimensa on päivitettävä' : ': lataa tämä sivu uudelleen'}`);
+  }
   link.peers = Array.isArray(msg.peers) ? msg.peers.slice(0, 64) : [];
   const name = cleanName(msg.name);
   if (name && ICONS.includes(msg.icon)) peerInfo.set(msg.id, { name, icon: msg.icon });
@@ -396,6 +401,8 @@ async function onDirected(msg, hops) {
   else if (msg.type === 'sponsor') await onSponsor(msg);
   else if (msg.type === 'claim') await onClaim(msg);
   else if (msg.type === 'vouched') await onVouched(msg);
+  else if (msg.type === 'cosign') await onCosign(msg);
+  else if (msg.type === 'cosigned') onCosigned(msg);
 }
 
 // --- Kahdenkeskiset viestit (dm.js) ---------------------------------------
@@ -768,35 +775,134 @@ function shareCards(link) {
 
 // --- Palvelimen liittäminen renkaaseen ---------------------------------------
 
-/** Liittämislinkki (kortti ja tunnus): yhteys palvelimeen, joka allekirjoittaa server-tapahtumansa. */
+/**
+ * Liittämislinkki (kortti ja tunnus): palvelin liitetään rengassolmuksi minun ja
+ * oikean naapurini väliin. Palvelin allekirjoittaa node-tapahtumansa, minä
+ * vasempana naapurina, ja oikea naapuri hyväksyy sen omalla sivullaan (cosign).
+ * Meistä kahdesta tulee solmun huoltajat.
+ */
 async function enrollServer(card) {
   if (!isMember()) return note('Palvelimen voi liittää vain renkaan jäsen.');
-  panel({ step: 'Liitetään rengaspalvelinta…', note: card.addrs.join(', '), secondary: ['Peru', showMember] });
+  const right = successor(ring.members, myId);
+  if (right === myId) {
+    return panel({ step: 'Rengassolmun hyväksyy kaksi vierekkäistä jäsentä. Kutsu ensin toinen perustaja.', close: true });
+  }
+  panel({ step: 'Liitetään rengassolmua…', note: card.addrs.join(', '), secondary: ['Peru', showMember] });
   const link = await connectServer(card, { enroll: card.token });
+  link.enrollRight = right;
   setTimeout(() => {
     if (link.enroll && links.get(link.key) === link) { drop(link, null); pairFailed('palvelin ei vastannut'); }
   }, CONNECT_TIMEOUT_MS);
 }
 
+/** Renkaan vanhat (malli 1) palvelimet: uusi solmu luettelee ne, jotta ne kelpaavat sen rinnalla. */
+const legacyServers = () => [...ring.servers].filter(([, sv]) => !sv.node).map(([id]) => id).sort();
+
 function sendEnroll(link) {
-  send(link, { type: 'enroll', token: link.enroll, ring: ringId, operator: myId, events: [...events.values()] });
+  send(link, { type: 'enroll', token: link.enroll, ring: ringId, left: myId, right: link.enrollRight, legacy: legacyServers(),
+    events: [...events.values()] });
 }
+
+let cosignReq = null; // oma pyyntö toiselle: { ev, to, what }
 
 async function onEnrolled(link, msg) {
   if (!link.enroll || !link.server) return;
   link.enroll = null;
   if (msg.ok !== true) {
-    panel({ step: `Palvelinta ei liitetty: ${String(msg.why ?? 'tuntematon syy').slice(0, 100)}.`, close: true });
+    panel({ step: `Palvelinta ei liitetty: ${String(msg.why ?? 'tuntematon syy').slice(0, 140)}.`, close: true });
     return;
   }
   const name = cleanName(msg.name);
-  if (msg.server !== link.id || msg.key !== link.peerKey || !name) return pairFailed('palvelimen vastaus ei täsmää');
-  const ev = { kind: 'server', ring: ringId, member: link.id, key: link.peerKey, operator: myId, name };
+  const right = link.enrollRight;
+  if (msg.kind !== 'node' || msg.server !== link.id || msg.key !== link.peerKey || !name || msg.right !== right || !validLegacy(msg.legacy)) {
+    return pairFailed('palvelimen vastaus ei täsmää');
+  }
+  const ev = { kind: 'node', ring: ringId, left: myId, right, member: link.id, key: link.peerKey, name, legacy: msg.legacy };
   const p = payloadOf(ev);
   if (!(await verify(ev.key, p, msg.sig))) return pairFailed('palvelimen allekirjoitus ei kelpaa');
-  ev.sigs = { member: msg.sig, operator: await sign(me.priv, p) };
-  await publish(ev);
-  done(`✅ Rengaspalvelin ${name} liitetty renkaaseen. Jäsenet yhdistävät siihen itsestään.`, null);
+  ev.id = eventId('node', ev.member);
+  ev.sigs = { member: msg.sig, left: await sign(me.priv, p) };
+  askCosign(ev, right, `rengassolmun ${name}`);
+}
+
+/** Pyyntö toiselle allekirjoittajalle; hän julkaisee valmiin tapahtuman. */
+function askCosign(ev, to, what) {
+  cosignReq = { ev, to, what };
+  const sendIt = () => originate({ type: 'cosign', to, ev });
+  sendIt();
+  panel({
+    step: `Odotetaan, että ${nameOf(to)} hyväksyy ${what}.`,
+    note: `Pyyntö näkyy hänen sivullaan, kun se on auki. ${ev.kind === 'node'
+      ? 'Te kaksi olette solmun huoltajat: huolto on vastuu, ei omistus eikä palkkio.' : 'Palvelinroolin poistoon tarvitaan molemmat huoltajat.'}`,
+    primary: ['Lähetä pyyntö uudelleen', sendIt],
+    secondary: ['Peru', () => { cosignReq = null; showMember(); }],
+  });
+}
+
+/** Toinen allekirjoittaja: rengassolmun liittäminen tai poisto, jonka pyytäjä on jo allekirjoittanut. */
+async function onCosign(msg) {
+  const ev = msg.ev;
+  if (!isMember() || !ev || typeof ev !== 'object' || ev.ring !== ringId || !ID.test(ev.member ?? '')) return;
+  const from = msg.from;
+  const fromKey = keyOf(from);
+  if (!fromKey) return;
+  let mine, theirs, step, note;
+  if (ev.kind === 'node') {
+    if (ev.left !== from || ev.right !== myId || !adjacent(ring.members, from, myId) || !validLegacy(ev.legacy) ||
+      ev.id !== eventId('node', ev.member) || (await idOf(ev.key)) !== ev.member || cleanName(ev.name) !== ev.name || !ev.name) return;
+    if (ring.servers.has(ev.member) || ring.retired.has(ev.member)) return;
+    if (!(await verify(ev.key, payloadOf(ev), ev.sigs?.member))) return log(`${nameOf(from)}: solmun allekirjoitus ei kelpaa`);
+    [mine, theirs] = ['right', 'left'];
+    step = `${nameOf(from)} pyytää: liitetäänkö rengassolmu ${ev.name} renkaaseen teidän väliinne?`;
+    note = 'Te kaksi olette sen huoltajat: huolto on vastuu, ei omistus eikä palkkio. Solmu säilyttää rekisteriä, ' +
+      'julkaisee osoitekorttinsa ja esittelee jäseniä toisilleen. Kahdenkeskiset viestit eivät kulje sen kautta.';
+  } else if (ev.kind === 'retire') {
+    const sv = ring.servers.get(ev.member);
+    if (!sv?.node || ev.id !== eventId('retire', ev.member) || !sv.guardians.includes(from) || !sv.guardians.includes(myId)) return;
+    mine = sv.guardians[0] === myId ? 'left' : 'right';
+    theirs = mine === 'left' ? 'right' : 'left';
+    step = `${nameOf(from)} pyytää: poistetaanko rengassolmun ${sv.name} palvelinrooli?`;
+    note = 'Sen kortti mitätöidään, eikä se voi palata samalla tunnisteella. Jäsenyydet ja viestit säilyvät.';
+  } else return;
+  if (!(await verify(fromKey, payloadOf(ev), ev.sigs?.[theirs]))) return log(`${nameOf(from)}: pyynnön allekirjoitus ei kelpaa`);
+  panel({
+    step,
+    note,
+    primary: ['Hyväksy', async () => {
+      const done2 = { ...ev, sigs: { ...ev.sigs, [mine]: await sign(me.priv, payloadOf(ev)) } };
+      await publish(done2);
+      done(ev.kind === 'node' ? `✅ Rengassolmu ${ev.name} liitetty. Huoltajat: ${nameOf(from)} ja ${nameOf(myId)}.`
+        : `✅ ${nameOf(ev.member)}: palvelinrooli poistettu.`, null);
+    }],
+    secondary: ['Hylkää', () => { originate({ type: 'cosigned', to: from, member: ev.member, kind: ev.kind, ok: false }); showMember(); }],
+  });
+}
+
+function onCosigned(msg) {
+  if (!cosignReq || msg.from !== cosignReq.to || msg.member !== cosignReq.ev.member || msg.ok !== false) return;
+  panel({ step: `${nameOf(msg.from)} ei hyväksynyt ${cosignReq.what}.`, close: true });
+  cosignReq = null;
+}
+
+/**
+ * Palvelinroolin poisto (retire): vanhan palvelimen operaattori yksin,
+ * rengassolmun huoltaja pyytää toista huoltajaa hyväksymään.
+ */
+async function retireServer(id) {
+  const sv = ring.servers.get(id);
+  if (!sv) return;
+  const ev = { kind: 'retire', id: eventId('retire', id), ring: ringId, member: id };
+  if (!sv.node) {
+    if (sv.operator !== myId) return;
+    if (!confirm(`Poistetaanko palvelimen ${sv.name} palvelinrooli? Sen kortti mitätöidään, eikä palvelin voi palata samalla tunnisteella.`)) return;
+    ev.sigs = { operator: await sign(me.priv, payloadOf(ev)) };
+    await publish(ev);
+    return done(`✅ ${sv.name}: palvelinrooli poistettu.`, null);
+  }
+  const i = sv.guardians.indexOf(myId);
+  if (i < 0) return;
+  ev.sigs = { [i === 0 ? 'left' : 'right']: await sign(me.priv, payloadOf(ev)) };
+  askCosign(ev, sv.guardians[1 - i], `rengassolmun ${sv.name} palvelinroolin poiston`);
 }
 
 // --- Rengas ---------------------------------------------------------------
@@ -805,14 +911,15 @@ function isMember(id = myId) { return !!id && ring.members.includes(id); }
 
 function nameOf(id) {
   if (!id) return null;
-  return ring.info.get(id)?.name ?? ring.servers.get(id)?.name ?? peerInfo.get(id)?.name ?? id;
+  return ring.info.get(id)?.name ?? ring.servers.get(id)?.name ?? targetOf(id)?.name ?? peerInfo.get(id)?.name ?? id;
 }
 
 function iconOf(id) {
-  return ring.info.get(id)?.icon ?? peerInfo.get(id)?.icon ?? '🧑';
+  return ring.info.get(id)?.icon ?? (ring.servers.has(id) ? NODE_ICON : null) ?? peerInfo.get(id)?.icon ?? '🧑';
 }
 
 const keyOf = (id) => (events.get(`${id}:f`) ?? events.get(`${id}:a`))?.key ?? null;
+const targetOf = (id) => events.get(`${id}:n`) ?? events.get(`${id}:s`) ?? null;
 
 /** Oma uusi tapahtuma: talteen ja kaikille. */
 async function publish(ev) {
@@ -845,7 +952,7 @@ async function mergeNow(list) {
   for (let progress = true; progress;) {
     progress = false;
     for (const [id, ev] of unverified) {
-      const ok = await verifyEvent(ev, keyOf);
+      const ok = await verifyEvent(ev, keyOf, targetOf);
       if (ok === null) continue; // allekirjoittajan avain tulee myöhemmin
       unverified.delete(id);
       progress = true;
@@ -854,6 +961,7 @@ async function mergeNow(list) {
   }
   if (!added) return;
   const before = new Set(ring.members);
+  const serversBefore = new Set(ring.servers.keys());
   ring = build(ringId, [...events.values()]);
   if (!restoring) for (const r of ring.rejected) log(`rekisteri: hylätty ${r.id} (${r.why})`);
   for (const m of ring.members) {
@@ -865,6 +973,26 @@ async function mergeNow(list) {
       : ev.left === ev.right ? `${nameOf(m)} liittyi toiseksi perustajaksi (kutsuja: ${nameOf(ev.left)})`
         : `${nameOf(m)} liittyi väliin ${nameOf(ev.left)} → ${nameOf(ev.right)}`);
     admitted(m, ev);
+  }
+  for (const [id, sv] of ring.servers) {
+    if (serversBefore.has(id) || restoring) continue;
+    log(sv.node ? `${sv.name} liitettiin rengassolmuksi (huoltajat ${nameOf(sv.guardians[0])} ja ${nameOf(sv.guardians[1])})`
+      : `${sv.name} liitettiin rengaspalvelimeksi (operaattori ${nameOf(sv.operator)})`);
+    if (cosignReq?.ev.kind === 'node' && cosignReq.ev.member === id) {
+      cosignReq = null;
+      done(`✅ Rengassolmu ${sv.name} liitetty. Huoltajat: ${nameOf(sv.guardians[0])} ja ${nameOf(sv.guardians[1])}.`, null);
+    }
+  }
+  for (const id of ring.retired) {
+    if (!serversBefore.has(id)) continue;
+    log(`${nameOf(id)}: palvelinrooli poistettu, kortti ei enää kelpaa`);
+    cards.delete(id);
+    const l = serverLink(id);
+    if (l) drop(l, null);
+    if (cosignReq?.ev.kind === 'retire' && cosignReq.ev.member === id) {
+      cosignReq = null;
+      done(`✅ ${nameOf(id)}: palvelinrooli poistettu.`, null);
+    }
   }
   if (isMember()) {
     persistRing();
@@ -1600,8 +1728,18 @@ function renderRing() {
   const now = Date.now();
   const here = new Set([myId, ...neighbours()]);
   const parts = [];
-  ring.members.forEach((m, i) => {
+  ring.order.forEach((m, i) => {
     if (i) parts.push(Object.assign(document.createElement('span'), { className: 'arrow', textContent: '→' }));
+    const sv = ring.servers.get(m);
+    if (sv) { // rengassolmu: ei viestejä, näytetään huoltajat
+      const up = !!serverLink(m);
+      parts.push(Object.assign(document.createElement('span'), {
+        className: `member node ${up ? 'here' : 'away'}`,
+        textContent: `${NODE_ICON} ${sv.name}`,
+        title: `rengassolmu · huoltajat ${nameOf(sv.guardians[0])} ja ${nameOf(sv.guardians[1])} · ${up ? 'yhteys' : 'ei yhteyttä'}`,
+      }));
+      return;
+    }
     const s = document.createElement(m === myId ? 'span' : 'button');
     s.className = 'member';
     if (m === myId) s.classList.add('me');
@@ -1618,7 +1756,7 @@ function renderRing() {
     s.textContent = `${iconOf(m)} ${nameOf(m)}${unread ? ` (${unread})` : ''}${outbox ? ' ⏳' : ''}`;
     parts.push(s);
   });
-  if (ring.members.length > 1) parts.push(Object.assign(document.createElement('span'), { className: 'arrow', textContent: '↺' }));
+  if (ring.order.length > 1) parts.push(Object.assign(document.createElement('span'), { className: 'arrow', textContent: '↺' }));
   box.replaceChildren(...parts);
 }
 
@@ -1699,9 +1837,27 @@ function render() {
   $('me-info').textContent = `Tunniste ${myId} · avain ${me.key.slice(0, 12)}…` +
     (stored ? ' · tallennettu tähän selaimeen' : ' · ⚠️ selain ei salli tallennusta: jäsenyys katoaa, kun sivu suljetaan') +
     (signalUrl ? ` · kohtaamispaikka ${new URL(signalUrl).host} (näkee tunnisteet ja IPv6-osoitteet, ei tekstiä eikä rekisteriä)` : '') +
-    (ring.servers.size ? ` · rengaspalvelimet: ${[...ring.servers].map(([id, sv]) => `${sv.name} ${serverLink(id) ? '✓' : cards.has(id) ? '(ei yhteyttä)' : '(ei korttia)'}`).join(', ')}`
+    (ring.servers.size ? ` · rengaspalvelimet: ${[...ring.servers].map(([id, sv]) => `${sv.name} (${sv.node
+      ? `solmu, huoltajat ${nameOf(sv.guardians[0])} ja ${nameOf(sv.guardians[1])}` : `vanha malli, operaattori ${nameOf(sv.operator)}`}) ${
+      serverLink(id) ? '✓' : cards.has(id) ? 'ei yhteyttä' : 'ei korttia'}`).join(', ')}`
       : signalUrl ? '' : ' · ei palvelinta: paluu yhdistämiskoodilla');
   $('forget').hidden = !isMember();
+  renderServerAdmin();
+}
+
+/** Palvelinroolin poisto: vain huoltajalle tai vanhan palvelimen operaattorille. */
+function renderServerAdmin() {
+  const mine = [...ring.servers].filter(([, sv]) => (sv.node ? sv.guardians.includes(myId) : sv.operator === myId));
+  const box = $('server-admin');
+  box.hidden = !mine.length;
+  const key = mine.map(([id]) => id).join();
+  if (box.dataset.key === key) return;
+  box.dataset.key = key;
+  box.replaceChildren(...mine.map(([id, sv]) => Object.assign(document.createElement('button'), {
+    type: 'button',
+    textContent: `Poista palvelinrooli: ${sv.name}${sv.node ? ' (toinen huoltaja hyväksyy)' : ''}`,
+    onclick: () => retireServer(id),
+  })));
 }
 
 // --- Kotivalikkoon lisääminen ---------------------------------------------
@@ -1868,6 +2024,13 @@ window.direct = {
   server: (text) => handleCode(text),
   get servers() { return [...links.values()].filter((l) => l.server && l.verified).map((l) => l.id); },
   get registeredServers() { return [...ring.servers.keys()]; },
+  get order() { return ring.order.map((m) => nameOf(m)); },
+  get serverInfo() { return Object.fromEntries([...ring.servers].map(([id, sv]) => [id, sv.node ? { name: sv.name, guardians: sv.guardians } : { name: sv.name, operator: sv.operator }])); },
+  get retired() { return [...ring.retired]; },
+  retire: (id) => retireServer(id),
+  get ringId() { return ringId; },
+  // Testeille: tapahtuma verkkoon sellaisenaan (väärennösten torjunta).
+  inject: (ev) => { originate({ type: 'ev', ev }); merge([ev]); return true; },
   get cards() { return [...cards.values()]; },
   /** Kahdenkeskinen viesti: 'sent' (suoralla yhteydellä), 'queued' (lähtevään) tai false. */
   dm: (to, text) => sendDM(to, text),

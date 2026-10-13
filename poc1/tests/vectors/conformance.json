@@ -1,0 +1,1264 @@
+{
+ "model": 2,
+ "cases": [
+  {
+   "name": "solmu kahden huoltajan hyväksymänä; vanha palvelin luettelossa; myöhempi jäsen ei muuta huoltajuutta",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Jedi",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+      "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+      "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "41c12926",
+     "key": "BLyBbRziO06U5sFC781Ng09k3cPcf8RTW-pAPrPnhtL_iHbpLv-iLYZ9p34OQiwdsm9o0nmNtFECxmPlL_jJrHY",
+     "name": "Liisa \"L\" <&>",
+     "icon": "👧",
+     "proof": "ba9876543210",
+     "id": "41c12926:a",
+     "sigs": {
+      "member": "lzCt8a5q-HblxIyviAVoPLFV4KQZDNtUuQ3dv_Bs2OH4Xd7S6fBGEBAVFc2VcLdkcRanXfT6Q-99ZxPXv778CA",
+      "left": "o3eo51i9vDYc_mi0dVWaCS3mmQY9p3Adci_7YDdBhobvef3jzXRg9ubeYydsxsZQAt9nULs6mcqE7WsAsHZrhQ",
+      "right": "RQUVTylfGHYZDK2tVKe8Wk40JdP1C8AHMtp4ldh2DGYJ4rb-nrIaEiX1yt4t_884E5NLkdjGMFEUtQ03wXC0ig"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "41c12926",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "41c12926",
+     "52e74746",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {
+     "52e74746": {
+      "node": true,
+      "guardians": [
+       "92964cbc",
+       "89b4d946"
+      ]
+     },
+     "672cf2af": {
+      "operator": "474d7de9"
+     }
+    },
+    "retired": [],
+    "rejected": [],
+    "pending": [],
+    "invalid": [],
+    "unverified": []
+   }
+  },
+  {
+   "name": "ilman solmua vanha palvelin kelpaa (malli 1)",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {
+     "672cf2af": {
+      "operator": "474d7de9"
+     }
+    },
+    "retired": [],
+    "rejected": [],
+    "pending": [],
+    "invalid": [],
+    "unverified": []
+   }
+  },
+  {
+   "name": "solmu, jonka sama ihminen allekirjoitti kahdesti",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Jedi",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "q0ISZKsUigykmPQQWONjEFMC4yZV43Y-mSQBAScjuhR438SqM5sk9nfCsNT25D55guy4j_vE9qTEpf9TKOauaQ",
+      "left": "s-1f_a7-Q0qjGVu2DJLug4n9yssdsQYtmRg4WKrmOmjgZaO97GNPq9PpxdFsJ3d4JQCypqIeJBRiJD_tqJgjYw",
+      "right": "qfQ9R96y6gRbS99W85CSf40MCHFk92wUc62ebnTZUh23nypapTiZKmwzI1tRPouNzBS3SaNyWevIU4pLkBbEgQ"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {
+     "672cf2af": {
+      "operator": "474d7de9"
+     }
+    },
+    "retired": [],
+    "rejected": [],
+    "pending": [],
+    "invalid": [
+     "52e74746:n"
+    ],
+    "unverified": []
+   }
+  },
+  {
+   "name": "muutettu solmutapahtuma",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Huijari",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+      "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+      "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {},
+    "retired": [],
+    "rejected": [],
+    "pending": [],
+    "invalid": [
+     "52e74746:n"
+    ],
+    "unverified": []
+   }
+  },
+  {
+   "name": "solmu ei voi perustaa solmua",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Jedi",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+      "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+      "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "41c12926",
+     "key": "BLyBbRziO06U5sFC781Ng09k3cPcf8RTW-pAPrPnhtL_iHbpLv-iLYZ9p34OQiwdsm9o0nmNtFECxmPlL_jJrHY",
+     "name": "Liisa \"L\" <&>",
+     "icon": "👧",
+     "proof": "ba9876543210",
+     "id": "41c12926:a",
+     "sigs": {
+      "member": "lzCt8a5q-HblxIyviAVoPLFV4KQZDNtUuQ3dv_Bs2OH4Xd7S6fBGEBAVFc2VcLdkcRanXfT6Q-99ZxPXv778CA",
+      "left": "o3eo51i9vDYc_mi0dVWaCS3mmQY9p3Adci_7YDdBhobvef3jzXRg9ubeYydsxsZQAt9nULs6mcqE7WsAsHZrhQ",
+      "right": "RQUVTylfGHYZDK2tVKe8Wk40JdP1C8AHMtp4ldh2DGYJ4rb-nrIaEiX1yt4t_884E5NLkdjGMFEUtQ03wXC0ig"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "52e74746",
+     "right": "89b4d946",
+     "member": "51d7ca6d",
+     "key": "BJ4uU9YEN1Nv4QUkIVjXT9XgKVYKTMV23agvtfMjFRzBrl8I8hplwXiOIZfAQu-Zdfrz7v9UeFM1C-kw8qG6ESA",
+     "name": "Toinen",
+     "legacy": [],
+     "id": "51d7ca6d:n",
+     "sigs": {
+      "member": "aavnL12lFybecyoDwxTENZMrwouUzKOHIPzbIPHlJekDs_GRH8l8V71SZP4saIJkmnK9SSWy-3cIr6sh8NUxXA",
+      "left": "LvnSELTZY-Ob0qYv2k6r4ctkCNgeROXl_4-SU2d82FjqsWEBJ3Iwv__x9aB0n5MvnhV7_y0RgU3TeyeAK51Znw",
+      "right": "-l1dR3v0o5EhLDZDmNth-pY5Yh7dXDbPLltwboE1dQP3RIdqViIadWQvmfoBLoGhIlx7wvsZGTqsrJds_s7ztg"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "41c12926",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "41c12926",
+     "52e74746",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {
+     "52e74746": {
+      "node": true,
+      "guardians": [
+       "92964cbc",
+       "89b4d946"
+      ]
+     },
+     "672cf2af": {
+      "operator": "474d7de9"
+     }
+    },
+    "retired": [],
+    "rejected": [],
+    "pending": [],
+    "invalid": [],
+    "unverified": [
+     "51d7ca6d:n"
+    ]
+   }
+  },
+  {
+   "name": "solmun jälkeen yksi jäsen ei voi lisätä vanhaa palvelinta",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Jedi",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+      "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+      "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "41c12926",
+     "key": "BLyBbRziO06U5sFC781Ng09k3cPcf8RTW-pAPrPnhtL_iHbpLv-iLYZ9p34OQiwdsm9o0nmNtFECxmPlL_jJrHY",
+     "name": "Liisa \"L\" <&>",
+     "icon": "👧",
+     "proof": "ba9876543210",
+     "id": "41c12926:a",
+     "sigs": {
+      "member": "lzCt8a5q-HblxIyviAVoPLFV4KQZDNtUuQ3dv_Bs2OH4Xd7S6fBGEBAVFc2VcLdkcRanXfT6Q-99ZxPXv778CA",
+      "left": "o3eo51i9vDYc_mi0dVWaCS3mmQY9p3Adci_7YDdBhobvef3jzXRg9ubeYydsxsZQAt9nULs6mcqE7WsAsHZrhQ",
+      "right": "RQUVTylfGHYZDK2tVKe8Wk40JdP1C8AHMtp4ldh2DGYJ4rb-nrIaEiX1yt4t_884E5NLkdjGMFEUtQ03wXC0ig"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "5036222b",
+     "key": "BF06ZA5lKdQrmBUfxm4FmyJvvGASrS_PJdEH5Ey9_9kA-q-Gm5HxfJEHNb-ToXInpkr4q7Idq8_u601DJNjeJ70",
+     "operator": "92964cbc",
+     "name": "Yksin",
+     "id": "5036222b:s",
+     "sigs": {
+      "member": "e0joU7XOzsWqVnvhVPye-NJ16tMOzgtFxFyEfunJA9oH6qRruzFhaRhzzJdZrsN8slpllH9odSQ1_qGAU_EzOg",
+      "operator": "co-OCxObERwoQKMefsExfkLn2Z_W7T6HBV6jASBp5MVNKbFjWEVlD_HcRQJFuR1rUw8POPcBIDJmNj-I6GrxZw"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "41c12926",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "41c12926",
+     "52e74746",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {
+     "52e74746": {
+      "node": true,
+      "guardians": [
+       "92964cbc",
+       "89b4d946"
+      ]
+     },
+     "672cf2af": {
+      "operator": "474d7de9"
+     }
+    },
+    "retired": [],
+    "rejected": [
+     "5036222b:s"
+    ],
+    "pending": [],
+    "invalid": [],
+    "unverified": []
+   }
+  },
+  {
+   "name": "Törtön palvelinrooli pois operaattorin allekirjoituksella",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Jedi",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+      "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+      "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "41c12926",
+     "key": "BLyBbRziO06U5sFC781Ng09k3cPcf8RTW-pAPrPnhtL_iHbpLv-iLYZ9p34OQiwdsm9o0nmNtFECxmPlL_jJrHY",
+     "name": "Liisa \"L\" <&>",
+     "icon": "👧",
+     "proof": "ba9876543210",
+     "id": "41c12926:a",
+     "sigs": {
+      "member": "lzCt8a5q-HblxIyviAVoPLFV4KQZDNtUuQ3dv_Bs2OH4Xd7S6fBGEBAVFc2VcLdkcRanXfT6Q-99ZxPXv778CA",
+      "left": "o3eo51i9vDYc_mi0dVWaCS3mmQY9p3Adci_7YDdBhobvef3jzXRg9ubeYydsxsZQAt9nULs6mcqE7WsAsHZrhQ",
+      "right": "RQUVTylfGHYZDK2tVKe8Wk40JdP1C8AHMtp4ldh2DGYJ4rb-nrIaEiX1yt4t_884E5NLkdjGMFEUtQ03wXC0ig"
+     }
+    },
+    {
+     "kind": "retire",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "id": "672cf2af:r",
+     "sigs": {
+      "operator": "fFPWHi1nbCw9YVXYny-v01i0-WtR2d4QSm-0ahY_6bIssNAtNfHhRHyRmfUi6JCAdjfFRIBbefZ5Q22UEgAI9w"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "41c12926",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "41c12926",
+     "52e74746",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {
+     "52e74746": {
+      "node": true,
+      "guardians": [
+       "92964cbc",
+       "89b4d946"
+      ]
+     }
+    },
+    "retired": [
+     "672cf2af"
+    ],
+    "rejected": [],
+    "pending": [],
+    "invalid": [],
+    "unverified": []
+   }
+  },
+  {
+   "name": "solmun poisto molempien huoltajien allekirjoituksella",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Jedi",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+      "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+      "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "41c12926",
+     "key": "BLyBbRziO06U5sFC781Ng09k3cPcf8RTW-pAPrPnhtL_iHbpLv-iLYZ9p34OQiwdsm9o0nmNtFECxmPlL_jJrHY",
+     "name": "Liisa \"L\" <&>",
+     "icon": "👧",
+     "proof": "ba9876543210",
+     "id": "41c12926:a",
+     "sigs": {
+      "member": "lzCt8a5q-HblxIyviAVoPLFV4KQZDNtUuQ3dv_Bs2OH4Xd7S6fBGEBAVFc2VcLdkcRanXfT6Q-99ZxPXv778CA",
+      "left": "o3eo51i9vDYc_mi0dVWaCS3mmQY9p3Adci_7YDdBhobvef3jzXRg9ubeYydsxsZQAt9nULs6mcqE7WsAsHZrhQ",
+      "right": "RQUVTylfGHYZDK2tVKe8Wk40JdP1C8AHMtp4ldh2DGYJ4rb-nrIaEiX1yt4t_884E5NLkdjGMFEUtQ03wXC0ig"
+     }
+    },
+    {
+     "kind": "retire",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "id": "672cf2af:r",
+     "sigs": {
+      "operator": "fFPWHi1nbCw9YVXYny-v01i0-WtR2d4QSm-0ahY_6bIssNAtNfHhRHyRmfUi6JCAdjfFRIBbefZ5Q22UEgAI9w"
+     }
+    },
+    {
+     "kind": "retire",
+     "ring": "91b0ba11",
+     "member": "52e74746",
+     "id": "52e74746:r",
+     "sigs": {
+      "left": "q0IB7go6CJCymwLv9vbnTBfjzN_QlqIAsc6-dxpA5NrRi6E5ZeXeIPk__z5pTqYYQgHF7XMaY_Gseedca2CvHQ",
+      "right": "5R5yNjPLDNiVjGNGPJ0xQDWf1Y9_HU9tZPvl9qtSWWFSrYvUOGXmeCt2D1fD7LnS_AFYNUs5AmspwTeleSwnJA"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "41c12926",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "41c12926",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {},
+    "retired": [
+     "52e74746",
+     "672cf2af"
+    ],
+    "rejected": [],
+    "pending": [],
+    "invalid": [],
+    "unverified": []
+   }
+  },
+  {
+   "name": "solmun poisto yhden huoltajan allekirjoituksella ei kelpaa",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "89b4d946",
+     "right": "92964cbc",
+     "member": "474d7de9",
+     "key": "BPwAy8zv3arkvlWiLIbtVXEoz3udCO3jX7n7XSIQ7PGFElK0yMgZuyGRZrvST-jg2BfQxmPNF5dMDFWL7wsV3L8",
+     "name": "Törttö",
+     "icon": "🐈",
+     "proof": "0123456789ab",
+     "id": "474d7de9:a",
+     "sigs": {
+      "member": "8CYOUG0bi_GBjSPwTUchmTe_PpskH8EOGAbFINgOjylzw0lgs0DOvjRlEVdtMc0Krqsoil6nXGI-E1ojZKs4lw",
+      "left": "GHyzXX75oYcgLqkOHJmxRS7LOWG-a4EZRCMPoB-15MknzBR9c1WiK46WwBnOhxUEOnv4D8RDoIkxS-ARPc7Jpw",
+      "right": "9MooJ_ChdEsgGU1lTxAerDOsN-B94o5YcqsZsYLlZBVegP72ALhhYfy2dut-CGVpzp7sPBUNvB5E1jxUOJATDQ"
+     }
+    },
+    {
+     "kind": "server",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "key": "BNBYKRUGFE-kAlFU3A1DVngqkFTW6c17xyfAyNMX9uMvVT2RuqKvyCxBm_C9kfzD3NG9kIgcwuO_kyHYE269zXA",
+     "operator": "474d7de9",
+     "name": "Nokia",
+     "id": "672cf2af:s",
+     "sigs": {
+      "member": "XGv2sMyJEb7MxLm1aYBp61Pfz1Qr8X9CchJG9vUdUaVfwinxDDIwT4Hb8kxjTIvF0vvdeyIEbQ5OvOod4oIvMw",
+      "operator": "AmWUnI9cBssvN6_0dRqqeOSHmK5K3MyUGZMjERab4m7w4jrfGKPWW0VxGB8JKfLvd7GaVFaYjkVcHs5oJIoAqA"
+     }
+    },
+    {
+     "kind": "node",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "52e74746",
+     "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+     "name": "Jedi",
+     "legacy": [
+      "672cf2af"
+     ],
+     "id": "52e74746:n",
+     "sigs": {
+      "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+      "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+      "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "89b4d946",
+     "member": "41c12926",
+     "key": "BLyBbRziO06U5sFC781Ng09k3cPcf8RTW-pAPrPnhtL_iHbpLv-iLYZ9p34OQiwdsm9o0nmNtFECxmPlL_jJrHY",
+     "name": "Liisa \"L\" <&>",
+     "icon": "👧",
+     "proof": "ba9876543210",
+     "id": "41c12926:a",
+     "sigs": {
+      "member": "lzCt8a5q-HblxIyviAVoPLFV4KQZDNtUuQ3dv_Bs2OH4Xd7S6fBGEBAVFc2VcLdkcRanXfT6Q-99ZxPXv778CA",
+      "left": "o3eo51i9vDYc_mi0dVWaCS3mmQY9p3Adci_7YDdBhobvef3jzXRg9ubeYydsxsZQAt9nULs6mcqE7WsAsHZrhQ",
+      "right": "RQUVTylfGHYZDK2tVKe8Wk40JdP1C8AHMtp4ldh2DGYJ4rb-nrIaEiX1yt4t_884E5NLkdjGMFEUtQ03wXC0ig"
+     }
+    },
+    {
+     "kind": "retire",
+     "ring": "91b0ba11",
+     "member": "52e74746",
+     "id": "52e74746:r",
+     "sigs": {
+      "left": "FkCnNhlWsLjY0c1J4-b5nxXDAq5eJBERUqAQuknQARXuQQFC_ntrjyQXAHcGpPg0kYs8jzrjY3YIHWPzhch2Cg",
+      "right": "BEbEfu9Aa76Hz6cTs_j-WgfgYUN7fiaRp85htc2Q4g3-JCFKVaM9PJyyzHnRsbWj3kTceEpKa6gzX1I6kj9EFA"
+     }
+    },
+    {
+     "kind": "retire",
+     "ring": "91b0ba11",
+     "member": "52e74746",
+     "id": "52e74746:r",
+     "sigs": {
+      "operator": "z0M_AnpfenYQesAsB8ycb82oR4LDkMwDFXFCO0Y54oGGdDRzp8I-CPdBjROZLAUdhxhgNmLEhU0k3N2u2O51LA"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "41c12926",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "order": [
+     "92964cbc",
+     "41c12926",
+     "52e74746",
+     "89b4d946",
+     "474d7de9"
+    ],
+    "servers": {
+     "52e74746": {
+      "node": true,
+      "guardians": [
+       "92964cbc",
+       "89b4d946"
+      ]
+     },
+     "672cf2af": {
+      "operator": "474d7de9"
+     }
+    },
+    "retired": [],
+    "rejected": [],
+    "pending": [],
+    "invalid": [
+     "52e74746:r"
+    ],
+    "unverified": []
+   }
+  },
+  {
+   "name": "poisto ennen kohdetta odottaa",
+   "ring": "91b0ba11",
+   "events": [
+    {
+     "kind": "found",
+     "ring": "91b0ba11",
+     "member": "92964cbc",
+     "key": "BHsm26Td3mBkFaCr3ol3ADyEUiB9zmXOHBSHd7aWE0dZ0yUh8ZAw-_CANezxdd0RORX-EELsU3iXTD68gYv3dyw",
+     "salt": "0a1b2c3d",
+     "name": "isi",
+     "icon": "👨",
+     "id": "92964cbc:f",
+     "sigs": {
+      "member": "D7-9znmaqL_SuGtYhvVeBTtm4prEcAOgPvIEqEFICzmOQyXyqj7sSNC-p6jZwGEU7s6qdwIiJ_CHtkUU5R_RuQ"
+     }
+    },
+    {
+     "kind": "admit",
+     "ring": "91b0ba11",
+     "left": "92964cbc",
+     "right": "92964cbc",
+     "member": "89b4d946",
+     "key": "BAHFoQAFF8ZmlwqaqtQKjisFTVfxSOSpXcOQyYQPQa7yS-s5Us5UaKnMIdO3nQCeh7Dinui-m0Hp_UvfO48hW8g",
+     "name": "Hanna Reunamo",
+     "icon": "👩",
+     "proof": "",
+     "id": "89b4d946:a",
+     "sigs": {
+      "member": "GLYXEJkffm-kDhdFsOl4oj4SK6KZFJ0v7AcJBhxZIO0zKzA780s-n8IpRvtij95Rg48OVB-I7jSiOqU6umjAaQ",
+      "left": "Bg6drVUddLnkFZ9V1LTP9TJi-iz5i_AW5odPbUN0L_0gtCdZSuV1kd-s1fvhvC9ZsM3llXQ0IKH8mS-Jdjdw2g"
+     }
+    },
+    {
+     "kind": "retire",
+     "ring": "91b0ba11",
+     "member": "672cf2af",
+     "id": "672cf2af:r",
+     "sigs": {
+      "operator": "fFPWHi1nbCw9YVXYny-v01i0-WtR2d4QSm-0ahY_6bIssNAtNfHhRHyRmfUi6JCAdjfFRIBbefZ5Q22UEgAI9w"
+     }
+    }
+   ],
+   "expect": {
+    "members": [
+     "92964cbc",
+     "89b4d946"
+    ],
+    "order": [
+     "92964cbc",
+     "89b4d946"
+    ],
+    "servers": {},
+    "retired": [],
+    "rejected": [],
+    "pending": [],
+    "invalid": [],
+    "unverified": [
+     "672cf2af:r"
+    ]
+   }
+  }
+ ],
+ "card": {
+  "ring": "91b0ba11",
+  "card": {
+   "server": "52e74746",
+   "seq": 1792000000000,
+   "port": 40123,
+   "fp": "S1Ltlk5RHYLu9U5r9lDTY_eDA7XoV2AoDOrB7InPMKo",
+   "addrs": [
+    "2001:db8::1"
+   ],
+   "sig": "-Mg6ViPD1lrFhbFhesD9g_INszF2r7AxM0zPIMu41yb6oQ_JSzw0DgjK_yB4hJBvsSfgXli7z2Sf9nONhQNycg"
+  },
+  "payload": "[\"card\",\"91b0ba11\",\"52e74746\",\"1792000000000\",\"40123\",\"S1Ltlk5RHYLu9U5r9lDTY_eDA7XoV2AoDOrB7InPMKo\",\"2001:db8::1\"]"
+ },
+ "payloads": [
+  {
+   "event": {
+    "kind": "node",
+    "ring": "91b0ba11",
+    "left": "92964cbc",
+    "right": "89b4d946",
+    "member": "52e74746",
+    "key": "BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk",
+    "name": "Jedi",
+    "legacy": [
+     "672cf2af"
+    ],
+    "id": "52e74746:n",
+    "sigs": {
+     "member": "tFRtT6lqdmA5EsJXPxcmXA1E-XL3PAdz8sD7fjixmsoM1sGZ0Jnr54oL9ITPS_vPW57UtPqfS9GccshogGOhgg",
+     "left": "YUPAelK2-3EJjc248WnTPRcKde7NOWgQni68szU_GfIGacWjebKOaadQcrJbqgsLRdIlq-ytRhQwSNuYvPT3dw",
+     "right": "8_Oqn8gCOqnDNPgAREZYdop8P6UuoMkF_JvR7SQL7y2G4O5i_gohAQtoV9apwfw1YfQ-iEbsO4s0bwY1-TOJeQ"
+    }
+   },
+   "payload": "[\"node\",\"91b0ba11\",\"92964cbc\",\"89b4d946\",\"52e74746\",\"BHjbrt4ViqSxMm9eYQcyXANV3xv92iEyPDfaGNE__79JVVEAF1w5zNSbXvgxbqWhE1QPlu4aTcm0Du0IJwBieEk\",\"Jedi\",\"672cf2af\"]"
+  },
+  {
+   "event": {
+    "kind": "retire",
+    "ring": "91b0ba11",
+    "member": "672cf2af",
+    "id": "672cf2af:r",
+    "sigs": {
+     "operator": "fFPWHi1nbCw9YVXYny-v01i0-WtR2d4QSm-0ahY_6bIssNAtNfHhRHyRmfUi6JCAdjfFRIBbefZ5Q22UEgAI9w"
+    }
+   },
+   "payload": "[\"retire\",\"91b0ba11\",\"672cf2af\"]"
+  }
+ ]
+}

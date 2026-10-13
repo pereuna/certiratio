@@ -24,6 +24,11 @@ cp "$web/src/direct.js" "$web/src/stream.js" "$web/src/dm.js" \
 	"$web/src/pairing.js" "$web/src/signaling.js" "$web/src/classify.js" "$web/src/ring.js" "$web/src/scanner.js" \
 	"$web/src/identity.js" "$web/src/store.js" "$web/src/servercard.js" "$tmp/src/"
 cp "$web/src/vendor/qrcode.js" "$web/src/vendor/jsQR.js" "$web/src/vendor/jsQR.LICENSE.txt" "$tmp/src/vendor/"
+# Moduulien osoitteisiin versio: Pages pitää tiedostoja välimuistissa 10 min, eikä
+# selain saa yhdistää vanhan ja uuden version moduuleja (uusi tuonti puuttuisi).
+ver=$(git -C "$web" rev-parse --short HEAD)
+sed -i "s#from '\./\([a-z]*\)\.js'#from './\1.js?v=$ver'#g" "$tmp"/src/*.js
+sed -i "s#src=\"src/direct\.js\"#src=\"src/direct.js?v=$ver\"#" "$tmp/direct.html"
 : > "$tmp/.nojekyll"
 cat > "$tmp/index.html" <<'EOF'
 <!doctype html>

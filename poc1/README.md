@@ -119,31 +119,43 @@ Paikallisesti: `python3 ../../Plan2001/monolith/tools/rtcsignal --port 8090 --we
 
 Puhelimessa ajettava WebRTC-vertainen, johon selain ottaa yhteyden pelkällä kortilla `s1.SORMENJÄLKI.PORTTI.OSOITTEET` ilman signalointia, DNS:ää tai varmentajaa ([suunnitelma](../docs/KOHTAAMISPUHELIN.md)). Palvelin on ICE-lite yhdessä UDP-portissa (pion), ja sillä on pysyvä DTLS-varmenne ja oma P-256-avain (`-dir`). Selain (`src/servercard.js`) kokoaa palvelimen vastauksen kortista ja tarkistaa sormenjäljen.
 
-Palvelin on renkaan solmu (`ringserver/node.go`, protokolla `certiratio-direct/5`):
+Palvelin on rengassolmu (`ringserver/node.go`, protokolla `certiratio-direct/5`, rekisterimalli 2; määrittely [PROTOKOLLA.md](../docs/PROTOKOLLA.md)):
 - todentaa jokaisen yhteyden (hello/auth) ja tarkistaa avaimen rekisteristä
 - tarkistaa ja säilyttää rekisterin (`ring.json`)
 - katkaisee vieraan renkaan ja rekisterin ulkopuolisen avaimen (5 s armonaika rekisterin saapumiselle)
-- kertoo naapurilistassaan paikalla olevat jäsenet ja välittää heidän tarjouksensa (`sig`), tekstin ja tapahtumat
+- kertoo naapurilistassaan paikalla olevat jäsenet ja välittää heidän tarjouksensa (`sig`) ja tapahtumat; kahdenkeskiset viestit (`dm`) eivät kulje sen kautta
 
-Jäsenet muodostavat sen jälkeen suorat yhteydet toisiinsa. Palvelin ei ole jäsen (`hello.server`), eikä se näy jäsenten naapurilistoissa. `palvelin.html` käyttää kanavaa `echo`, joka vain kaiuttaa viestit.
+Jäsenet muodostavat sen jälkeen suorat yhteydet toisiinsa. Palvelin ei ole henkilöjäsen (`hello.server`), eikä se näy jäsenten naapurilistoissa; renkaassa se näkyy omana 🖥️-solmunaan huoltajiensa välissä. `palvelin.html` käyttää kanavaa `echo`, joka vain kaiuttaa viestit.
 
-**Palvelimen liittäminen renkaaseen:**
+**Palvelimen liittäminen renkaaseen rengassolmuksi** (kaksi huoltajaa):
 1. Palvelin tulostaa käynnistyessään liittämislinkin ja QR-koodin: `direct.html#s1.SORMENJÄLKI.PORTTI.OSOITTEET.TUNNUS`.
-2. Renkaan jäsen avaa linkin tai skannaa koodin sivun kameralla.
-3. Sivu ottaa yhteyden palvelimeen ja lähettää `enroll`-sanoman (tunnus, rengas, rekisteri).
-4. Palvelin tarkistaa, että pyytäjä on jäsen, ja allekirjoittaa `server`-tapahtuman. Jäsen allekirjoittaa sen operaattorina ja julkaisee sen.
-5. Tunnus on kertakäyttöinen, ja liitetty palvelin kuuluu vain omaan renkaaseensa.
+2. Renkaan jäsen A avaa linkin tai skannaa koodin sivun kameralla.
+3. Sivu ottaa yhteyden palvelimeen ja lähettää `enroll`-sanoman (tunnus, rengas, rekisteri, `left` = A, `right` = A:n oikea naapuri B, vanhat palvelimet).
+4. Palvelin tarkistaa, että A ja B ovat vierekkäiset jäsenet, ja allekirjoittaa `node`-tapahtuman. A allekirjoittaa sen ja pyytää B:tä (`cosign`); B hyväksyy omalla sivullaan ja julkaisee sen. A:sta ja B:stä tulee solmun huoltajat (huolto on vastuu, ei omistus).
+5. Tunnus on kertakäyttöinen, ja liitetty palvelin kuuluu vain omaan renkaaseensa. Yksi jäsen ei voi liittää palvelinta yksin, eikä solmu voi perustaa solmua.
+6. Palvelinroolin poisto (`retire`): yhteydet-osion *Poista palvelinrooli* (solmulta molemmat huoltajat, vanhalta mallin 1 palvelimelta sen operaattori). Poistetun kortti ei enää kelpaa.
+
+Vanhat mallin 1 `server`-tapahtumat (yksi operaattori) kelpaavat siirtymäkauden ajan; uusia ei tehdä. Siirto Törtön puhelimesta Jediin: [JEDI_SIIRTO.md](../docs/JEDI_SIIRTO.md).
 
 **Kortit:** palvelin allekirjoittaa korttinsa `{server, seq, port, fp, addrs, sig}`. Osoitteet tarkistetaan 30 sekunnin välein, ja kun ne muuttuvat, `seq` kasvaa ja kortti lähetetään kaikille. Jäsenet tarkistavat kortin palvelimen avaimella rekisteristä, tallentavat tuoreimman IndexedDB:hen ja välittävät sen muille. Sivu yhdistää kaikkiin tunnettuihin palvelimiin, kun se avautuu tai tulee näkyviin, kun verkko palaa, kun kortti vaihtuu, kun yhteys katkeaa ja muuten puolen minuutin välein. Tilarivillä näkyy *palvelin ✓* tai *palvelin ei vastaa*, ja info-osiossa on palvelinten nimet ja tila.
 
-Go-puoli tekee allekirjoitettavan sisällön kuten `JSON.stringify` (`crypto.go`, ei `encoding/json`) ja rakentaa renkaan kuten `ring.js`. Yhteiset testivektorit tehdään selaimen koodilla: `node tools/make-vectors.mjs > tests/vectors/ring.json`, ja niitä käyttävät `cd ringserver && go test -race ./...`.
+Go-puolen rekisteriydin on verkoton paketti `ringserver/ringcore`: se tekee allekirjoitettavan sisällön kuten `JSON.stringify` (ei `encoding/json`) ja rakentaa renkaan kuten `ring.js`. Yhteiset testivektorit tehdään selaimen koodilla: `node tools/make-vectors.mjs > tests/vectors/ring.json` ja `node tools/make-conformance.mjs > tests/vectors/conformance.json`; niitä käyttävät `npm test` ja `cd ringserver && go test -race ./...`. Muilla alustoilla: `go run ./cmd/ringcheck ../tests/vectors/conformance.json` (myös `GOOS=js GOARCH=wasm`, Node: `$(go env GOROOT)/lib/wasm/wasm_exec_node.js`; `GOOS=wasip1`: `tools/run-wasip1.mjs`; arm64 puhelimessa adb:llä). Alustojen tila: [PROTOKOLLA.md](../docs/PROTOKOLLA.md#8-testivektorit-ja-toteutukset).
+
+Jedin palvelutiedostot (systemd, varmuuskopio): `ringserver/deploy/`.
 
 ```bash
 cd ringserver && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ringserver-arm64 .   # puhelimeen (adb push / Termux)
 ./ringserver -port 40123 -name Nokia -dir ringserver-tila   # tulostaa kortin sekä liittämislinkin ja QR-koodin
 ```
 
-Rengastesti: `tools/drive-ringnode.mjs BASE_URL LIITTÄMISLINKKI PORT_ISI PORT_TORTTO PORT_VIERAS`. Siinä isi ja Törttö perustavat renkaan QR-koodeilla, ja isi liittää palvelimen. Palvelintapahtuma ja kortti leviävät Törtölle, joka yhdistää palvelimeen itsestään. Törtön välilehti suljetaan ja avataan: tallennettu kortti riittää, ja suora yhteys isiin palaa 0,5–0,8 sekunnissa sivun avauksesta ilman yhtään koodia. Teksti menee perille. Vieras ei voi liittää toisen renkaan palvelinta eikä pysy palvelimessa. Testattu 2026-10-12 kolmella peräkkäisellä ajolla (ULA-verkkonimiavaruus).
+Rengastesti: `tools/drive-ringnode.mjs BASE_URL LIITTÄMISLINKKI PORT_ISI PORT_TORTTO PORT_VIERAS [PORT_HANNA]`. Siinä isi ja Törttö perustavat renkaan QR-koodeilla, ja isi liittää palvelimen rengassolmuksi; Törttö hyväksyy (huoltajat isi ja Törttö). Palvelintapahtuma ja kortti leviävät Törtölle, joka yhdistää palvelimeen itsestään. Törtön välilehti suljetaan ja avataan: tallennettu kortti riittää, ja suora yhteys isiin palaa 0,5–0,8 sekunnissa sivun avauksesta ilman yhtään koodia. Teksti menee perille. Vieras ei voi liittää toisen renkaan palvelinta eikä pysy palvelimessa. Testattu 2026-10-12 kolmella peräkkäisellä ajolla (ULA-verkkonimiavaruus).
 
 Yhteystesti: `tools/drive-ringserver.mjs PAGE_URL KORTTI DEVTOOLS_PORT` (kolme asiakasta samaan porttiin, väärä sormenjälki hylätään; Chromium `--disable-features=WebRtcHideLocalIpsWithMdns`). Testattu 2026-10-12 G50 palvelimena ja OnePlusin Chrome asiakkaana, molemmat mobiilidatalla: yhteys 1,6 s.
 
+Siirtymätesti (`tools/ns-migration.sh`, `tools/drive-migration.mjs`): vanha versio (sivu ja palvelin) → uusi, ja vanha palvelin Nokia → rengassolmu Jedi. Nokia pysäytetään (SIGSTOP, ei sammuteta), ja paluu ilman koodeja, esittely, viestit, Jedin uudelleenkäynnistys, kortin päivitys ja väärennöksen torjunta tarkistetaan pelkän Jedin varassa; lopuksi Nokian palvelinrooli poistetaan. Ajetaan muistirajan sisällä (kone ilman swapia kaatui, kun Chromiumeja jäi testeistä käyntiin):
+
+```bash
+git worktree add /tmp/old 056e67d && (cd /tmp/old/poc1/ringserver && go build -o /tmp/ringserver-old .) && (cd ringserver && go build -o /tmp/ringserver .)
+systemd-run --user --scope -p MemoryMax=6G -p MemorySwapMax=0 unshare -rn sh tools/ns-migration.sh /tmp/mig /tmp/old/poc1/web /tmp/ringserver-old /tmp/ringserver
+```
+Testattu 2026-10-13: kaikki kohdat OK (*JEDI KORVAA NOKIAN*).

@@ -1,6 +1,7 @@
 // Rengaspalvelin renkaan solmuna (DevTools-protokolla, kolme Chromiumia):
 // isi perustaa renkaan ja kutsuu Törtön QR-koodeilla (?signal=off), ja isi
-// liittää palvelimen renkaaseen liittämislinkillä. Palvelintapahtuma ja kortti
+// liittää palvelimen rengassolmuksi liittämislinkillä; Törttö hyväksyy
+// (kaksi huoltajaa, rekisterimalli 2). Solmun tapahtuma ja kortti
 // leviävät Törtölle, joka yhdistää palvelimeen itsestään. Törtön välilehti
 // suljetaan ja avataan: hän yhdistää palvelimeen tallennetulla kortilla, ja
 // palvelin esittelee hänet isille ilman yhtään koodia. Vieras (oma rengas) ei
@@ -53,9 +54,15 @@ await until(tortto, `direct.ring.join() === 'isi,Törttö'`);
 await until(isi, `direct.ring.join() === 'isi,Törttö'`);
 console.log('rengas isi → Törttö QR-koodeilla');
 
-// isi liittää palvelimen; tapahtuma ja kortti leviävät Törtölle, joka yhdistää itsestään.
+// isi liittää palvelimen rengassolmuksi; Törttö (oikea naapuri) hyväksyy. Tapahtuma ja kortti leviävät.
 await isi.ev(`direct.server(${J(enrollLink)})`);
-await until(isi, `direct.step.includes('liitetty renkaaseen')`);
+await until(isi, `direct.step.includes('Odotetaan, että Törttö hyväksyy')`);
+await until(tortto, `direct.step.includes('pyytää: liitetäänkö rengassolmu')`);
+await tortto.ev(`document.getElementById('primary').click()`);
+await until(isi, `direct.step.includes('Rengassolmu') && direct.step.includes('liitetty')`);
+const guardians = Object.values(await isi.ev('direct.serverInfo'))[0]?.guardians;
+check('rengassolmu: huoltajat isi ja Törttö, rengasjärjestyksessä heidän välissään', J(guardians) === J([await isi.ev('direct.id'), await tortto.ev('direct.id')]) &&
+  (await tortto.ev('direct.order')).length === 3, J(await tortto.ev('direct.order')));
 for (const t of [isi, tortto]) await until(t, 'direct.registeredServers.length === 1 && direct.cards.length === 1 && direct.servers.length === 1');
 check('palvelin liitetty: rekisterissä ja kortti molemmilla, yhteys molemmilta', true, J(await tortto.ev('direct.cards[0].addrs')));
 check('palvelin ei näy jäsenten naapurina', (await isi.ev('direct.open.length')) === 1, J(await isi.ev('direct.open')));
@@ -102,8 +109,9 @@ const vieras = await open(ports[2], page, 'vieras');
 await profile(vieras, 'vieras', '🧑');
 await until(vieras, 'direct.ring.length === 1');
 await vieras.ev(`direct.server(${J(enrollLink)})`);
-const vstep = await until(vieras, `(direct.step.includes('toiseen renkaaseen') || direct.step.includes('ei liitetty')) && direct.step`, 20000);
-check('toisen renkaan palvelinta ei voi liittää (käytetty linkki)', true, vstep);
+const vstep = await until(vieras, `(direct.step.includes('toiseen renkaaseen') || direct.step.includes('ei liitetty') ||
+  direct.step.includes('kaksi vierekkäistä jäsentä')) && direct.step`, 20000);
+check('vieras ei voi liittää palvelinta (yksin hän ei voi hyväksyä solmua, ja linkki on käytetty)', true, vstep);
 await vieras.ev(`document.getElementById('close')?.click()`);
 await vieras.ev(`direct.server(${J(card)})`);
 await sleep(8000);

@@ -1,0 +1,36 @@
+# Certiratio-rengassolmu (docs/JEDI_SIIRTO.md). Asennus:
+#   install -m 755 ringserver /usr/local/bin/certiratio-ringserver
+#   install -m 644 certiratio-ring.service /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable --now certiratio-ring
+# Liittämislinkki ja loki: journalctl -u certiratio-ring
+# Tila (avain key.pem, DTLS-varmenne dtls.pem, rekisteri ring.json): /var/lib/private/certiratio-ring
+[Unit]
+Description=Certiratio-rengassolmu (ringserver, UDP 40123)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/certiratio-ringserver -port 40123 -name Jedi -dir /var/lib/certiratio-ring
+DynamicUser=yes
+StateDirectory=certiratio-ring
+StateDirectoryMode=0700
+Restart=always
+RestartSec=5
+# Rajaus: ei muuta kuin IPv6-UDP, osoitteiden luku (netlink) ja oma tila.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET6 AF_UNIX AF_NETLINK
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryMax=256M
+CPUQuota=50%
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

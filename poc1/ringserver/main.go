@@ -43,9 +43,12 @@ import (
 	"github.com/pion/stun/v3"
 	"github.com/pion/webrtc/v4"
 	"rsc.io/qr"
+
+	"certiratio/ringserver/ringcore"
 )
 
 const (
+	maxAddrs       = 8
 	maxConns       = 64
 	connectTimeout = 20 * time.Second
 	quarantine     = 30 * time.Second // suljetun yhteyden tunnus ei avaa heti uutta (uudelleenlähetetyt tarkistukset)
@@ -307,7 +310,7 @@ func addresses(extra string) []string {
 	seen := map[string]bool{}
 	var out []string
 	add := func(ip net.IP) {
-		if usable(ip) && !seen[ip.String()] {
+		if usable(ip) && !seen[ip.String()] && len(out) < maxAddrs { // kortissa enintään 8 (vastaanottaja hylkää enemmän)
 			seen[ip.String()] = true
 			out = append(out, ip.String())
 		}
@@ -341,7 +344,7 @@ func main() {
 	if err := os.MkdirAll(*dir, 0o700); err != nil {
 		log.Fatal(err)
 	}
-	me, err := loadIdentity(filepath.Join(*dir, "key.pem"))
+	me, err := ringcore.LoadIdentity(filepath.Join(*dir, "key.pem"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -357,7 +360,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if !cleanNameOK(*name) {
+	if !ringcore.CleanNameOK(*name) {
 		log.Fatal("kelvoton nimi")
 	}
 	addrs := addresses(*extra)
@@ -370,7 +373,7 @@ func main() {
 	s.mux = ice.NewUDPMuxDefault(ice.UDPMuxParams{UDPConn: &sniffConn{PacketConn: conn, onUfrag: s.onUfrag}})
 
 	card := fmt.Sprintf("s1.%s.%d.%s", fp64, *port, strings.Join(addrs, ","))
-	log.Printf("kuunnellaan UDP [::]:%d, palvelimen tunniste %s, nimi %q", *port, me.id, *name)
+	log.Printf("kuunnellaan UDP [::]:%d, palvelimen tunniste %s, nimi %q", *port, me.ID, *name)
 	fmt.Printf("kortti: %s\n", card)
 	n.mu.Lock()
 	token := n.token
@@ -380,7 +383,7 @@ func main() {
 		fmt.Printf("\nLiitä palvelin renkaaseen: avaa tämä linkki renkaan jäsenen puhelimessa tai skannaa koodi sivun kameralla.\n%s\n", link)
 		printQR(link)
 	} else {
-		log.Printf("renkaassa %s, %d jäsentä", n.ring, len(n.state.members))
+		log.Printf("renkaassa %s, %d jäsentä", n.ring, len(n.state.Members))
 	}
 	for range time.Tick(30 * time.Second) {
 		if a := addresses(*extra); len(a) > 0 {

@@ -101,3 +101,50 @@ test('rengaspalvelin: operaattori jäsen, palvelin ei jäsen eikä vaikuta järj
   const bad = { ...server, id: `${LIISA}:s`, member: LIISA };
   assert.deepEqual(build(R, [found, torttoIn, liisaIn, bad]).rejected.map((x) => x.why), ['jäsen ei voi olla palvelin']);
 });
+
+test('rengassolmu: kaksi huoltajaa, rengasjärjestyksessä, ei hyväksy jäseniä', () => {
+  const NODE = 'f0f0f0f0';
+  const node = { kind: 'node', id: `${NODE}:n`, ring: R, member: NODE, key: KEY, name: 'Jedi', left: ISI, right: LIISA, legacy: [],
+    sigs: { member: SIG, left: SIG, right: SIG } };
+  assert.equal(validEvent(node), true);
+  assert.equal(validEvent({ ...node, right: ISI }), false, 'sama huoltaja kahdesti');
+  assert.equal(validEvent({ ...node, sigs: { member: SIG, left: SIG } }), false, 'yksi huoltaja');
+  assert.equal(validEvent({ ...node, legacy: ['bbbbbbbb', 'aaaaaaaa'] }), false, 'luettelo ei kasvava');
+  assert.equal(validEvent({ ...node, legacy: undefined }), false);
+  const r = build(R, [found, torttoIn, liisaIn, node]);
+  assert.deepEqual(names(r), ['isi', 'Liisa', 'Törttö']);
+  assert.deepEqual(r.order, [ISI, NODE, LIISA, TORTTO]);
+  assert.deepEqual(r.servers.get(NODE), { name: 'Jedi', key: KEY, node: true, guardians: [ISI, LIISA], event: `${NODE}:n` });
+  // Henkilö voi liittyä huoltajien väliin: solmu ei erota heitä, huoltajuus ei muutu.
+  const r2 = build(R, [found, torttoIn, liisaIn, node, aitiIn]);
+  assert.deepEqual(r2.order, [ISI, AITI, NODE, LIISA, TORTTO]);
+  assert.deepEqual(r2.servers.get(NODE).guardians, [ISI, LIISA]);
+  // Solmu naapurina: hylätään (solmu ei perusta solmua eikä hyväksy jäsentä).
+  const n2 = { ...node, id: 'f1f1f1f1:n', member: 'f1f1f1f1', left: NODE, right: LIISA };
+  const viaNode = admit(NODE, LIISA, X, 'Eero');
+  const r3 = build(R, [found, torttoIn, liisaIn, node, n2, viaNode]);
+  assert.deepEqual(r3.rejected.map((x) => x.why), ['solmu ei voi olla naapurina allekirjoittamassa', 'solmu ei voi olla naapurina allekirjoittamassa']);
+  // Solmu ensin: huoltajien väliin liittynyt henkilö ei kumoa solmua, vaikka sen tunniste olisi pienempi.
+  const early = { ...aitiIn, id: '00000000:a', member: '00000000' };
+  const r5 = build(R, [found, torttoIn, liisaIn, early, node]);
+  assert.deepEqual(r5.order, [ISI, '00000000', NODE, LIISA, TORTTO]);
+  assert.deepEqual(r5.rejected, []);
+  // Poisto: huoltajat; vanhalta palvelimelta operaattori.
+  const retire = { kind: 'retire', id: `${NODE}:r`, ring: R, member: NODE, sigs: { left: SIG, right: SIG } };
+  assert.equal(validEvent(retire), true);
+  const r4 = build(R, [found, torttoIn, liisaIn, node, retire]);
+  assert.equal(r4.servers.has(NODE), false);
+  assert.deepEqual([...r4.retired], [NODE]);
+  assert.deepEqual(r4.order, [ISI, LIISA, TORTTO]);
+  assert.deepEqual(build(R, [found, torttoIn, liisaIn, node, { ...retire, sigs: { operator: SIG } }]).rejected.map((x) => x.why), ['väärät allekirjoittajat']);
+});
+
+test('vanha palvelin solmun rinnalla vain solmun luettelossa', () => {
+  const SRV = 'ffff0000', OTHER = 'ffff0001', NODE = 'f0f0f0f0';
+  const server = (id) => ({ kind: 'server', id: `${id}:s`, ring: R, member: id, key: KEY, operator: TORTTO, name: 'Nokia', sigs: { member: SIG, operator: SIG } });
+  const node = { kind: 'node', id: `${NODE}:n`, ring: R, member: NODE, key: KEY, name: 'Jedi', left: ISI, right: LIISA, legacy: [SRV],
+    sigs: { member: SIG, left: SIG, right: SIG } };
+  const r = build(R, [found, torttoIn, liisaIn, server(SRV), server(OTHER), node]);
+  assert.deepEqual([...r.servers.keys()].sort(), [NODE, SRV]);
+  assert.deepEqual(r.rejected.map((x) => x.id), [`${OTHER}:s`]);
+});

@@ -62,6 +62,8 @@ export async function verify(key, payload, sig) {
 export function payloadOf(ev) {
   if (ev.kind === 'found') return ['found', ev.ring, ev.member, ev.key, ev.salt, ev.name, ev.icon];
   if (ev.kind === 'server') return ['server', ev.ring, ev.member, ev.key, ev.operator, ev.name];
+  if (ev.kind === 'node') return ['node', ev.ring, ev.left, ev.right, ev.member, ev.key, ev.name, ev.legacy.join(',')];
+  if (ev.kind === 'retire') return ['retire', ev.ring, ev.member];
   return ['admit', ev.ring, ev.left, ev.right, ev.member, ev.key, ev.name, ev.icon, ev.proof];
 }
 
@@ -72,24 +74,33 @@ export const authPayload = (nonce, signer, verifier) => ['auth', nonce, signer, 
 
 /**
  * Tarkistaa tapahtuman allekirjoitukset. `keyOf(id)` palauttaa rekisteriin jo
- * hyväksytyn jäsenen avaimen. Palauttaa true, false tai null (allekirjoittajan
- * avainta ei vielä tunneta: tarkistetaan myöhemmin uudelleen).
+ * hyväksytyn henkilöjäsenen avaimen (found/admit; solmun avain ei kelpaa
+ * allekirjoittajaksi), `targetOf(id)` palvelimen node- tai server-tapahtuman
+ * (retire). Palauttaa true, false tai null (allekirjoittajaa ei vielä tunneta:
+ * tarkistetaan myöhemmin uudelleen).
  */
-export async function verifyEvent(ev, keyOf) {
-  if (await idOf(ev.key) !== ev.member) return false;
+export async function verifyEvent(ev, keyOf, targetOf = () => null) {
   const p = payloadOf(ev);
+  const signed = async (id, role) => {
+    const k = keyOf(id);
+    return k ? verify(k, p, ev.sigs?.[role]) : null;
+  };
+  const all = async (pairs) => {
+    for (const [id, role] of pairs) {
+      const ok = await signed(id, role);
+      if (ok !== true) return ok;
+    }
+    return true;
+  };
+  if (ev.kind === 'retire') {
+    const t = targetOf(ev.member);
+    if (!t) return null;
+    return t.kind === 'node' ? all([[t.left, 'left'], [t.right, 'right']]) : all([[t.operator, 'operator']]);
+  }
+  if (await idOf(ev.key) !== ev.member) return false;
   if (!(await verify(ev.key, p, ev.sigs?.member))) return false;
   if (ev.kind === 'found') return (await ringIdOf(ev.key, ev.salt)) === ev.ring;
-  if (ev.kind === 'server') {
-    const k = keyOf(ev.operator);
-    if (!k) return null;
-    return verify(k, p, ev.sigs?.operator);
-  }
-  const signers = ev.left === ev.right ? [ev.left] : [ev.left, ev.right];
-  for (const s of signers) {
-    const k = keyOf(s);
-    if (!k) return null;
-    if (!(await verify(k, p, ev.sigs?.[s === ev.left ? 'left' : 'right']))) return false;
-  }
-  return true;
+  if (ev.kind === 'server') return all([[ev.operator, 'operator']]);
+  if (ev.kind === 'node') return all([[ev.left, 'left'], [ev.right, 'right']]);
+  return all(ev.left === ev.right ? [[ev.left, 'left']] : [[ev.left, 'left'], [ev.right, 'right']]);
 }

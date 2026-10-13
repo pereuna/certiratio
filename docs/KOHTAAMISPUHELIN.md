@@ -4,7 +4,7 @@
 
 ## Tavoite
 
-Rengas (`poc1/web/direct.html`) toimii ilman palvelinta QR-koodeilla, mutta paluu suljetun sivun jälkeen vaatii kaksi skannausta. Jedi-kokeessa paluu tapahtui itsestään (kahdella puhelimella 1,1 s), mutta jedi on varattu muuhun käyttöön.
+Rengas (`poc1/web/direct.html`) toimii ilman palvelinta QR-koodeilla, mutta paluu suljetun sivun jälkeen vaatii kaksi skannausta. Jedi-kokeessa paluu tapahtui itsestään (kahdella puhelimella 1,1 s). 13.10.2026 päätettiin, että jedi tulee renkaaseen itsenäiseksi rengassolmuksi kahden huoltajan hyväksymänä ([JEDI_SIIRTO.md](JEDI_SIIRTO.md)); yhden operaattorin `server`-malli jää siirtymäkauden ajaksi.
 
 Uusi malli:
 - Osa jäsenistä (esimerkiksi Nokia G50) ajaa puhelimessaan **rengaspalvelinta**. Nyt se on Termux-ohjelma, lopullisesti oma App.
@@ -48,7 +48,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
   - Kentät: `{ kind: 'server', id: SERVER:s, ring, server, key, operator, name, sigs: { server, operator } }`.
   - Palvelimella on oma P-256-avain, ja `server = idOf(key)`.
   - Palvelin ei ole jäsen, koska se ei voi skannata koodeja. Sen ottaa renkaaseen sitä ylläpitävä jäsen (`operator`), joka allekirjoittaa sen.
-  - Palvelimen voi myöhemmin poistaa (`unserver`, operaattorin allekirjoitus).
+  - Palvelimen voi myöhemmin poistaa (toteutettu 2026-10-13 `retire`-tapahtumana, ks. [PROTOKOLLA.md](PROTOKOLLA.md)).
 - **Kortti** (`card`, ei rekisterissä):
   - Kentät: `{ server, seq, addrs: [...], port, fp, sig }`, ja palvelin allekirjoittaa kortin omalla avaimellaan.
   - Kun palvelimen osoite vaihtuu, palvelin kasvattaa `seq`:tä ja lähettää kortin kaikille yhteydessä oleville.

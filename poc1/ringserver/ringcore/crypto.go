@@ -1,4 +1,8 @@
-package main
+// Package ringcore: Certiratio-rekisterin alustariippumaton ydin
+// (docs/PROTOKOLLA.md): identiteetit, kanoninen allekirjoitettava sisältö,
+// tapahtumat, rekisterin rakentaminen ja kortit. Ei verkkoa eikä WebRTC:tä,
+// joten paketti kääntyy myös wasm- ja Plan 9 -kohteisiin (cmd/ringcheck).
+package ringcore
 
 // Identiteetti kuten web/src/identity.js: ECDSA P-256, julkinen avain raw
 // (65 tavua) base64url:nä, allekirjoitus r‖s (64 tavua, WebCryptomuoto), ja
@@ -24,10 +28,10 @@ import (
 
 var b64 = base64.RawURLEncoding
 
-// jsString koodaa merkkijonon kuten JavaScriptin JSON.stringify: vain ",
+// JSString koodaa merkkijonon kuten JavaScriptin JSON.stringify: vain ",
 // \ ja ohjausmerkit escapoidaan (Go:n encoding/json escapoisi lisäksi
 // esimerkiksi <, >, & sekä U+2028 ja U+2029).
-func jsString(s string) string {
+func JSString(s string) string {
 	var b strings.Builder
 	b.WriteByte('"')
 	for _, r := range s {
@@ -59,27 +63,27 @@ func jsString(s string) string {
 }
 
 // canon: allekirjoitettava sisältö, merkkijonotaulukko JSON-muodossa.
-func canon(parts ...string) []byte {
+func Canon(parts ...string) []byte {
 	q := make([]string, len(parts))
 	for i, p := range parts {
-		q[i] = jsString(p)
+		q[i] = JSString(p)
 	}
 	return []byte("[" + strings.Join(q, ",") + "]")
 }
 
-func hex8(text string) string {
+func Hex8(text string) string {
 	h := sha256.Sum256([]byte(text))
 	return hex.EncodeToString(h[:4])
 }
 
-func idOf(key string) string           { return hex8(key) }
-func ringIdOf(key, salt string) string { return hex8(key + "." + salt) }
-func authPayload(nonce, signer, verifier string) []byte {
-	return canon("auth", nonce, signer, verifier)
+func IDOf(key string) string           { return Hex8(key) }
+func RingIDOf(key, salt string) string { return Hex8(key + "." + salt) }
+func AuthPayload(nonce, signer, verifier string) []byte {
+	return Canon("auth", nonce, signer, verifier)
 }
 
-// verify: allekirjoitus (r‖s, base64url) julkisella avaimella (raw, base64url).
-func verify(key string, payload []byte, sig string) bool {
+// Verify: allekirjoitus (r‖s, base64url) julkisella avaimella (raw, base64url).
+func Verify(key string, payload []byte, sig string) bool {
 	raw, err := b64.DecodeString(key)
 	if err != nil {
 		return false
@@ -100,15 +104,15 @@ func verify(key string, payload []byte, sig string) bool {
 		new(big.Int).SetBytes(s[:32]), new(big.Int).SetBytes(s[32:]))
 }
 
-type identity struct {
-	priv *ecdsa.PrivateKey
-	key  string // julkinen avain raw, base64url
-	id   string
+type Identity struct {
+	Priv *ecdsa.PrivateKey
+	Key  string // julkinen avain raw, base64url
+	ID   string
 }
 
-func (me *identity) sign(payload []byte) (string, error) {
+func (me *Identity) Sign(payload []byte) (string, error) {
 	h := sha256.Sum256(payload)
-	r, s, err := ecdsa.Sign(rand.Reader, me.priv, h[:])
+	r, s, err := ecdsa.Sign(rand.Reader, me.Priv, h[:])
 	if err != nil {
 		return "", err
 	}
@@ -118,17 +122,17 @@ func (me *identity) sign(payload []byte) (string, error) {
 	return b64.EncodeToString(out), nil
 }
 
-func newIdentity(priv *ecdsa.PrivateKey) (*identity, error) {
+func NewIdentity(priv *ecdsa.PrivateKey) (*Identity, error) {
 	pub, err := priv.PublicKey.ECDH()
 	if err != nil {
 		return nil, err
 	}
 	key := b64.EncodeToString(pub.Bytes())
-	return &identity{priv: priv, key: key, id: idOf(key)}, nil
+	return &Identity{Priv: priv, Key: key, ID: IDOf(key)}, nil
 }
 
-// loadIdentity: palvelimen pysyvä avainpari (PKCS#8 PEM).
-func loadIdentity(path string) (*identity, error) {
+// LoadIdentity: palvelimen pysyvä avainpari (PKCS#8 PEM).
+func LoadIdentity(path string) (*Identity, error) {
 	if b, err := os.ReadFile(path); err == nil {
 		blk, _ := pem.Decode(b)
 		if blk == nil {
@@ -142,7 +146,7 @@ func loadIdentity(path string) (*identity, error) {
 		if !ok {
 			return nil, errors.New("avain ei ole ECDSA")
 		}
-		return newIdentity(priv)
+		return NewIdentity(priv)
 	}
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -155,7 +159,7 @@ func loadIdentity(path string) (*identity, error) {
 	if err := os.WriteFile(path, pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: der}), 0o600); err != nil {
 		return nil, err
 	}
-	return newIdentity(priv)
+	return NewIdentity(priv)
 }
 
 // utf16Len: JavaScriptin merkkijonon pituus (UTF-16-yksiköt).
@@ -180,9 +184,9 @@ func jsSpace(r rune) bool {
 	return r >= 0x2000 && r <= 0x200a
 }
 
-// cleanNameOK: onko nimi sama kuin ring.js:n cleanName(nimi) ja ei tyhjä.
-func cleanNameOK(s string) bool {
-	if s == "" || !utf8.ValidString(s) || utf16Len(s) > maxName {
+// CleanNameOK: onko nimi sama kuin ring.js:n cleanName(nimi) ja ei tyhjä.
+func CleanNameOK(s string) bool {
+	if s == "" || !utf8.ValidString(s) || utf16Len(s) > MaxName {
 		return false
 	}
 	for _, r := range s {
