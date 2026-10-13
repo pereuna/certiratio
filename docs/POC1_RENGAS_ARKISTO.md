@@ -95,7 +95,7 @@ Nämä koskevat mitä tahansa selaimessa tai puhelimessa ajettavaa P2P-ratkaisua
 
 ## 6. Jäljellä (käyttäjän päätettävissä)
 
-- **G50:** `/data/local/tmp` sisältää edelleen tiedostot `ringserver`, `ringserver.malli1`, `ringcheck`, `conformance.json`, `nokia-tila/` ja `rs*.log`. Chromen sivustotiedot pereuna.github.io:lle (Törtön avain, rekisteri ja viestit IndexedDB:ssä) ovat myös jäljellä. Poistoa ei tehty, koska automaattinen lupatarkistus esti peruuttamattoman poiston.
+- **G50:** demon tiedostot hakemistosta `/data/local/tmp` poistettiin 2026-10-13 käyttäjän pyynnöstä. Chromen sivustotiedot pereuna.github.io:lle (Törtön avain, rekisteri ja viestit IndexedDB:ssä) poistetaan puhelimesta käsin: Chrome → Asetukset → Sivustoasetukset → Kaikki sivustot → pereuna.github.io → Tyhjennä ja nollaa. Automaattinen lupatarkistus esti etäpoiston.
 - **Muiden jäsenten puhelimet** (isi, Hanna): sivustotiedot jäävät heidän selaimiinsa, kunnes he poistavat ne itse. Sivu ei enää lataudu Pagesista.
 - **Paikalliset varmuuskopiot** `~/certiratio-varmuus/`.
 - **Repo** `github.com/pereuna/certiratio` pysyy julkisena (käyttäjän päätös 2026-10-13).
