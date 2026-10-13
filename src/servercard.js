@@ -9,7 +9,7 @@
 // palvelimella. Selain on DTLS-asiakas ja tarkistaa palvelimen sormenjäljen
 // kortista, joten väärä palvelin ei kelpaa.
 
-import { pairable } from './pairing.js?v=c882abf';
+import { pairable } from './pairing.js?v=68dc813';
 
 const B64URL = /^[A-Za-z0-9_-]{43}$/;
 const TOKEN = /^[0-9a-f]{16}$/;

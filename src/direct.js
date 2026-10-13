@@ -28,16 +28,16 @@
 // vastaanottajan välisellä todennetulla suoralla yhteydellä. Eri renkaiden puhelimet eivät yhdisty (hello.ring).
 // Vain IPv6.
 
-import { CLASSES, classifyPair, selectedPair } from './classify.js?v=c882abf';
-import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js?v=c882abf';
-import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js?v=c882abf';
-import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js?v=c882abf';
-import { ICONS, MODEL, NODE_ICON, adjacent, build, cleanName, eventId, preferred, successor, validEvent, validLegacy } from './ring.js?v=c882abf';
-import { createScanner } from './scanner.js?v=c882abf';
-import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js?v=c882abf';
-import { Signaling } from './signaling.js?v=c882abf';
-import { clear as clearStore, load, save } from './store.js?v=c882abf';
-import { candidateAddr, filterSdp } from './stream.js?v=c882abf';
+import { CLASSES, classifyPair, selectedPair } from './classify.js?v=68dc813';
+import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js?v=68dc813';
+import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js?v=68dc813';
+import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js?v=68dc813';
+import { ICONS, MODEL, NODE_ICON, adjacent, build, cleanName, eventId, preferred, successor, validEvent, validLegacy } from './ring.js?v=68dc813';
+import { createScanner } from './scanner.js?v=68dc813';
+import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js?v=68dc813';
+import { Signaling } from './signaling.js?v=68dc813';
+import { clear as clearStore, load, save } from './store.js?v=68dc813';
+import { candidateAddr, filterSdp } from './stream.js?v=68dc813';
 
 const PROTOCOL = 'certiratio-direct/5';
 const MAX_MESSAGE_BYTES = 64 * 1024;
@@ -759,6 +759,7 @@ async function onCard(via, c) {
   if (!(await verify(srv.key, cardPayload(ringId, card), card.sig))) return log(`${nameOf(c.server)}: kortin allekirjoitus ei kelpaa`);
   const moved = cards.has(c.server);
   cards.set(c.server, card);
+  enrollCards.delete(c.server);
   log(`${nameOf(c.server)}: kortti ${moved ? 'päivittyi' : 'saatu'} (${card.addrs.join(', ')})`);
   if (isMember()) persistRing();
   for (const l of links.values()) if (l !== via && l.verified && (isMember(l.id) || l.server)) send(l, { type: 'card', card });
@@ -790,6 +791,7 @@ async function enrollServer(card) {
   panel({ step: 'Liitetään rengassolmua…', note: card.addrs.join(', '), secondary: ['Peru', showMember] });
   const link = await connectServer(card, { enroll: card.token });
   link.enrollRight = right;
+  link.enrollCard = { fp64: card.fp64, port: card.port, addrs: card.addrs };
   setTimeout(() => {
     if (link.enroll && links.get(link.key) === link) { drop(link, null); pairFailed('palvelin ei vastannut'); }
   }, CONNECT_TIMEOUT_MS);
@@ -804,6 +806,11 @@ function sendEnroll(link) {
 }
 
 let cosignReq = null; // oma pyyntö toiselle: { ev, to, what }
+// Liitettävän solmun kortti liittämislinkistä, kunnes solmu on renkaassa ja sen oma kortti tunnetaan:
+// solmu kuulee liittymisestään vasta, kun joku yhdistää siihen (pyytäjän yhteys voi katketa odotuksen aikana).
+const enrollCards = new Map(); // solmu → { fp64, port, addrs }
+const validEnrollCard = (c) => !!c && typeof c === 'object' && CARD_FP.test(c.fp64 ?? '') && Number.isInteger(c.port) && c.port > 0 &&
+  c.port < 65536 && Array.isArray(c.addrs) && c.addrs.length > 0 && c.addrs.length <= 8 && c.addrs.every((a) => typeof a === 'string' && pairable(a));
 
 async function onEnrolled(link, msg) {
   if (!link.enroll || !link.server) return;
@@ -822,13 +829,15 @@ async function onEnrolled(link, msg) {
   if (!(await verify(ev.key, p, msg.sig))) return pairFailed('palvelimen allekirjoitus ei kelpaa');
   ev.id = eventId('node', ev.member);
   ev.sigs = { member: msg.sig, left: await sign(me.priv, p) };
+  enrollCards.set(ev.member, link.enrollCard);
   askCosign(ev, right, `rengassolmun ${name}`);
 }
 
 /** Pyyntö toiselle allekirjoittajalle; hän julkaisee valmiin tapahtuman. */
 function askCosign(ev, to, what) {
   cosignReq = { ev, to, what };
-  const sendIt = () => originate({ type: 'cosign', to, ev });
+  const card = enrollCards.get(ev.member);
+  const sendIt = () => originate({ type: 'cosign', to, ev, ...(ev.kind === 'node' && card ? { card } : {}) });
   sendIt();
   panel({
     step: `Odotetaan, että ${nameOf(to)} hyväksyy ${what}.`,
@@ -869,6 +878,10 @@ async function onCosign(msg) {
     step,
     note,
     primary: ['Hyväksy', async () => {
+      if (ev.kind === 'node' && validEnrollCard(msg.card)) {
+        const { fp64, port, addrs } = msg.card;
+        enrollCards.set(ev.member, { fp64, port, addrs });
+      }
       const done2 = { ...ev, sigs: { ...ev.sigs, [mine]: await sign(me.priv, payloadOf(ev)) } };
       await publish(done2);
       done(ev.kind === 'node' ? `✅ Rengassolmu ${ev.name} liitetty. Huoltajat: ${nameOf(from)} ja ${nameOf(myId)}.`
@@ -978,6 +991,10 @@ async function mergeNow(list) {
     if (serversBefore.has(id) || restoring) continue;
     log(sv.node ? `${sv.name} liitettiin rengassolmuksi (huoltajat ${nameOf(sv.guardians[0])} ja ${nameOf(sv.guardians[1])})`
       : `${sv.name} liitettiin rengaspalvelimeksi (operaattori ${nameOf(sv.operator)})`);
+    const ec = enrollCards.get(id);
+    if (sv.node && ec && !cards.has(id) && !serverLink(id)) { // solmu ei vielä tiedä liittyneensä
+      connectServer({ fp: fpHex(ec.fp64), port: ec.port, addrs: ec.addrs }, { expect: id }).catch((e) => log(`${sv.name}: ${e.message}`));
+    }
     if (cosignReq?.ev.kind === 'node' && cosignReq.ev.member === id) {
       cosignReq = null;
       done(`✅ Rengassolmu ${sv.name} liitetty. Huoltajat: ${nameOf(sv.guardians[0])} ja ${nameOf(sv.guardians[1])}.`, null);
@@ -2028,6 +2045,7 @@ window.direct = {
   get serverInfo() { return Object.fromEntries([...ring.servers].map(([id, sv]) => [id, sv.node ? { name: sv.name, guardians: sv.guardians } : { name: sv.name, operator: sv.operator }])); },
   get retired() { return [...ring.retired]; },
   retire: (id) => retireServer(id),
+  dropServers: () => { for (const l of [...links.values()]) if (l.server) drop(l, null); return true; },
   get ringId() { return ringId; },
   // Testeille: tapahtuma verkkoon sellaisenaan (väärennösten torjunta).
   inject: (ev) => { originate({ type: 'ev', ev }); merge([ev]); return true; },
