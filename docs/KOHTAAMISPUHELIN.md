@@ -123,7 +123,7 @@ Jäsenyysrekisteri (`found`/`admit`) on vain lisäävä. Palvelinten osoitteet m
 
 ## Avoimet kysymykset
 
-- **UDP eri operaattoreiden välillä:** saman operaattorin sisällä pyytämätön UDP kulkee (testattu). Eri operaattorilta testaamatta.
+- **UDP eri operaattoreiden välillä:** saman operaattorin sisällä pyytämätön UDP kulkee (testattu). Elisalta DNA:lle (Jedi, 4G-reititin) testattu 13.10.2026: yhteys kortilla 0,66 s.
 - **Piilotettu oma osoite (mDNS):** jos selain piilottaa oman host-osoitteensa (työpöytä-Chrome, iPhone/WebKit), yhteys kortilla ei syntynyt paikallisessa testissä. Android-Chrome ei piilota. Ratkaisuvaihtoehtoja: STUN, kuten renkaassa nyt (antaa selaimelle srflx-kandidaatin), tai palvelin myös vastaanottajaksi, joka hyväksyy vertaisheijastetut osoitteet. Testattava iPhonella.
 - **Safari ja iPhone:** WebRTC Direct -tyyppisen yhteyden (koottu ICE-lite-vastaus) toimivuus iOS:n WebKitissä on testattava. Chrome ja Firefox toimivat libp2p:n kokemuksen perusteella.
 - **Palvelinten määrä ja sijoittelu:** riittääkö yksi palvelin per kotitalous?

@@ -17,7 +17,7 @@ Protokolla on kuvattu tiedostossa [PROTOKOLLA.md](PROTOKOLLA.md).
   - Ajo on ilman aikarajaa, mutta prosessi kuolee, kun puhelin käynnistyy uudelleen.
   - Tila: `key.pem`, `dtls.pem` ja `ring.json`.
 
-**Huoltajat.** isi pyytää liittämistä, ja Hanna (isin oikea naapuri) hyväksyy. Huoltajiksi tulevat siis isi ja Hanna, kaksi luonnollista henkilöjäsentä.
+**Huoltajat:** isi ja Törttö (käyttäjän päätös 13.10.2026). Renkaassa Törttö → isi ovat vierekkäin, joten Törttö avaa liittämislinkin ja isi hyväksyy.
 
 ## Valmisteltu ja testattu (koodi)
 
@@ -52,11 +52,26 @@ Plan 9 amd64 -käännös onnistuu, mutta sitä ei ole ajettu.
 
 Ajo 13.10.2026: kaikki kohdat OK.
 
-**Ei vielä testattu:**
+**Käyttöönotossa testattu (13.10.2026):**
+- operaattorien välinen UDP: Elisa → DNA
 - yhteydet eri IPv6-verkoista oikeaan Jediin
-- operaattorien välinen UDP
 
-Nämä testataan käyttöönotossa (kohta 3 alla).
+## Tila 13.10.2026 klo 14
+
+Tehdyt vaiheet:
+
+1. **Nokian varmuuskopio** (kohta 1) on tiedostossa `~/certiratio-varmuus/nokia-20261013-1325/`.
+   - Vanha Nokia ei ollut enää käynnissä. Se kuoli todennäköisesti, kun koneen adb-yhteys katkesi kaatumisessa.
+2. **Nokia päivitettiin malliin 2** (kohta 2) samalla tilalla.
+   - Se käynnistettiin `setsid nohup`, joten se ei kuole, kun adb-yhteys katkeaa.
+   - Vanha ohjelma on tiedostossa `/data/local/tmp/ringserver.malli1`.
+3. **Jedi asennettiin** (kohta 3): tunniste `248fdde4`, ringcheck YHTEENSOPIVA OpenBSD arm64:llä.
+   - Yhteys onnistui toisen operaattorin verkosta: kone Elisa → Jedi DNA 0,66 s, ja väärän sormenjäljen kortti hylättiin. G50 mobiilidatalla → Jedi: suora yhteys.
+   - **Huoltajat ovat isi ja Törttö** (käyttäjän päätös). Renkaassa Törttö → isi ovat vierekkäin, joten Törttö pyysi ja isi hyväksyi klo 13.51.
+   - Rengas: isi → Hanna Reunamo → Törttö → 🖥️ Jedi → (isi).
+   - Liittämisessä löytyi virhe. Törtön sivu jäätyi odotuksen ajaksi, joten Jedi ei kuullut liittymisestään, eikä kukaan tuntenut sen korttia. Virhe ohitettiin yhdistämällä Jediin käsin ja korjattiin sitten koodissa: `cosign` kuljettaa kortin, ja pyytäjä ja hyväksyjä yhdistävät uuteen solmuun.
+
+Seuraavaksi: kohta 4 (testi pelkän Jedin varassa) ja kohta 5 (Nokian palvelinroolin poisto).
 
 ## 1. Dokumentointi ja varmuuskopio Törtön palvelusta
 

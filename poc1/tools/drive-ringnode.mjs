@@ -58,6 +58,8 @@ console.log('rengas isi → Törttö QR-koodeilla');
 await isi.ev(`direct.server(${J(enrollLink)})`);
 await until(isi, `direct.step.includes('Odotetaan, että Törttö hyväksyy')`);
 await until(tortto, `direct.step.includes('pyytää: liitetäänkö rengassolmu')`);
+// Pyytäjän yhteys palvelimeen katkeaa odotuksen aikana (puhelin jäädyttää sivun): palvelin saa tapahtuman silti.
+await isi.ev('direct.dropServers()');
 await tortto.ev(`document.getElementById('primary').click()`);
 await until(isi, `direct.step.includes('Rengassolmu') && direct.step.includes('liitetty')`);
 const guardians = Object.values(await isi.ev('direct.serverInfo'))[0]?.guardians;
