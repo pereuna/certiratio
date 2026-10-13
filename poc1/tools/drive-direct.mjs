@@ -6,7 +6,7 @@
 // 2.j (kohtaamispaikka, paikallinen rtcsignal), joten vastausta ei skannata.
 // Pysyvyys: Liisan välilehti suljetaan ja avataan uudelleen (sama selainprofiili),
 // ja hän yhdistyy itsestään renkaan huoneen kautta. Sitten sama ?signal=off-tilassa:
-// paluu äidin yhdistämiskoodilla. Viestit ovat kahdenkeskisiä: vain vastaanottaja saa ne. Lisäksi toinen välilehti samassa profiilissa,
+// paluu yhdistämiskoodilla (Liisa näyttää, äiti skannaa; Yhdistä-nappi vain Liisalla). Viestit ovat kahdenkeskisiä: vain vastaanottaja saa ne. Lisäksi toinen välilehti samassa profiilissa,
 // väärennetyt tapahtumat ja viides selain Q (käytetty kutsu, vieras, oma rengas).
 // Profiilihakemistojen on oltava tyhjiä ajon alussa. URL on rtcsignalin jakama sivu.
 //   node --experimental-websocket drive-direct.mjs URL PORT_ISI PORT_TORTTO PORT_LIISA PORT_AITI [PORT_Q]
@@ -181,19 +181,21 @@ const silent = async (t) => Object.keys(await t.ev('direct.dms')).length === 0;
   await sleep(3000);
   check('?signal=off: ei yhteyksiä ilman koodia', (await back2.ev('direct.open.length')) === 0,
     await back2.ev(`document.getElementById('status').textContent`));
-  await until(nodes.äiti, `!document.getElementById('reconnect').hidden`);
-  await nodes.äiti.ev(`document.getElementById('reconnect').click()`);
-  await nodes.äiti.ev(`document.getElementById('primary').click()`); // Näytä yhdistämiskoodi
-  const rcode = await until(nodes.äiti, `direct.url?.includes('#2.r.') && direct.url`);
-  await back2.ev(`direct.scan(${J(rcode)})`);
-  const answer = await until(back2, `direct.url?.includes('#2.a.') && direct.url`);
-  await nodes.äiti.ev(`document.getElementById('primary').click()`); // Skannaa hänen vastauksensa
-  await nodes.äiti.ev(`direct.scan(${J(answer)})`);
+  check('Yhdistä-nappi vain sillä, joka ei saa yhteyttä itsestään', (await nodes.äiti.ev(`document.getElementById('reconnect').hidden`)) &&
+    !!(await until(back2, `!document.getElementById('reconnect').hidden`, 5000).catch(() => false)));
+  // Liisa näyttää yhdistämiskoodin, äiti skannaa sen ja näyttää vastauksen, jonka Liisa skannaa.
+  await back2.ev(`document.getElementById('reconnect').click()`);
+  await back2.ev(`document.getElementById('primary').click()`); // Näytä yhdistämiskoodi
+  const rcode = await until(back2, `direct.url?.includes('#2.r.') && direct.url`);
+  await nodes.äiti.ev(`direct.scan(${J(rcode)})`);
+  const answer = await until(nodes.äiti, `direct.url?.includes('#2.a.') && direct.url`);
+  await back2.ev(`document.getElementById('primary').click()`); // Skannaa hänen vastauksensa
+  await back2.ev(`direct.scan(${J(answer)})`);
   await until(back2, `direct.open.length === 3`, 60000);
-  await until(nodes.äiti, `direct.step.includes('taas mukana') || document.getElementById('pair').hidden`);
+  await until(back2, `direct.step.includes('taas mukana') || document.getElementById('pair').hidden`);
   nodes.Liisa = back2;
   all.splice(all.findIndex((t) => t.label === 'Liisa'), 1, back2);
-  check('?signal=off: Liisa yhdistetty äidin koodilla, suorat yhteydet kaikkiin ja viesti perillä',
+  check('?signal=off: Liisa yhdistetty koodilla (Liisa näyttää, äiti skannaa), suorat yhteydet kaikkiin ja viesti perillä',
     await back2.ev(`direct.dm(${J(id.Törttö)}, 'palasin')`) && await got(nodes.Törttö, liisaId, 'palasin'));
 
   // Käytetty kutsu, vieras (Q:n selain, ei jäsen) ja toinen rengas eivät pääse sisään.

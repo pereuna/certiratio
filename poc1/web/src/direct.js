@@ -1286,8 +1286,8 @@ function rejoined() {
 
 function reconnectMenu() {
   panel({
-    step: 'Yhdistä palaava jäsen: toinen näyttää yhdistämiskoodin, toinen skannaa sen.',
-    note: 'Kuka tahansa paikalla oleva jäsen voi näyttää koodin. Liittymistä ei tarvitse tehdä uudelleen.',
+    step: 'Yhteys ei synny itsestään. Näytä yhdistämiskoodi paikalla olevalle jäsenelle: hän skannaa sen puhelimen kameralla.',
+    note: 'Toimii myös toisin päin: hän näyttää koodin, ja sinä skannaat sen. Liittymistä ei tarvitse tehdä uudelleen.',
     primary: ['Näytä yhdistämiskoodi', () => startInvite('reconnect')],
     secondary: ['Skannaa yhdistämiskoodi', () => panel({
       step: 'Skannaa yhdistämiskoodi toisen jäsenen näytöltä.', cam: true, secondary: ['Peru', showMember],
@@ -1679,12 +1679,14 @@ function render() {
   $('status').className = open || n === 1 || met ? 'ok' : 'bad';
   $('status').textContent = (n === 1 && !open ? 'Rengas aloitettu. Kutsu toinen perustaja.'
     : !open && met ? `Renkaassa ${n} · muita ei ole nyt paikalla. Yhteys syntyy itsestään, kun joku avaa sivun.`
-      : !open ? `Renkaassa ${n} · ei yhteyksiä. Pyydä paikalla olevaa jäsentä näyttämään yhdistämiskoodi (Yhdistä).`
+      : !open ? `Renkaassa ${n} · ei yhteyksiä. Paina Yhdistä ja näytä koodi paikalla olevalle jäsenelle.`
         : `Renkaassa ${n} · paikalla ${here} · suoria yhteyksiä ${open}${joiners > 0 ? ` · liittymässä ${joiners}` : ''}`) + meetText;
   const right = isMember() ? successor(ring.members, myId) : null;
   $('invite').hidden = !isMember();
   $('invite').textContent = right === myId ? 'Kutsu toinen perustaja' : `Kutsu väliin: minä ja ${nameOf(right)}`;
-  $('reconnect').hidden = !isMember() || n < 2 || (met && here >= n); // varalla: kohtaamispaikka ei vastaa tai joku puuttuu
+  // Vain kun tarvitaan: joku puuttuu, eikä kohtaamispaikka tai rengaspalvelin vastaa (yhteys ei synny itsestään).
+  // Puuttuva jäsen näyttää koodin, ja paikalla oleva skannaa sen puhelimen kameralla.
+  $('reconnect').hidden = !isMember() || n < 2 || here >= n || met;
   $('info-sum').textContent = `yhteydet · minä ${profile.icon} ${profile.name || myId}`;
   $('me-info').textContent = `Tunniste ${myId} · avain ${me.key.slice(0, 12)}…` +
     (stored ? ' · tallennettu tähän selaimeen' : ' · ⚠️ selain ei salli tallennusta: jäsenyys katoaa, kun sivu suljetaan') +
