@@ -34,7 +34,7 @@ async function open(port, url, label, ready = '!!window.direct?.id') {
     return r.result?.result?.value;
   };
   for (let i = 0; i < 40 && !(await ev(ready)); i++) await sleep(250);
-  return { label, port, ev, close: () => fetch(`http://localhost:${port}/json/close/${t.id}`) };
+  return { label, port, ev, send: c.send, close: () => fetch(`http://localhost:${port}/json/close/${t.id}`) };
 }
 
 const until = async (t, expr, ms = 30000) => {
@@ -213,6 +213,31 @@ const silent = async (t) => Object.keys(await t.ev('direct.dms')).length === 0;
     check('toisen renkaan yhdistämiskoodi hylätään', (await q.ev(`direct.scan(${J(rcode)})`)) === false && (await q.ev('direct.note')).includes('toiseen renkaaseen'));
     all.push(q);
   }
+}
+// Yläpalkki: yksi rivi; kapealla ruudulla loputon vieritys, minä keskellä.
+{
+  const t = all[0];
+  const row = `(() => { const b = document.getElementById('ringview'); return { cls: b.className, h: b.offsetHeight, laps: b.children.length,
+    me: (() => { const m = b.children[1]?.querySelector?.('.me') ?? b.querySelector('.me'); const r = m.getBoundingClientRect(); return Math.round(r.left + r.width / 2 - innerWidth / 2); })() }; })()`;
+  await t.send('Emulation.setDeviceMetricsOverride', { width: 900, height: 700, deviceScaleFactor: 1, mobile: false });
+  await sleep(300);
+  const wide = await t.ev(row);
+  check('leveällä ruudulla rengas mahtuu yhdelle riville', wide.cls === 'fits' && wide.h < 50, JSON.stringify(wide));
+  await t.send('Emulation.setDeviceMetricsOverride', { width: 230, height: 600, deviceScaleFactor: 2, mobile: true });
+  await sleep(300);
+  const narrow = await t.ev(row);
+  check('kapealla ruudulla kolme kierrosta, yksi rivi, minä keskellä', narrow.cls === 'laps' && narrow.laps === 3 && narrow.h < 50 && Math.abs(narrow.me) < 30, JSON.stringify(narrow));
+  const wrap = await t.ev(`(async () => { const b = document.getElementById('ringview'); const w = b.children[1].offsetLeft - b.children[0].offsetLeft;
+    const out = [];
+    for (const d of [w * 0.8, -w * 1.6]) { b.scrollLeft += d; await new Promise((r) => setTimeout(r, 200)); out.push(b.scrollLeft >= w / 2 - 2 && b.scrollLeft <= w * 1.5 + 2); }
+    return out; })()`);
+  check('vieritys kiertää renkaan ympäri', wrap.every(Boolean), JSON.stringify(wrap));
+  if (process.env.SHOT) {
+    const c = await t.ev(`(() => { const r = document.getElementById('ringview').getBoundingClientRect(); return { x: 0, y: r.top + scrollY, width: 230, height: r.height + 40, scale: 1 }; })()`);
+    const r = await t.send('Page.captureScreenshot', { clip: c, captureBeyondViewport: true });
+    (await import('node:fs')).writeFileSync(process.env.SHOT, Buffer.from(r.result.data, 'base64'));
+  }
+  await t.send('Emulation.clearDeviceMetricsOverride');
 }
 console.log(ok ? 'RENGAS TOIMII' : 'VIRHE');
 if (!process.env.KEEP) for (const t of all) await t.close();
