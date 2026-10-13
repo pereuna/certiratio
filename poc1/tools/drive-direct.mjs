@@ -108,9 +108,10 @@ const silent = async (t) => Object.keys(await t.ev('direct.dms')).length === 0;
 {
   const a = 'Myyn sinulle 5 kg perunoita.';
   const b = 'Sopii. Hinta 10 yksikköä?';
-  check('isi → Törttö lähti suoraan', await nodes.isi.ev(`direct.dm(${J(id.Törttö)}, ${J(a)})`));
-  check('Törttö sai viestin', await got(nodes.Törttö, id.isi, a));
-  check('Törttö → isi (vastaus)', await nodes.Törttö.ev(`direct.dm(${J(id.isi)}, ${J(b)})`) && await got(nodes.isi, id.Törttö, b));
+  check('isi → Törttö lähti suoraan', (await nodes.isi.ev(`direct.dm(${J(id.Törttö)}, ${J(a)})`)) === 'sent');
+  check('Törttö sai viestin, isi sai kuittauksen', await got(nodes.Törttö, id.isi, a) &&
+    !!(await until(nodes.isi, `direct.dms[${J(id.Törttö)}].find((m) => m.out).state === 'delivered'`, 5000).catch(() => false)));
+  check('Törttö → isi (vastaus)', (await nodes.Törttö.ev(`direct.dm(${J(id.isi)}, ${J(b)})`)) === 'sent' && await got(nodes.isi, id.Törttö, b));
   await sleep(1000);
   check('Liisa ja äiti eivät saaneet kummankaan viestiä', await silent(nodes.Liisa) && await silent(nodes.äiti));
   // Käyttöliittymän kautta: äiti valitsee Liisan renkaasta ja lähettää lomakkeella.
@@ -119,12 +120,12 @@ const silent = async (t) => Object.keys(await t.ev('direct.dms')).length === 0;
   await nodes.äiti.ev(`(() => { document.getElementById('dm-text').value = '  hei Liisa\u0020 '; document.getElementById('dm').requestSubmit(); })()`);
   check('äiti → Liisa lomakkeella', await got(nodes.Liisa, id.äiti, 'hei Liisa') &&
     (await nodes.äiti.ev(`document.getElementById('dm-text').value`)) === '' &&
-    (await nodes.äiti.ev(`document.querySelector('#msgs .msg.out')?.textContent`)) === 'hei Liisa', path);
+    (await nodes.äiti.ev(`document.querySelector('#msgs .msg.out')?.firstChild.textContent`)) === 'hei Liisa', path);
   const badge = await nodes.Liisa.ev(`document.getElementById('ringview').textContent`);
   check('Liisalla lukematon äidiltä renkaassa', badge.includes('äiti (1)'), badge);
   check('isi ja Törttö eivät saaneet äidin viestiä', (await nodes.isi.ev(`Object.keys(direct.dms).join()`)) === id.Törttö &&
     (await nodes.Törttö.ev(`Object.keys(direct.dms).join()`)) === id.isi);
-  check('itselle, vieraalle ja tyhjää ei lähetetä', !(await nodes.isi.ev(`direct.dm(${J(id.isi)}, 'x')`)) &&
+  check('itselle, renkaaseen kuulumattomalle ja tyhjää ei lähetetä', !(await nodes.isi.ev(`direct.dm(${J(id.isi)}, 'x')`)) &&
     !(await nodes.isi.ev(`direct.dm('ffffffff', 'x')`)) && !(await nodes.isi.ev(`direct.dm(${J(id.Törttö)}, '  ')`)));
 }
 
@@ -143,6 +144,9 @@ const silent = async (t) => Object.keys(await t.ev('direct.dms')).length === 0;
   const liisaId = await nodes.Liisa.ev('direct.id');
   await nodes.Liisa.close();
   for (const t of [nodes.isi, nodes.äiti, nodes.Törttö]) await until(t, `!direct.open.includes(${J(liisaId)})`, 60000);
+  // Liisa ei ole paikalla: isin viesti jää lähtevään.
+  check('poissa olevalle jäsenelle viesti jää lähtevään', (await nodes.isi.ev(`direct.dm(${J(liisaId)}, 'odotan sinua')`)) === 'queued' &&
+    (await nodes.isi.ev(`document.getElementById('ringview').textContent`)).includes('Liisa ⏳'));
   const t0 = Date.now();
   const back = await open(ports[2], base, 'Liisa');
   await until(back, `direct.ring.join() === ${J(want.join())}`);
@@ -150,13 +154,20 @@ const silent = async (t) => Object.keys(await t.ev('direct.dms')).length === 0;
   await until(back, `direct.open.length === 3`, 60000);
   check('Liisa yhdistyy itsestään kohtaamispaikan kautta (ei koodeja)', true,
     `${((Date.now() - t0) / 1000).toFixed(1)} s · ${await back.ev(`document.getElementById('status').textContent`)}`);
+  check('lähtevä perillä, kun Liisa palasi, ja kuitattu', await got(back, id.isi, 'odotan sinua') &&
+    !!(await until(nodes.isi, `direct.dms[${J(liisaId)}].every((m) => m.state === 'delivered')`, 5000).catch(() => false)));
+  check('Liisan keskustelu äidin kanssa tallessa uudelleenavauksen jälkeen',
+    !!(await until(back, `(direct.dms[${J(id.äiti)}] ?? []).map((m) => m.text).join() === 'hei Liisa'`, 5000).catch(() => false)),
+    await back.ev(`new Promise((ok) => { const r = indexedDB.open('certiratio-direct'); r.onsuccess = () => { const g = r.result.transaction('kv').objectStore('kv').get('dms'); g.onsuccess = () => ok(JSON.stringify(g.result).slice(0, 400) + ' ring=' + direct.ringId + ' dms=' + JSON.stringify(direct.dms).slice(0, 200)); }; })`));
   check('viesti perillä paluun jälkeen', await back.ev(`direct.dm(${J(id.Törttö)}, 'olen taas täällä')`) &&
     await got(nodes.Törttö, liisaId, 'olen taas täällä'));
-  // Katkos: ilman suoraa yhteyttä viesti ei lähde, eikä rekisteri muutu.
+  // Katkos: viesti jää lähtevään ja lähtee, kun yhteys palaa itsestään; rekisteri ei muutu.
   await back.ev(`direct.cut(${J(id.Törttö)})`);
-  check('katkenneelle yhteydelle ei lähetetä, rengas ennallaan', !(await back.ev(`direct.dm(${J(id.Törttö)}, 'katkos')`)) &&
+  check('katkenneelle yhteydelle viesti jää lähtevään, rengas ennallaan', (await back.ev(`direct.dm(${J(id.Törttö)}, 'katkos')`)) === 'queued' &&
     (await back.ev('direct.ring.join()')) === want.join());
-  await until(back, `direct.open.length === 3`, 60000); // yhteys palaa itsestään kohtaamispaikan kautta
+  await until(back, `direct.open.length === 3`, 60000);
+  check('lähtevä perillä, kun yhteys palasi', await got(nodes.Törttö, liisaId, 'katkos'));
+  check('ei kaksoiskappaleita', (await nodes.Törttö.ev(`direct.dms[${J(liisaId)}].filter((m) => m.text === 'katkos').length`)) === 1);
   // Toinen välilehti samassa profiilissa ei aukea jäsenenä.
   const second = await open(ports[2], base, 'Liisa-2', `!!document.getElementById('step')?.textContent`);
   check('toinen välilehti samassa selaimessa', (await second.ev('direct.step')).includes('toisessa välilehdessä'));
