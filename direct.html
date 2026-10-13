@@ -76,6 +76,8 @@
   #ringview .member { white-space: nowrap; padding: 1px 6px; border-radius: 10px; }
   #ringview button.member { font: inherit; color: inherit; background: none; border: 1px solid var(--line); cursor: pointer; }
   #ringview button.member.chosen { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+  #ringview .member.node { font-size: 0.9em; border: 1px dashed var(--line); }
+  #server-admin button { display: block; margin: 6px 0; }
   #ringview .me { font-weight: 700; }
   #ringview .fresh { background: color-mix(in srgb, var(--accent) 22%, transparent); }
   #ringview .arrow { color: var(--muted); margin: 0 3px; }
@@ -118,6 +120,7 @@
   </table>
   <p id="me-info" class="muted"></p>
   <ul id="log"></ul>
+  <div id="server-admin" hidden></div>
   <button id="forget" type="button" hidden>Poista jäsenyys tästä puhelimesta</button>
 </details>
 
@@ -135,6 +138,6 @@
 </section>
 
 <script src="src/vendor/qrcode.js"></script>
-<script type="module" src="src/direct.js"></script>
+<script type="module" src="src/direct.js?v=c882abf"></script>
 </body>
 </html>

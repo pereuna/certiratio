@@ -1,7 +1,7 @@
 // Launchpadin puhtaat apufunktiot: syötetyn tekstin erotus, rtcsignal-nimi,
 // IPv6-kandidaattisuodatin ja kirjoittajan sävy.
 
-import { ipFamily } from './classify.js';
+import { ipFamily } from './classify.js?v=c882abf';
 
 /**
  * Teksti, jonka syöttökentän muutos prev → next lisäsi. Pyyhkimistä ei
