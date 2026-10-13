@@ -20,8 +20,6 @@
   html, body { margin: 0; height: 100%; }
   body { display: flex; flex-direction: column; height: 100dvh; max-width: 960px; margin: 0 auto;
          background: var(--bg); color: var(--fg); font: 16px/1.45 system-ui, sans-serif; }
-  header { padding: 10px 16px 6px; border-bottom: 1px solid var(--line); }
-  h1 { font-size: 1.05rem; margin: 0; }
   .muted { color: var(--muted); font-size: 0.85rem; }
   #pad { padding: 16px; }
   #pad label { display: block; margin: 8px 0; }
@@ -56,7 +54,6 @@
   #pair p { margin: 8px 0; }
   .qr { display: block; width: min(78vw, 300px); height: auto; margin: 12px 0; background: #fff; border-radius: 6px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-  #paste { font: 14px ui-monospace, monospace; width: 100%; box-sizing: border-box; padding: 6px; }
   #bar { display: flex; align-items: center; gap: 8px; padding: 6px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
   #bar #status { flex: 1 1 12em; font-size: 0.85rem; }
   #pair.overlay { border-bottom: 1px solid var(--line); }
@@ -75,7 +72,6 @@
   #icons button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
   #cam { display: block; width: min(86vw, 360px); aspect-ratio: 1; object-fit: cover; border-radius: 8px; background: #000; margin: 12px 0; }
   .primary { font-weight: 600; }
-  #nocam { border: 0; padding: 0; margin-top: 10px; }
   #ringview { padding: 6px 16px; border-bottom: 1px solid var(--line); font-size: 0.95rem; line-height: 1.8; }
   #ringview .member { white-space: nowrap; padding: 1px 6px; border-radius: 10px; }
   #ringview button.member { font: inherit; color: inherit; background: none; border: 1px solid var(--line); cursor: pointer; }
@@ -92,10 +88,6 @@
 </style>
 </head>
 <body>
-<header>
-  <h1>Rengas</h1>
-  <div class="muted">Uusi jäsen liittyy kahden vierekkäisen jäsenen väliin, ja kumpikin näyttää hänelle QR-koodin. Viestit kulkevat kahden jäsenen välillä suoraan puhelimesta toiseen.</div>
-</header>
 <div id="install" hidden><span id="install-text"></span><button id="install-go" type="button" hidden>Lisää aloitusnäyttöön</button><button id="install-close" type="button" aria-label="sulje">✕</button></div>
 
 <section id="pair">
@@ -110,18 +102,6 @@
   <div id="cam-box" hidden><video id="cam" playsinline muted></video></div>
   <p class="muted" id="pair-note"></p>
   <div class="row"><button id="primary" class="primary" type="button" hidden></button><button id="secondary" type="button" hidden></button><button id="close" type="button" hidden></button></div>
-  <details id="nocam" hidden>
-    <summary class="muted">Ei kameraa?</summary>
-    <div class="row" id="links" hidden>
-      <button id="share" type="button">Jaa linkki</button>
-      <button id="copy" type="button">Kopioi linkki</button>
-    </div>
-    <div id="answer-box" hidden>
-      <p class="muted">Liitä toisen puhelimen lähettämä linkki:</p>
-      <input id="paste" type="text" autocomplete="off" placeholder="https://…#2.…">
-      <div class="row"><button id="use" type="button">Käytä</button></div>
-    </div>
-  </details>
 </section>
 
 <div id="ringview" hidden></div>

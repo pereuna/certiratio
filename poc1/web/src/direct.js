@@ -990,7 +990,7 @@ function showInviteCode(token) {
       qr: `${base}#${token}`,
       primary: ['Skannaa hänen vastauksensa', () => scanAnswer(token)],
       secondary: ['Peru', cancelInvite],
-      paste: true,
+     
     });
     return;
   }
@@ -1003,7 +1003,7 @@ function showInviteCode(token) {
     qr: `${base}#${token}`,
     primary: ['Skannaa hänen vastauksensa', () => scanAnswer(token)],
     secondary: ['Peru', cancelInvite],
-    paste: true,
+   
   });
 }
 
@@ -1014,7 +1014,7 @@ function scanAnswer(token) {
     cam: true,
     primary: ['Näytä koodi uudelleen', () => showInviteCode(token)],
     secondary: ['Peru', cancelInvite],
-    paste: true,
+   
   });
 }
 
@@ -1228,7 +1228,7 @@ async function joinConnected() {
     note: `Liityt väliin: ${nameOf(left)} – ${nameOf(right)}.`,
     trio: trioNew(left, right, myId),
     cam: true,
-    paste: true,
+   
   });
 }
 
@@ -1290,7 +1290,7 @@ function reconnectMenu() {
     note: 'Kuka tahansa paikalla oleva jäsen voi näyttää koodin. Liittymistä ei tarvitse tehdä uudelleen.',
     primary: ['Näytä yhdistämiskoodi', () => startInvite('reconnect')],
     secondary: ['Skannaa yhdistämiskoodi', () => panel({
-      step: 'Skannaa yhdistämiskoodi toisen jäsenen näytöltä.', cam: true, paste: true, secondary: ['Peru', showMember],
+      step: 'Skannaa yhdistämiskoodi toisen jäsenen näytöltä.', cam: true, secondary: ['Peru', showMember],
     })],
     close: true,
   });
@@ -1352,7 +1352,6 @@ function relay(token) {
 function relayFailed(token) {
   panel({
     step: 'Rengas on auki toisessa välilehdessä, mutta se ei vastannut. Palaa siihen ja skannaa koodi sivun omalla kameralla.',
-    links: `${base}#${token}`,
     primary: ['Käytä tätä välilehteä', takeOver],
   });
 }
@@ -1409,7 +1408,7 @@ const scanner = createScanner($('cam'), (text) => {
 
 /**
  * Yksi näkymä kerrallaan. o: { step, note, trio, profile, qr, cam, primary: [teksti, fn],
- * secondary, close (Sulje-nappi), paste (liittämiskenttä), links (jakolinkki ilman QR:ää) }.
+ * secondary, close (Sulje-nappi) }.
  */
 function panel(o) {
   const p = $('pair');
@@ -1428,12 +1427,6 @@ function panel(o) {
   } else {
     $('qr').setAttribute('hidden', '');
   }
-  const url = o.qr ?? o.links;
-  $('nocam').hidden = !(url || o.paste);
-  $('nocam').open = !!o.links;
-  $('links').hidden = !url;
-  if (url) showLinks(url);
-  $('answer-box').hidden = !o.paste;
   for (const [id, b] of [['primary', o.primary], ['secondary', o.secondary], ['close', o.close && ['Sulje', showMember]]]) {
     $(id).hidden = !b;
     if (b) { $(id).textContent = b[0]; $(id).onclick = b[1]; }
@@ -1443,8 +1436,7 @@ function panel(o) {
   if (o.cam) {
     scanner.start().catch((e) => {
       $('cam-box').hidden = true;
-      warn('meh', `Kameraa ei saatu (${e.message}). Avaa "Ei kameraa?" ja liitä koodin linkki.`);
-      $('nocam').open = true;
+      warn('meh', `Kameraa ei saatu (${e.message}). Salli kameran käyttö selaimen asetuksista ja yritä uudelleen, tai skannaa koodi puhelimen omalla kameralla.`);
     });
   }
 }
@@ -1520,13 +1512,6 @@ function setupProfile() {
 function profileFromRing() {
   const i = ring.info.get(myId);
   if (i) profile = { name: i.name, icon: i.icon };
-}
-
-function showLinks(url) {
-  $('share').hidden = !navigator.share;
-  $('share').onclick = () => navigator.share({ url }).catch(() => {});
-  $('copy').textContent = 'Kopioi linkki';
-  $('copy').onclick = () => navigator.clipboard.writeText(url).then(() => { $('copy').textContent = 'Kopioitu ✓'; }, () => {});
 }
 
 function drawQr(svg, text) {
@@ -1753,7 +1738,7 @@ function startScreen() {
 }
 
 function scanOffer() {
-  panel({ step: 'Skannaa kutsujan näytöltä kutsukoodi.', cam: true, paste: true, secondary: ['Takaisin', startScreen] });
+  panel({ step: 'Skannaa kutsujan näytöltä kutsukoodi.', cam: true, secondary: ['Takaisin', startScreen] });
 }
 
 async function loadIdentity() {
@@ -1817,7 +1802,6 @@ async function main() {
       }
     };
   }
-  $('use').onclick = () => { if (handleCode($('paste').value)) $('paste').value = ''; };
   $('invite').onclick = () => startInvite('join');
   $('reconnect').onclick = reconnectMenu;
   $('forget').onclick = async () => {
