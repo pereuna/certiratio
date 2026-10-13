@@ -77,14 +77,13 @@
   #ringview::-webkit-scrollbar { display: none; }
   #ringview .lap { display: inline-block; padding: 0 2px; }
   #ringview.fits { text-align: center; padding: 6px 16px; }
-  #ringview .member { white-space: nowrap; padding: 1px 6px; border-radius: 10px; }
+  #ringview .member { white-space: nowrap; padding: 1px 6px; border-radius: 10px; margin: 0 4px; }
   #ringview button.member { font: inherit; color: inherit; background: none; border: 1px solid var(--line); cursor: pointer; }
   #ringview button.member.chosen { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
   #ringview .member.node { font-size: 0.9em; border: 1px dashed var(--line); }
   #server-admin button { display: block; margin: 6px 0; }
   #ringview .me { font-weight: 700; }
   #ringview .fresh { background: color-mix(in srgb, var(--accent) 22%, transparent); }
-  #ringview .arrow { color: var(--muted); margin: 0 3px; }
   #ringview .away { opacity: 0.45; }
   #ringview .here:not(.me)::before { content: "● "; color: var(--v6); font-size: 0.7em; }
   #install { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--line); font-size: 0.85rem; }
@@ -142,6 +141,6 @@
 </section>
 
 <script src="src/vendor/qrcode.js"></script>
-<script type="module" src="src/direct.js?v=5eca5ce"></script>
+<script type="module" src="src/direct.js?v=7b00f39"></script>
 </body>
 </html>

@@ -28,16 +28,16 @@
 // vastaanottajan välisellä todennetulla suoralla yhteydellä. Eri renkaiden puhelimet eivät yhdisty (hello.ring).
 // Vain IPv6.
 
-import { CLASSES, classifyPair, selectedPair } from './classify.js?v=5eca5ce';
-import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js?v=5eca5ce';
-import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js?v=5eca5ce';
-import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js?v=5eca5ce';
-import { ICONS, MODEL, NODE_ICON, adjacent, build, cleanName, eventId, preferred, successor, validEvent, validLegacy } from './ring.js?v=5eca5ce';
-import { createScanner } from './scanner.js?v=5eca5ce';
-import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js?v=5eca5ce';
-import { Signaling } from './signaling.js?v=5eca5ce';
-import { clear as clearStore, load, save } from './store.js?v=5eca5ce';
-import { candidateAddr, filterSdp } from './stream.js?v=5eca5ce';
+import { CLASSES, classifyPair, selectedPair } from './classify.js?v=7b00f39';
+import { authPayload, cardPayload, createIdentity, idOf, payloadOf, ringIdOf, sign, verify, verifyEvent } from './identity.js?v=7b00f39';
+import { DM_ID, acceptDm, cleanDm, restoreDms } from './dm.js?v=7b00f39';
+import { decodeAny, encodeJoin, encodePairing, encodeVouch, pairable } from './pairing.js?v=7b00f39';
+import { ICONS, MODEL, NODE_ICON, adjacent, build, cleanName, eventId, preferred, successor, validEvent, validLegacy } from './ring.js?v=7b00f39';
+import { createScanner } from './scanner.js?v=7b00f39';
+import { cardAnswer, decodeCard, fpHex, isCard } from './servercard.js?v=7b00f39';
+import { Signaling } from './signaling.js?v=7b00f39';
+import { clear as clearStore, load, save } from './store.js?v=7b00f39';
+import { candidateAddr, filterSdp } from './stream.js?v=7b00f39';
 
 const PROTOCOL = 'certiratio-direct/5';
 const MAX_MESSAGE_BYTES = 64 * 1024;
@@ -1780,11 +1780,10 @@ function renderRing() {
     s.textContent = `${iconOf(m)} ${nameOf(m)}${unread ? ` (${unread})` : ''}${outbox ? ' ⏳' : ''}`;
     return s;
   };
-  const arrow = (t) => Object.assign(document.createElement('span'), { className: 'arrow', textContent: t });
   const lap = (copy) => {
     const l = Object.assign(document.createElement('span'), { className: 'lap' });
     if (copy) l.setAttribute('aria-hidden', 'true');
-    for (const m of order) l.append(item(m, copy), arrow('→'));
+    for (const m of order) l.append(item(m, copy));
     return l;
   };
   // Sijainti keskimmäisen kierroksen alusta: säilyy piirrosten yli.
@@ -1796,7 +1795,7 @@ function renderRing() {
   }
   const one = lap(false);
   box.className = 'fits';
-  box.replaceChildren(one, arrow('↺'));
+  box.replaceChildren(one);
   if (box.scrollWidth <= box.clientWidth) return;
   box.className = 'laps';
   box.replaceChildren(lap(true), one, lap(true));
