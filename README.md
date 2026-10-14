@@ -14,6 +14,8 @@ Kuolemassa henkilön saldo siirtyy samalla etumerkillä erilliselle yhteisön se
 
 Lue [nykyinen mallikonteksti](VELKATALOUS_CONTEXT.md), [mekanismi ja tutkimussuunnitelma](docs/MALLI_JA_SUUNNITELMA.md) sekä [ensimmäiset v2-tulokset](docs/ENSIMMAISET_TULOKSET.md).
 
+[Vaihdannan vapaus](docs/POSITIIVINEN_RAHA_HYODYKKEENA.md): euroja, dollareita ja muuta positiivista rahaa voidaan vaihtaa Certiratiossa kuten mitä tahansa hyödykettä. Certiratio ei korvaa nykyistä rahajärjestelmää eikä sillä ole kiinteää vaihtokurssia; se on yleinen vaihdannan ja velan kirjanpitojärjestelmä.
+
 Protokollan sitova [kannustinyhteensopivuusvaatimus](docs/KANNUSTINYHTEENSOPIVUUS.md): ostaja hyväksyy kaupan kaupantekohetkellä, myyjä vastaa rekisteröinnistä ja laskentatoimisto valvonnasta. Myyjän hyvitys ei saa riippua ostajan myöhemmästä vapaaehtoisesta toiminnasta. Hyvitystakuu edellyttää ostajan tapahtumaoikeuden asianmukaista tarkistusta. Tosite-, henkilöllisyys-, valtuutus- ja riitautusmenettelyt ovat suunnitteluvaatimuksia, joita nykyinen simulaattori ei vielä kokonaisuutena toteuta.
 
 [Rekisteröityminen ja identiteetti](docs/REKISTEROITYMINEN_JA_IDENTITEETTI.md) (suunnittelumuistio): jäsenyys perustuu liittymissopimukseen, kahden tutun jäsenen henkilökohtaiseen tunnistukseen ja historiallisen ympyrärekisterin atomiseen välinjakoon; avaimet ovat käyttövälineitä, eivät ihminen. Ei vielä hyväksyttyä protokollaa.
