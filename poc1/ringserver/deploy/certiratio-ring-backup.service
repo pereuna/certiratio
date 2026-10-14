@@ -1,6 +1,0 @@
-[Unit]
-Description=Certiratio-rengassolmun varmuuskopio
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/sbin/certiratio-ring-backup

@@ -298,7 +298,7 @@ Näiden riskien olemassaolo ei tarkoita, että kaikkia pitäisi estää ohjelmak
 
 Projektin nykyiset ohjeet painottavat ensin selainpohjaista tapahtumajärjestelmää. Tämä dokumentti täydentää sen tulevia jäsenyysvaatimuksia; se ei tee paperisen sopimusarkiston valmistumisesta nykyisen verkkokokeen ehdotonta edellytystä.
 
-**Vaihe 1 – rekisterin rakennetesti:** kolmen perustajajäsenen ympyrä, välin atominen jakaminen, ristiriitaisten liittymisten hylkäys, historiallinen rekonstruktio ja yksi suljettu ympyrä. Simuloidut jäsenet ja allekirjoitukset riittävät. *Kokeilu puhelimilla:* [`poc1/web/direct.html`](../poc1/README.md#rengas-suora-verkko-qr-koodit-webdirecthtml) toteuttaa renkaan ilman allekirjoituksia: kaksi perustajaa, liittyminen vierekkäisten jäsenten väliin kahdella QR-koodilla ja ristiriitaisten liittymisten hylkäys (`poc1/web/src/ring.js`).
+**Vaihe 1 – rekisterin rakennetesti:** kolmen perustajajäsenen ympyrä, välin atominen jakaminen, ristiriitaisten liittymisten hylkäys, historiallinen rekonstruktio ja yksi suljettu ympyrä. Simuloidut jäsenet ja allekirjoitukset riittävät. *Kokeilu puhelimilla:* `poc1/web/direct.html` (repo `pereuna/ipv6-p2p`) toteuttaa renkaan ilman allekirjoituksia: kaksi perustajaa, liittyminen vierekkäisten jäsenten väliin kahdella QR-koodilla ja ristiriitaisten liittymisten hylkäys (`poc1/web/src/ring.js`). Rengaskoe arkistoitiin 2026-10-13.
 
 **Vaihe 2 – sosiaalisen tunnistuksen koe:** kahden tunnistajan hyväksynnät, jakson historiallisen kasvun raportointi, kiistämismenettely, avaimen vaihto ja uudelleentunnistus. Testataan myös yhteistyössä toimivia vääriä tunnistajia. *Kokeilu puhelimilla:* `poc1/web/direct.html` allekirjoittaa liittymiset (tulokas, vasen ja oikea naapuri; ECDSA P-256), todentaa jokaisen yhteyden avaimella, säilyttää avaimen ja rekisterin selaimessa ja yhdistää palaavan jäsenen ilman uutta liittymistä. Kiistäminen, avaimen vaihto ja uudelleentunnistus ovat vielä tekemättä.
 
@@ -342,4 +342,4 @@ Järjestelmän vahvuus voi muodostua usean toisistaan poikkeavan mekanismin yhte
 
 **Huomautus:** Asiakirja on suunnittelumuistio eikä oikeudellinen lausunto. Maksut, sopimussakot, tunnistajien vastuu, sopimuksen pätevyys, tietosuoja, rahanpesun estämiseen liittyvät velvoitteet ja mahdollinen finanssialan sääntely on tutkittava erikseen ennen todellista jäsenyyttä tai taloudellista toimintaa. Tutkimusvaiheen vaihtoehtoja ei pidä tulkita jo hyväksytyiksi protokollapäätöksiksi.
 
-**Projektin nykyisiä vertailudokumentteja:** `VELKATALOUS_CONTEXT.md`, `docs/MALLI_JA_SUUNNITELMA.md`, `docs/KANNUSTINYHTEENSOPIVUUS.md`, `docs/POC1-BROWSER-P2P.md` ja `AGENTS.md`.
+**Projektin nykyisiä vertailudokumentteja:** `VELKATALOUS_CONTEXT.md`, `docs/MALLI_JA_SUUNNITELMA.md`, `docs/KANNUSTINYHTEENSOPIVUUS.md` ja `AGENTS.md`; P2P-kokeen määrittely `docs/POC1-BROWSER-P2P.md` on repossa `pereuna/ipv6-p2p`.
